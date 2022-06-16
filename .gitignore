@@ -5,6 +5,22 @@
 /logs/*
 /tmp/*
 /vendor/*
+/bin/*
+/plugins/*
+/resources/*
+/tests/*
+/tmp/*
+.editorconfig
+#.gitignore
+.htaccess
+composer.json
+composer.lock
+connect.php
+index.php
+phpcs
+phpstan.neon
+phpunit.xml.dist
+README.md
 
 # OS generated files #
 ######################
