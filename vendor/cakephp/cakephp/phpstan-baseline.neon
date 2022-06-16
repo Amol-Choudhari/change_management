@@ -1,0 +1,522 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Strict comparison using \\=\\=\\= between string and false will always evaluate to false\\.$#"
+			count: 1
+			path: src/Auth/DigestAuthenticate.php
+
+		-
+			message: "#^Method Cake\\\\Auth\\\\Storage\\\\MemoryStorage\\:\\:redirectUrl\\(\\) should return array\\|string\\|null but return statement is missing\\.$#"
+			count: 1
+			path: src/Auth/Storage/MemoryStorage.php
+
+		-
+			message: "#^Constructor of class Cake\\\\Auth\\\\Storage\\\\SessionStorage has an unused parameter \\$response\\.$#"
+			count: 1
+			path: src/Auth/Storage/SessionStorage.php
+
+		-
+			message: "#^Method Cake\\\\Auth\\\\Storage\\\\SessionStorage\\:\\:redirectUrl\\(\\) should return array\\|string\\|null but return statement is missing\\.$#"
+			count: 1
+			path: src/Auth/Storage/SessionStorage.php
+
+		-
+			message: "#^Access to undefined constant Memcached\\:\\:OPT_CLIENT_MODE\\.$#"
+			count: 1
+			path: src/Cache/Engine/MemcachedEngine.php
+
+		-
+			message: "#^Access to undefined constant Memcached\\:\\:DYNAMIC_CLIENT_MODE\\.$#"
+			count: 1
+			path: src/Cache/Engine/MemcachedEngine.php
+
+		-
+			message: "#^Parameter \\#1 \\$iterator of class LimitIterator constructor expects Iterator, Countable&Traversable given\\.$#"
+			count: 2
+			path: src/Collection/Collection.php
+
+		-
+			message: "#^Parameter \\#1 \\$it of method AppendIterator\\:\\:append\\(\\) expects Iterator, Traversable given\\.$#"
+			count: 2
+			path: src/Collection/Collection.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between class\\-string\\<ArrayObject\\> and 'ArrayIterator' will always evaluate to false\\.$#"
+			count: 1
+			path: src/Collection/Collection.php
+
+		-
+			message: "#^Parameter \\#1 \\$iterator of class LimitIterator constructor expects Iterator, Countable&Traversable given\\.$#"
+			count: 2
+			path: src/Collection/Iterator/TreeIterator.php
+
+		-
+			message: "#^Parameter \\#1 \\$it of method AppendIterator\\:\\:append\\(\\) expects Iterator, Traversable given\\.$#"
+			count: 2
+			path: src/Collection/Iterator/TreeIterator.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between class\\-string\\<ArrayObject\\> and 'ArrayIterator' will always evaluate to false\\.$#"
+			count: 1
+			path: src/Collection/Iterator/TreeIterator.php
+
+		-
+			message: "#^Parameter \\#1 \\$iterator of class LimitIterator constructor expects Iterator, Countable&Traversable given\\.$#"
+			count: 2
+			path: src/Collection/Iterator/TreePrinter.php
+
+		-
+			message: "#^Parameter \\#1 \\$it of method AppendIterator\\:\\:append\\(\\) expects Iterator, Traversable given\\.$#"
+			count: 2
+			path: src/Collection/Iterator/TreePrinter.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between class\\-string\\<ArrayObject\\> and 'ArrayIterator' will always evaluate to false\\.$#"
+			count: 1
+			path: src/Collection/Iterator/TreePrinter.php
+
+		-
+			message: "#^Parameter \\#1 \\$iterator of class LimitIterator constructor expects Iterator, Countable&Traversable given\\.$#"
+			count: 2
+			path: src/Collection/Iterator/ZipIterator.php
+
+		-
+			message: "#^Parameter \\#1 \\$it of method AppendIterator\\:\\:append\\(\\) expects Iterator, Traversable given\\.$#"
+			count: 2
+			path: src/Collection/Iterator/ZipIterator.php
+
+		-
+			message: "#^Method Cake\\\\Collection\\\\Iterator\\\\ZipIterator\\:\\:toArray\\(\\) should return array but returns array\\<array, array\\|false\\>\\.$#"
+			count: 1
+			path: src/Collection/Iterator/ZipIterator.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between class\\-string\\<ArrayObject\\> and 'ArrayIterator' will always evaluate to false\\.$#"
+			count: 1
+			path: src/Collection/Iterator/ZipIterator.php
+
+		-
+			message: "#^Parameter \\#1 \\$iterator of class LimitIterator constructor expects Iterator, Countable&Traversable given\\.$#"
+			count: 2
+			path: src/ORM/ResultSet.php
+
+		-
+			message: "#^Parameter \\#1 \\$it of method AppendIterator\\:\\:append\\(\\) expects Iterator, Traversable given\\.$#"
+			count: 2
+			path: src/ORM/ResultSet.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between class\\-string\\<ArrayObject\\> and 'ArrayIterator' will always evaluate to false\\.$#"
+			count: 1
+			path: src/ORM/ResultSet.php
+
+		-
+			message: "#^Call to an undefined method Traversable\\:\\:getArrayCopy\\(\\)\\.$#"
+			count: 1
+			path: src/Collection/Iterator/ExtractIterator.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/Collection/Iterator/NestIterator.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/Collection/Iterator/NoChildrenIterator.php
+
+		-
+			message: "#^Parameter \\#1 \\$var_array of function extract is passed by reference, so it expects variables only\\.$#"
+			count: 1
+			path: src/Command/I18nExtractCommand.php
+
+		-
+			message: "#^Strict comparison using \\!\\=\\= between null and null will always evaluate to false\\.$#"
+			count: 2
+			path: src/Command/I18nExtractCommand.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 2
+			path: src/Console/ConsoleOptionParser.php
+
+		-
+			message: "#^Property Cake\\\\Controller\\\\Controller\\:\\:\\$response \\(Cake\\\\Http\\\\Response\\) does not accept Psr\\\\Http\\\\Message\\\\ResponseInterface\\.$#"
+			count: 1
+			path: src/Controller/Controller.php
+
+		-
+			message: "#^Parameter \\#1 \\$request of method Cake\\\\Controller\\\\ControllerFactory\\:\\:getControllerClass\\(\\) expects Cake\\\\Http\\\\ServerRequest, Psr\\\\Http\\\\Message\\\\ServerRequestInterface given\\.$#"
+			count: 1
+			path: src/Controller/ControllerFactory.php
+
+		-
+			message: "#^Parameter \\#1 \\$request of method Cake\\\\Controller\\\\ControllerFactory\\:\\:missingController\\(\\) expects Cake\\\\Http\\\\ServerRequest, Psr\\\\Http\\\\Message\\\\ServerRequestInterface given\\.$#"
+			count: 2
+			path: src/Controller/ControllerFactory.php
+
+		-
+			message: "#^Parameter \\#1 \\$autoload_function of function spl_autoload_register expects callable\\(string\\)\\: void, array\\(\\$this\\(Cake\\\\Core\\\\ClassLoader\\), 'loadClass'\\) given\\.$#"
+			count: 1
+			path: src/Core/ClassLoader.php
+
+		-
+			message: "#^PHPDoc tag @param for parameter \\$object with type TObject is not subtype of native type object\\.$#"
+			count: 1
+			path: src/Core/ObjectRegistry.php
+
+		-
+			message: "#^Array \\(array\\<TObject\\>\\) does not accept object\\.$#"
+			count: 1
+			path: src/Core/ObjectRegistry.php
+
+		-
+			message: "#^Property Cake\\\\Database\\\\Driver\\:\\:\\$_connection \\(PDO\\) does not accept null\\.$#"
+			count: 2
+			path: src/Database/Driver.php
+
+		-
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			count: 1
+			path: src/Database/Driver.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: src/Database/Driver/Mysql.php
+
+		-
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			count: 1
+			path: src/Database/Driver/Mysql.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: src/Database/Driver/Postgres.php
+
+		-
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			count: 1
+			path: src/Database/Driver/Postgres.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: src/Database/Driver/Sqlite.php
+
+		-
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			count: 1
+			path: src/Database/Driver/Sqlite.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: src/Database/Driver/Sqlserver.php
+
+		-
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			count: 1
+			path: src/Database/Driver/Sqlserver.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 7
+			path: src/Database/Expression/QueryExpression.php
+
+		-
+			message: "#^Access to an undefined property Exception\\:\\:\\$queryString\\.$#"
+			count: 1
+			path: src/Database/Log/LoggingStatement.php
+
+		-
+			message: "#^Property Cake\\\\ORM\\\\Query\\:\\:\\$_repository \\(Cake\\\\ORM\\\\Table\\) does not accept Cake\\\\Datasource\\\\RepositoryInterface\\.$#"
+			count: 1
+			path: src/ORM/Query.php
+
+		-
+			message: "#^Method Cake\\\\ORM\\\\Query\\:\\:find\\(\\) should return static\\(Cake\\\\ORM\\\\Query\\) but returns Cake\\\\ORM\\\\Query\\.$#"
+			count: 1
+			path: src/ORM/Query.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/ORM/Query.php
+
+		-
+			message: "#^Parameter \\#1 \\$rules of method Cake\\\\ORM\\\\Table\\:\\:buildRules\\(\\) expects Cake\\\\ORM\\\\RulesChecker, Cake\\\\Datasource\\\\RulesChecker given\\.$#"
+			count: 1
+			path: src/ORM/Table.php
+
+		-
+			message: "#^Variable \\$entities in PHPDoc tag @var does not match any variable in the foreach loop\\: \\$key, \\$entity$#"
+			count: 1
+			path: src/ORM/Table.php
+
+		-
+			message: "#^Cannot unset offset 'args' on array\\('path' \\=\\> string, 'reference' \\=\\> mixed\\)\\.$#"
+			count: 1
+			path: src/Error/Debugger.php
+
+		-
+			message: "#^Cannot unset offset 'object' on array\\('path' \\=\\> string, 'reference' \\=\\> mixed\\)\\.$#"
+			count: 1
+			path: src/Error/Debugger.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/Event/EventManager.php
+
+		-
+			message: "#^Parameter \\#1 \\$request of static method Cake\\\\Routing\\\\Router\\:\\:setRequest\\(\\) expects Cake\\\\Http\\\\ServerRequest, Psr\\\\Http\\\\Message\\\\ServerRequestInterface given\\.$#"
+			count: 1
+			path: src/Http/BaseApplication.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/Http/Client.php
+
+		-
+			message: "#^Constructor of class Cake\\\\Http\\\\Client\\\\Auth\\\\Digest has an unused parameter \\$options\\.$#"
+			count: 1
+			path: src/Http/Client/Auth/Digest.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/Http/Cookie/Cookie.php
+
+		-
+			message: "#^Call to an undefined method DateTimeInterface\\:\\:setTimezone\\(\\)\\.$#"
+			count: 1
+			path: src/Http/Cookie/Cookie.php
+
+		-
+			message: "#^Method Cake\\\\Http\\\\Cookie\\\\Cookie\\:\\:createFromHeaderString\\(\\) should return static\\(Cake\\\\Http\\\\Cookie\\\\Cookie\\) but returns Cake\\\\Http\\\\Cookie\\\\Cookie\\.$#"
+			count: 1
+			path: src/Http/Cookie/Cookie.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 2
+			path: src/Http/Cookie/CookieCollection.php
+
+		-
+			message: "#^Call to an undefined method DateTimeInterface\\:\\:setTimezone\\(\\)\\.$#"
+			count: 1
+			path: src/Http/Response.php
+
+		-
+			message: "#^Access to an undefined property Psr\\\\Http\\\\Message\\\\UriInterface\\:\\:\\$webroot\\.$#"
+			count: 3
+			path: src/Http/ServerRequestFactory.php
+
+		-
+			message: "#^Access to an undefined property Psr\\\\Http\\\\Message\\\\UriInterface\\:\\:\\$base\\.$#"
+			count: 2
+			path: src/Http/ServerRequestFactory.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/Http/Session.php
+
+		-
+			message: "#^Call to an undefined method Cake\\\\Chronos\\\\DifferenceFormatterInterface\\:\\:dateAgoInWords\\(\\)\\.$#"
+			count: 1
+			path: src/I18n/Date.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/I18n/Date.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/I18n/FrozenDate.php
+
+		-
+			message: "#^Call to an undefined method Cake\\\\Chronos\\\\DifferenceFormatterInterface\\:\\:dateAgoInWords\\(\\)\\.$#"
+			count: 1
+			path: src/I18n/FrozenDate.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/I18n/FrozenTime.php
+
+		-
+			message: "#^Call to an undefined method Cake\\\\Chronos\\\\DifferenceFormatterInterface\\:\\:timeAgoInWords\\(\\)\\.$#"
+			count: 1
+			path: src/I18n/FrozenTime.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/I18n/Time.php
+
+		-
+			message: "#^Call to an undefined method Cake\\\\Chronos\\\\DifferenceFormatterInterface\\:\\:timeAgoInWords\\(\\)\\.$#"
+			count: 1
+			path: src/I18n/Time.php
+
+		-
+			message: "#^Access to undefined constant NumberFormatter\\:\\:CURRENCY_ACCOUNTING\\.$#"
+			count: 1
+			path: src/I18n/Number.php
+
+		-
+			message: "#^Offset 1 does not exist on array\\(\\)\\|array\\(0 \\=\\> 'context'\\|'ids'\\|'translated', \\?1 \\=\\> 'plural'\\|'singular'\\|int\\)\\.$#"
+			count: 1
+			path: src/I18n/Parser/PoFileParser.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/Mailer/Email.php
+
+		-
+			message: "#^Parameter \\#2 \\$callback of function array_filter expects callable\\(mixed, mixed\\)\\: bool, 'strlen' given\\.$#"
+			count: 1
+			path: src/ORM/Association/BelongsToMany.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 2
+			path: src/ORM/EagerLoader.php
+
+		-
+			message: "#^Parameter \\#1 \\$assoc of method Cake\\\\ORM\\\\Marshaller\\:\\:_belongsToMany\\(\\) expects Cake\\\\ORM\\\\Association\\\\BelongsToMany, Cake\\\\ORM\\\\Association given\\.$#"
+			count: 1
+			path: src/ORM/Marshaller.php
+
+		-
+			message: "#^Parameter \\#2 \\$callback of function array_filter expects callable\\(mixed, mixed\\)\\: bool, 'strlen' given\\.$#"
+			count: 1
+			path: src/ORM/Marshaller.php
+
+		-
+			message: "#^Parameter \\#2 \\$assoc of method Cake\\\\ORM\\\\Marshaller\\:\\:_mergeBelongsToMany\\(\\) expects Cake\\\\ORM\\\\Association\\\\BelongsToMany, Cake\\\\ORM\\\\Association given\\.$#"
+			count: 1
+			path: src/ORM/Marshaller.php
+
+		-
+			message: "#^Parameter \\#2 \\$callback of function array_filter expects callable\\(mixed, mixed\\)\\: bool, 'strlen' given\\.$#"
+			count: 1
+			path: src/ORM/Rule/IsUnique.php
+
+		-
+			message: "#^Parameter \\#1 \\$request of static method Cake\\\\Routing\\\\Router\\:\\:setRequest\\(\\) expects Cake\\\\Http\\\\ServerRequest, Psr\\\\Http\\\\Message\\\\ServerRequestInterface given\\.$#"
+			count: 1
+			path: src/Routing/Middleware/RoutingMiddleware.php
+
+		-
+			message: "#^Parameter \\#1 \\$request of static method Cake\\\\Routing\\\\Router\\:\\:parseRequest\\(\\) expects Cake\\\\Http\\\\ServerRequest, Psr\\\\Http\\\\Message\\\\ServerRequestInterface given\\.$#"
+			count: 1
+			path: src/Routing/Middleware/RoutingMiddleware.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/Routing/RouteBuilder.php
+
+		-
+			message: "#^Property Cake\\\\TestSuite\\\\ConsoleIntegrationTestCase\\:\\:\\$_out \\(Cake\\\\TestSuite\\\\Stub\\\\ConsoleOutput\\) does not accept null\\.$#"
+			count: 1
+			path: src/TestSuite/ConsoleIntegrationTestCase.php
+
+		-
+			message: "#^Property Cake\\\\TestSuite\\\\ConsoleIntegrationTestCase\\:\\:\\$_err \\(Cake\\\\TestSuite\\\\Stub\\\\ConsoleOutput\\) does not accept null\\.$#"
+			count: 1
+			path: src/TestSuite/ConsoleIntegrationTestCase.php
+
+		-
+			message: "#^Property Cake\\\\TestSuite\\\\ConsoleIntegrationTestCase\\:\\:\\$_in \\(Cake\\\\Console\\\\ConsoleInput\\) does not accept null\\.$#"
+			count: 1
+			path: src/TestSuite/ConsoleIntegrationTestCase.php
+
+		-
+			message: "#^Access to an undefined property PHPUnit\\\\Framework\\\\Test\\:\\:\\$fixtureManager\\.$#"
+			count: 1
+			path: src/TestSuite/Fixture/FixtureInjector.php
+
+		-
+			message: "#^Parameter \\#1 \\$connection of method Cake\\\\Database\\\\Schema\\\\SqlGeneratorInterface\\:\\:createSql\\(\\) expects Cake\\\\Database\\\\Connection, Cake\\\\Datasource\\\\ConnectionInterface given\\.$#"
+			count: 1
+			path: src/TestSuite/Fixture/TestFixture.php
+
+		-
+			message: "#^Parameter \\#1 \\$connection of method Cake\\\\Database\\\\Schema\\\\SqlGeneratorInterface\\:\\:dropSql\\(\\) expects Cake\\\\Database\\\\Connection, Cake\\\\Datasource\\\\ConnectionInterface given\\.$#"
+			count: 1
+			path: src/TestSuite/Fixture/TestFixture.php
+
+		-
+			message: "#^Parameter \\#1 \\$connection of method Cake\\\\Database\\\\Schema\\\\SqlGeneratorInterface\\:\\:addConstraintSql\\(\\) expects Cake\\\\Database\\\\Connection, Cake\\\\Datasource\\\\ConnectionInterface given\\.$#"
+			count: 1
+			path: src/TestSuite/Fixture/TestFixture.php
+
+		-
+			message: "#^Parameter \\#1 \\$connection of method Cake\\\\Database\\\\Schema\\\\SqlGeneratorInterface\\:\\:dropConstraintSql\\(\\) expects Cake\\\\Database\\\\Connection, Cake\\\\Datasource\\\\ConnectionInterface given\\.$#"
+			count: 1
+			path: src/TestSuite/Fixture/TestFixture.php
+
+		-
+			message: "#^Parameter \\#1 \\$connection of method Cake\\\\Database\\\\Schema\\\\SqlGeneratorInterface\\:\\:truncateSql\\(\\) expects Cake\\\\Database\\\\Connection, Cake\\\\Datasource\\\\ConnectionInterface given\\.$#"
+			count: 1
+			path: src/TestSuite/Fixture/TestFixture.php
+
+		-
+			message: "#^Property Cake\\\\TestSuite\\\\IntegrationTestCase\\:\\:\\$_viewName \\(string\\) does not accept null\\.$#"
+			count: 1
+			path: src/TestSuite/IntegrationTestCase.php
+
+		-
+			message: "#^Property Cake\\\\TestSuite\\\\IntegrationTestCase\\:\\:\\$_layoutName \\(string\\) does not accept null\\.$#"
+			count: 1
+			path: src/TestSuite/IntegrationTestCase.php
+
+		-
+			message: "#^Property Cake\\\\TestSuite\\\\IntegrationTestCase\\:\\:\\$_requestSession \\(Cake\\\\Http\\\\Session\\) does not accept null\\.$#"
+			count: 1
+			path: src/TestSuite/IntegrationTestCase.php
+
+		-
+			message: "#^Parameter \\#1 \\$response of class Cake\\\\TestSuite\\\\Constraint\\\\Response\\\\CookieEquals constructor expects Cake\\\\Http\\\\Response\\|null, Psr\\\\Http\\\\Message\\\\ResponseInterface\\|null given\\.$#"
+			count: 1
+			path: src/TestSuite/IntegrationTestCase.php
+
+		-
+			message: "#^Parameter \\#1 \\$response of class Cake\\\\TestSuite\\\\Constraint\\\\Response\\\\CookieEncryptedEquals constructor expects Cake\\\\Http\\\\Response\\|null, Psr\\\\Http\\\\Message\\\\ResponseInterface\\|null given\\.$#"
+			count: 1
+			path: src/TestSuite/IntegrationTestCase.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/View/Form/ContextFactory.php
+
+		-
+			message: "#^Constructor of class Cake\\\\View\\\\Form\\\\NullContext has an unused parameter \\$context\\.$#"
+			count: 1
+			path: src/View/Form/NullContext.php
+
+		-
+			message: "#^Call to an undefined method DateTimeInterface\\:\\:setTimezone\\(\\)\\.$#"
+			count: 1
+			path: src/View/Helper/TimeHelper.php
+
+		-
+			message: "#^Access to an undefined property Cake\\\\Mailer\\\\Renderer\\:\\:\\$request\\.$#"
+			count: 1
+			path: src/Mailer/Renderer.php
+
+		-
+			message: "#^Access to an undefined property Cake\\\\Mailer\\\\Renderer\\:\\:\\$response\\.$#"
+			count: 1
+			path: src/Mailer/Renderer.php
+
