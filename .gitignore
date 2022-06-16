@@ -11,7 +11,7 @@
 /tests/*
 /tmp/*
 .editorconfig
-#.gitignore
+.gitignore
 .htaccess
 composer.json
 composer.lock
