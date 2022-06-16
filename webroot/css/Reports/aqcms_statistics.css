@@ -1,0 +1,109 @@
+
+  ul { list-style-type: none; }
+  .ul { margin-left: -40px; }
+  .ul-margin { margin-top: -30px; }
+  .circle { text-align: center; }
+  .stats-card {
+    width: 180px;
+    height: 185px;
+    font-size: 18px;
+    text-align: center;
+    display: inline-block;
+    /* box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); */
+    background-color: transparent;
+    perspective: 1000px; /*Remove this if you don't want the 3D effect*/
+  }
+  .stats-card a{
+    color: white;
+  }
+  .stats-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 5%;
+    text-align: center;
+    background-color: transparent;</style>
+    transition: transform 0.3s;
+    transform-style: preserve-3d;
+  }
+  .fixed-stats-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 5%;
+    text-align: center;
+    background-color: transparent;
+  }
+  .stats-card-front, .stats-card-back {
+   position: absolute;
+   width: 100%;
+   height: 100%;
+   padding-top: 35px;
+   border-radius: 5%;
+   -webkit-backface-visibility: hidden; /* Safari */
+   backface-visibility: hidden;
+   transform: rotateX(0deg);
+  }
+  .fixed-stats-card-front {
+    /* z-index: 2; */
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    padding-top: 35px;
+  }
+  .stats-card-back {
+    font-size: 12px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transform: rotateY(180deg);
+  }
+  .box-1 { background:linear-gradient(135deg, #184e68 0%,#57ca85 100%); }
+  .box-2 { background:linear-gradient(135deg, #F36265 0%,#961276 100%); }
+  .box-3 { background:linear-gradient(135deg, #0FF0B3 0%,#036ED9 100%); }
+  .box-4 { background:linear-gradient(135deg, #7117ea 0%,#ea6060 100%); }
+  .box-5 { background:linear-gradient(135deg, #f5515f 0%,#A1051D 100%); }
+  .box-6 { background:linear-gradient(135deg, #fad961 0%,#f76b1c 100%); }
+  .box-7 { background:linear-gradient(135deg, #622774 0%,#c53364 100%); }
+  .box-8 { background:linear-gradient(135deg, #f2d50f 0%,#da0641 100%); }
+  .stats-card-front:hover {
+   visibility: hidden;
+  }
+  .stats-card:hover .stats-card-inner {
+    transform: rotateY(180deg);
+  }
+  .title-number {
+    font-size: 50px;
+  }
+  .subtitle {
+    font-size: 15px;
+    /* font-weight: bold;   */
+  }
+  .bg-grad1 { /*background:linear-gradient(135deg, #65799b 0%,#5e2563 100%);*/ border: 1px solid #5e2563; color: #343a40; }
+  .bg-grad2 { background:#343a40; color: white; }
+  .bg-grad3 { /*background:linear-gradient(135deg, #65799b 0%,#5e2563 100%);*/ border: 1px solid #6C757D; }
+  .bg-bg { background: #F1ECEC; }
+  .page-header, .back-btn {
+	  background:#343a40;
+	  color:#c2c7d0;
+   }
+   .option-menu-btn {  min-width:100%; height:auto; font-size:150%; }
+  .back-btn:hover { background:#c2c7d0; color:#343a40; }
+  .input-box-info { width: 100%; }
+  .input-box-info { width: 60%; height: auto; border: 0px solid white; padding: 5.5% 0 5.5% 0; background:#c2c7d0; color: #343a40; }
+  .display-none, .input-box-select { display: none; }
+  .input-box:hover .input-box-info { display:none; }
+  .input-box:hover .input-box-select { display:block; }
+
+.fs80{font-size:80%;}
+
+.zoomin{
+     height: 200px;
+     width: 200px;
+     -webkit-transition: all 2s ease;
+     -moz-transition: all 2s ease;
+     -ms-transition: all 2s ease;
+     transition: all 2s ease;
+   }
+   .zoomin:hover {
+     width: 300px;
+     height: 300px;
+   }

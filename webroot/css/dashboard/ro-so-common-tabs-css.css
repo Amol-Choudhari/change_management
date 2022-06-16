@@ -1,0 +1,4 @@
+ #ro_tabs_div ul li a{background:#fff; color:#0068b7; font-weight:bold; padding:5px 10px;}
+ #ro_tabs_div ul .active a{background:#0068b7; color:#fff; border:none;}
+ .nav-tabs{cursor:pointer;}
+ #tab-content-bg{background:#d0eaff;}

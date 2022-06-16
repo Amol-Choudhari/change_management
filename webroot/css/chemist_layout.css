@@ -1,0 +1,134 @@
+
+button[disabled], html input[disabled] {
+    cursor: default;
+    background-color: #eaeaea;
+}
+
+select[disabled] {
+    background-color: #eaeaea;
+}
+
+#content { width: 910px !important; }
+
+#leftmenu {
+    margin: 15px;
+    width: 190px;
+    float: left;
+}
+
+#content_main { background-color: #ffff; padding-left: 0px;  padding-right: 0px; padding-bottom: 20px;}
+.heading { background-color: #ffa500; color: white; margin: 0px 0 25px !important; }
+.mt-1{ margin-top: 16px;}
+.form-input { border: 1px solid #4cae4c; width: 100%; border-radius: 5px; height: 35px; background-color:#ffffff; padding-left:12px}
+
+input[type=checkbox], input[type=radio] {
+    margin: 2px 19px 0;
+    margin-top: 1px\9;
+    line-height: normal;
+}
+
+.btn{ width: 105px; }
+
+
+
+.alrt-div {
+	position: absolute;
+	top: 0;
+	right: 0;
+	position: fixed;
+    top: 70px;
+    right: 11px;
+	z-index: 5;
+}
+.alrt-danger {
+	background-color: #ff626a;
+	color: white;
+}
+.alrt-body {
+	padding: 0.60rem;
+}
+.min_width {
+	min-width: 80px;
+}
+
+.is-invalid{
+	
+	border:1px solid #d92550 !important;
+}
+
+.err_cv{
+	color: #d92550;
+}
+.chemist_doc {
+    border-radius: 6px;
+    border: 1px solid #4cae4c;
+}
+.comment_bx_container {
+    box-shadow: 1px 0px 8px 0px #bfbfbf;
+    border-radius: 5px;
+}
+.comment_bx {
+    width: 40%;
+}
+.comment_bx_header {
+	box-shadow: 0px -2px 8px 0px #bfbfbf;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+.comment_bx_body {
+	/* box-shadow: 0px 3px 8px 0px #bfbfbf;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px; */
+	padding: 18px;
+}
+.comment_bx_title {
+	padding: 9px 12px 6px 12px;
+    margin: 0;
+    font-size: 18px;
+    text-align: center;
+}
+.remark_bx {
+    margin: 15px 0;
+}
+.remark_tbl {
+    font-size: 14px;
+    padding: 0;
+    margin: 0 auto;
+    width: 96% !important;
+}
+.remark_tbl_thead {
+    background-color: #8e8e8e;
+    color: white;
+}
+.chemist_doc_div {
+    padding: 0 65px;
+}
+.remark_action {
+    display: inline-flex;
+}
+.remark_edit_btn {
+    width: auto;
+}
+.remark_delete {
+    margin-left: 6px;
+    width: auto !important;
+}
+.btn_w_auto {
+    width: auto;
+}
+.btn_save_remark {
+    background-color: #00b500;
+    color: white;
+}
+.btn_save_remark:hover {
+    color: white;
+    background-color: green;
+}
+.btn_final_submit {
+    background-color: #0e6515;
+    color: white;
+}
+.btn_final_submit:hover {
+    background-color: #09480e;
+    color: white;
+}

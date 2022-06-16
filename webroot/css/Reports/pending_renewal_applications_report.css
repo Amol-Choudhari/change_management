@@ -1,0 +1,31 @@
+
+.bg-grad1 { /*background:linear-gradient(135deg, #65799b 0%,#5e2563 100%);*/ border: 1px solid #5e2563; color: #343a40; }
+.bg-grad2 { background:#343a40; color: white; }
+.bg-grad3 { /*background:linear-gradient(135deg, #65799b 0%,#5e2563 100%);*/ border: 1px solid #6C757D; }
+.bg-bg { background: #F1ECEC; }
+.page-header, .back-btn { background:#343a40; color:#c2c7d0; }
+.back-btn:hover { background:#c2c7d0; color:#343a40; }
+.table-head-row { border: 1px solid #c2c7d0; }
+.table-heading { font-size: 12.5px; transition: all 0.6ms ease-in-out; color:#495057; }
+.row-hover .table-col-bg { background: #F8EEFE; }
+.roles-badge {
+  margin-top:2px;
+  font-size: 11px;
+}
+.title { transition: all 0.6ms ease-in-out; color:#495057; }
+.subtitle { transition: all 0.6ms ease-in-out; color:#6C757D; }
+.subtitle-2 { font-size: 12px; }
+.borderless { border: 1px solid #ffffff; }
+.option-menu-btn {  min-width:100%; height:auto; font-size:150%; }
+.row-hover:hover .hover-border {
+    border: 1px solid #eadcdc;
+}
+
+.all { display: none; }
+.row-hover:hover .top5 { display: none; }
+.row-hover:hover .all { display: block; -webkit-animation: slide-down 0.45s ease-out; -moz-animation: slide-down 0.45s ease-out; }
+      @-webkit-keyframes slide-down { 0% { opacity: 0; } 100% { opacity: 1; } }
+      @-moz-keyframes slide-down { 0% { opacity: 0; } 100% { opacity: 1; } }
+}
+
+.fs80{font-size:80%;}

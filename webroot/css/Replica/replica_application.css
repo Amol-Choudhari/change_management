@@ -1,0 +1,6 @@
+#table_outer {overflow-x: scroll; }
+#table_outer th{border:1px solid gainsboro;}
+#table_container_1 { min-width: 200%; }
+section{background-color: #eee;padding:10px;}
+.form-horizontal{padding-bottom:10px;}
+.wd1080{width:1080px !important;}

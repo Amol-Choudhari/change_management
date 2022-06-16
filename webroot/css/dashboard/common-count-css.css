@@ -1,0 +1,29 @@
+.panel{margin-bottom:0 !important;}
+.panel-heading{background:#0068b7 !important; 
+color:#fff!important; 
+font-weight:bold; 
+border-top:1px solid #fff !important; 
+border-bottom:0px !important;
+padding:5px 20px; 
+margin-top:20px;}
+
+h4{    font-size: 18px;
+    font-weight: bold;}
+
+.panel{margin-bottom:5px;}
+.widget-left{height:55px; border-bottom:1px solid #fff;padding-top:15px;}
+.count_box .glyphicon{color:#fff; height:80%; width:50%; float:left;text-align:center; font-size:25px !important; margin:0px;}
+.count_no{width:50%;float:left;text-align:center;font-size:30px; color:yellow;line-height:35px;}
+.count_box{border-radius:5px;height:85px; box-shadow: 5px 5px gray; cursor:pointer;}
+.text-muted{color:#fff !important; text-align:center; font-size:17px; padding-top:5px;}
+.panel-title{padding-top:5px;}
+.panel-body .content-wrapper{background:none !important;min-height:0px !important;}
+
+#pending_count_box .count_box{background-image:linear-gradient(#ddd,#703fce,#703fce);}
+#reports_filed_count_box .count_box{background-image:linear-gradient(#ddd,#349ffd,#349ffd);}
+#ref_back_count_box .count_box{background-image:linear-gradient(#ddd,#f4b24d,#f4b24d);}
+#replied_count_box .count_box{background-image:linear-gradient(#ddd,#9f5594,#9f5594);}
+#approved_count_box .count_box{background-image:linear-gradient(#ddd,#53d562,#53d562);}
+#rejected_count_box .count_box{background-image:linear-gradient(#ddd,#e84a25,#e84a25);}
+#allocations_count_box .count_box{background-image:linear-gradient(#ddd,#349ffd,#349ffd);}
+#list_heading_text{color:#3f3d3d;padding: 10px 20px;margin:0;font-size: 16px;background:#f4cd7c;}

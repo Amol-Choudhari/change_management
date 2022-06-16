@@ -1,0 +1,10 @@
+
+  .bg-bg { background: #F1ECEC; }
+  .page-header, .back-btn {
+	background:#343a40;
+	color:#c2c7d0;
+  }
+  .table-heading { font-size: 14px; transition: all 0.6ms ease-in-out; color:#495057; }
+  .title { font-size: 13px; transition: all 0.6ms ease-in-out; }
+  .subtitle { font-size: 13px; transition: all 0.6ms ease-in-out; color:#6C757D; font-weight: 600; }
+  .fs80{font-size:80%;}

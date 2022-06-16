@@ -1,0 +1,13 @@
+ .modal-content{background:linear-gradient(#343a40,#17a2b8,#343a40); border:2px solid #fff;}
+ .modal-content h4{color:#fff;}
+
+#reject_appl_btn{padding:7px 10px; background:#30a5ff; color:#fff; font-weight:bold;}
+#reject_appl_btn:hover{color:#fff;}
+
+#common_reject_Modal input[type="text"]{max-width:130px;border:none;background:#f9f9f9;font-size:14px;}
+#rej_remark{height:45px;color:#000;border:1px solid #ccc}
+
+#common_reject_Modal{background-color: rgba(0,0,0,0.7);}
+.modal-dialog{min-width:60% !important;}
+.close{color:#fff;}
+#rej-appl-table{width:100%}

@@ -1,0 +1,6 @@
+#firm_details_block{border:1px solid #000; background:#fff;padding:10px;}
+#replica_add_more_table{border:1px solid #000; background:#fff;padding:10px;}
+section{background-color: #eee;padding:10px;}
+#table_outer {overflow-x: scroll; }
+#table_container { min-width: 200%; }
+.wd1080{width:1080px !important;}

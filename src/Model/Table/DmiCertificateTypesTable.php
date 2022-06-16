@@ -1,0 +1,12 @@
+<?php
+
+namespace app\Model\Table;
+use Cake\ORM\Table;
+use App\Model\Model;
+
+class DmiCertificateTypesTable extends Table{
+	
+	var $name = "DmiCertificateTypes";
+}
+
+?>

@@ -1,0 +1,1 @@
+<?php //this view is created intensionally to call final grant with redirect message view ?>

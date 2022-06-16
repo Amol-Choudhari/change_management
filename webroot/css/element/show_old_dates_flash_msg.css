@@ -1,0 +1,4 @@
+.validity_msg{text-align:left;color:red;padding:0;margin:0;font-weight:bold;}
+.blink {animation: blinker 1s linear infinite;}
+@keyframes blinker{50% { opacity: 0; }}
+.progress{margin-top:20px !important;}

@@ -1,0 +1,11 @@
+body{background:none !important;}
+.container{display:none;}
+.uiHeader{
+    font-weight: 500;
+    color: #747474;
+    font-size: 17px;
+}
+
+.width14{width:40%;}
+
+.fr{float:right;}

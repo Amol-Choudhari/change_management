@@ -1,0 +1,2575 @@
+<?php
+namespace App\Controller;
+
+use Cake\Event\Event;
+use Cake\Network\Session\DatabaseSession;
+use App\Network\Email\Email;
+use App\Network\Request\Request;
+use App\Network\Response\Response;
+use Cake\Datasource\ConnectionManager;
+use phpDocumentor\Reflection\Types\This;
+
+class ChemistController extends AppController {
+
+    var $name = 'chemist';
+
+	//to initialize our custom requirements
+	public function initialize(): void {
+
+		parent::initialize();
+
+		$this->loadComponent('RequestHandler');
+		$this->loadComponent('Createcaptcha');
+		$this->loadComponent('Authentication');
+		$this->loadComponent('Customfunctions');
+
+		$this->viewBuilder()->setHelpers(['Form','Html','Time']);
+
+		//$this->viewBuilder()->setLayout('admin_dashboard');
+		$this->Session = $this->getRequest()->getSession();
+
+		//Load Models
+		$this->loadModel('DmiChemistRegistrations');
+		$this->loadModel('DmiFirms');
+		$this->loadModel('DmiChemistsResetpassKeys');
+		$this->loadModel('DmiChemistLogs');
+		$this->loadModel('DmiChemistProfileDetails');
+		$this->loadModel('DmiChemistExperienceDetails');
+		$this->loadModel('DmiChemistEducationDetails');
+		$this->loadModel('DmiChemistTrainingDetails');
+		$this->loadModel('DmiChemistFinalSubmits');
+		$this->loadModel('DmiStates');
+		$this->loadModel('DmiDistricts');
+		$this->loadModel('DmiEducationTypes');
+		$this->loadModel('DmiDivisionGrades');
+		$this->loadModel('DmiChemistAllocations');
+		$this->loadModel('DmiRoOffices');
+		$this->loadModel('DmiChemistComments');
+		$this->loadModel('DmiChemistAllotments');
+		$this->loadModel('DmiChemistOtherDetails');
+		$this->loadModel('DmiSmsEmailTemplates');
+
+
+	}
+
+
+	//Before Filter Function
+	public function beforeFilter($event) {
+
+		parent::beforeFilter($event);
+		//To Find Customer Last Login
+		$customer_last_login = $this->Customfunctions->customerLastLogin();
+		$this->set('customer_last_login', $customer_last_login);
+		// Change layout for Ajax requests
+		if ($this->request->is('ajax')) {
+			$this->layout = 'ajax';
+		}
+
+		// Checked final submit status, moved here on 10-08-2021 by Amol, for common use
+		$chemist_id = $this->Session->read('username');
+		$final_submit_record = $this->DmiChemistFinalSubmits->find('all',array('conditions'=>array('customer_id IS'=>$chemist_id),'order'=>'id desc'))->first();
+		$final_status = '';
+
+		if (!empty($final_submit_record)) {
+			$final_status = $final_submit_record['status'];
+		}
+
+		$this->set('final_submit_status',$final_status);
+
+
+
+	}
+
+
+
+	//Get information about the Final Submit Status
+	public function finalSubmitStatus($chemist_id) {
+
+		$tableArray = array('DmiChemistProfileDetails','DmiChemistEducationDetails','DmiChemistExperienceDetails','DmiChemistTrainingDetails','DmiChemistOtherDetails');
+		$final_submt_btn = 'no';
+
+		foreach ($tableArray as $table) {
+
+			$result = $this->$table->find('all',array('fields'=>'status','conditions'=>array('username IS'=>$chemist_id,'is_latest'=>1)))->first();
+
+			if (!empty($result)) {
+
+				if ($result['status'] == 'saved' || $result['status']=='replied') {
+
+					$final_submt_btn = 'yes';
+				} else {
+					$final_submt_btn = 'no';
+					break;
+				}
+
+			} else {
+				$final_submt_btn = 'no';
+				break;
+			}
+		}
+
+		$this->set('final_submt_btn',$final_submt_btn);
+	}
+
+
+
+	//For Chemist Progress Bar Status
+	public function progressbarStatus($chemist_id) {
+
+		$application_dashboard = $this->Session->read('application_dashboard');
+
+		$profile_status = '';
+		$education_status = '';
+		$experience_status = '';
+		$training_status = '';
+		$other_details_status = '';
+
+		$profile_details = $this->DmiChemistProfileDetails->find('all',array('fields'=>'status','conditions'=>array('username IS'=>$chemist_id,'is_latest'=>1)))->first();
+		$education_details = $this->DmiChemistEducationDetails->find('all',array('fields'=>'status','conditions'=>array('username IS'=>$chemist_id,'is_latest'=>1)))->first();
+		$experience_details = $this->DmiChemistExperienceDetails->find('all',array('fields'=>'status','conditions'=>array('username IS'=>$chemist_id,'is_latest'=>1)))->first();
+		$training_details = $this->DmiChemistTrainingDetails->find('all',array('fields'=>'status','conditions'=>array('username IS'=>$chemist_id,'is_latest'=>1)))->first();
+		$other_details = $this->DmiChemistOtherDetails->find('all',array('fields'=>'status','conditions'=>array('username IS'=>$chemist_id,'is_latest'=>1)))->first();
+
+		if (!empty($profile_details)) {
+			$profile_status = $profile_details['status'];
+		}
+		if (!empty($education_details)) {
+			$education_status = $education_details['status'];
+		}
+		if (!empty($experience_details)) {
+			$experience_status = $experience_details['status'];
+		}
+		if (!empty($training_details)) {
+			$training_status = $training_details['status'];
+		}
+		if (!empty($other_details)) {
+			$other_details_status = $other_details['status'];
+		}
+
+		$this->set('profile_status',$profile_status);
+		$this->set('education_status',$education_status);
+		$this->set('experience_status',$experience_status);
+		$this->set('training_status',$training_status);
+		$this->set('other_details_status',$other_details_status);
+
+	}
+
+
+
+	//Valid User
+	public function validUser() {
+
+		$application_dashboard = $this->Session->read('application_dashboard');
+
+		if ($this->Session->read('username') == null) {
+			echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot');?>">Please Login</a><?php
+			exit();
+		} else {
+
+			if ($application_dashboard == 'packer') {
+				//checking applicant id pattern ex.102/1/PUN/006
+				if (preg_match("/^[0-9]+\/[0-9]+\/[A-Z]+\/[0-9]+$/", $this->Session->read('username'),$matches) !=1) {
+
+					echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot');?>">Please Login</a><?php
+					exit();
+				}
+
+			}
+		}
+
+
+		if ($application_dashboard == 'packer') {
+
+			$show_renewal_btn = $this->Customfunctions->checkApplicantValidForRenewal($this->Session->read('username'));
+			$this->set('show_renewal_btn',$show_renewal_btn);
+
+			//Find the value of "is_already_granted" flag status to redirect the application on appropriate new application or old application controller
+			//Done by pravin 27-09-2017
+			$is_already_granted = null;
+			$get_is_already_granted = $this->DmiFirms->find('all', array('fields'=>'is_already_granted','conditions'=>array('customer_id IS'=>$this->Session->read('username'))))->first();
+
+			if (!empty($get_is_already_granted)) {
+
+				$is_already_granted = $get_is_already_granted['is_already_granted'];
+			}
+
+			$this->set('is_already_granted',$is_already_granted);
+		}
+
+	}
+
+
+
+	//Chemist Login Function
+	public function chemistLogin() {
+
+		// set variables to show popup messages from view file
+		$message = '';
+		$message_theme = '';
+		$redirect_to = '';
+		$login_result = '';
+		//Set Layout
+		$this->viewBuilder()->setLayout('form_layout');
+
+		if ($this->request->is('post')) {
+
+			//check login lockout status, applied on 24-04-2018 by Amol
+			$lockout_status = $this->Customfunctions->checkLoginLockout('DmiChemistLogs',$this->request->getData('chemist_id'));
+			if ($lockout_status == 'yes') {
+
+				$message = 'Sorry... Your account is disabled for today, on account of 3 login failure.';
+				$message_theme = 'failed';
+				$redirect_to = $this->getRequest()->getAttribute('webroot');
+
+			} else {
+
+
+				$countspecialchar = substr_count($this->request->getData('chemist_id') ,"/");
+
+				if ($countspecialchar == 2) {
+
+					if (substr_count($this->request->getData('chemist_id') ,"/")!=0) {
+
+						$split_customer_id = explode('/',$this->request->getData('chemist_id'));
+
+						$randsalt = $this->Session->read('randSalt');
+						$captchacode1 = $this->Session->read('code');
+						$logindata = $this->request->getData();
+						$username = $this->request->getData('chemist_id');
+						$password = $this->request->getData('password');
+						$captcharequest = $this->request->getData('captcha');
+						$current_ip = $this->getRequest()->clientIp();
+
+						if ($current_ip == '::1') {
+
+							$current_ip = '127.0.0.1';
+						}
+
+							if ($this->request->getData('captcha') !="" && $this->Session->read('code') == $this->request->getData('captcha')) {
+
+								$PassFromdb = $this->DmiChemistRegistrations->find('all', array('conditions'=> array('chemist_id IS' => $username,'delete_status IS NULL')))->first();
+
+								$userType = 'chem';
+
+								if ($PassFromdb != null && $PassFromdb != '') {
+
+									$passarray1 = $PassFromdb;
+									$passarray2 = $passarray1['password'];
+									$emailforrecovery = $passarray1['email'];
+									$PassFromdbsalted = $randsalt . $passarray2; //adding random salt
+									$DbpasssaltedSHA512 = hash('sha512',$PassFromdbsalted); // Encripting
+
+									// check password to db password
+									//print_r($password); exit;
+
+									if ($password == $DbpasssaltedSHA512 ) {
+
+										$this->Session->destroy();// destroy old session data
+										session_start();
+
+										//$this->Authentication->browserLoginStatus($username,'yes');
+
+										//updating customer successful logs
+										$DmiChemistLogsEntity = $this->DmiChemistLogs->newEntity(
+											['customer_id'=>$username,
+											'ip_address'=>$current_ip,
+											'date'=>date('Y-m-d'),
+											'time_in'=>date('H:i:s'),
+											'remark'=>'Success']
+										);
+
+										$this->DmiChemistLogs->save($DmiChemistLogsEntity);
+
+										$customer_data_query = $this->DmiChemistRegistrations->find('all', array('conditions'=> array('chemist_id IS' => $username)))->first();
+
+										$this->Session->write('username',$username);
+										$this->Session->write('last_login_time_value',time()); // Store the "login time" into session for checking user activity time (Done by pravin 24/4/2018)
+										$this->Session->write('ip_address',$this->getRequest()->clientIp());
+
+
+										$customer_f_name = $customer_data_query['chemist_fname'];
+										$this->Session->write('f_name',$customer_f_name);
+
+										$customer_l_name = $customer_data_query['chemist_lname'];
+										$this->Session->write('l_name',$customer_l_name);
+
+
+										$this->redirect(array('controller'=>'chemist', 'action'=>'home'));
+
+
+									} else {
+
+										//Save Chemist Logs Failed Status
+										$DmiChemistLogsEntity = $this->DmiChemistLogs->newEntity(
+											['customer_id'=>$username,
+											'ip_address'=>$current_ip,
+											'date'=>date('Y-m-d'),
+											'time_in'=>date('H:i:s'),
+											'remark'=>'Failed']
+										);
+
+										$this->DmiChemistLogs->save($DmiChemistLogsEntity);
+
+										$login_result = 1;
+									}
+
+								} else {
+
+									$login_result = 2;
+								}
+
+							} else {
+
+								$login_result = 3;
+							}
+
+						// show user login failed messgae (by pravin 27/05/2017)
+						if ($login_result == 1) {
+
+							//this custom functionn is called on 08-04-2021, to show remaining login attempts
+							$remng_attempts_msg = $this->showRemainingLoginAttempts('DmiChemistLogs',$this->request->getData('chemist_id'));
+							$message = 'Username or password do not match. <br>'.$remng_attempts_msg;
+							$message_theme = 'failed';
+							$redirect_to = 'chemist_login';
+
+						} elseif ($login_result == 2) {
+
+							//this custom functionn is called on 08-04-2021, to show remaining login attempts
+							$remng_attempts_msg = $this->showRemainingLoginAttempts('DmiChemistLogs',$this->request->getData('chemist_id'));
+							$message = 'Username or password do not match. <br>'.$remng_attempts_msg;
+							$message_theme = 'info';
+							$redirect_to = 'chemist_login';
+
+
+						} elseif ($login_result == 3) {
+
+							$message = 'Sorry...Wrong Captcha Code Entered';
+							$message_theme = 'failed';
+							$redirect_to = 'chemist_login';
+						}
+
+					} else {
+
+							$message = 'Username or password do not match or your account is freezed';
+							$message_theme = 'failed';
+							$redirect_to = 'chemist_login';
+					}
+
+
+
+				} else {
+
+					$message = 'Username or password do not match or your account is freezed';
+					$message_theme = 'failed';
+					$redirect_to = 'chemist_login';
+				}
+
+			}
+
+		}
+
+			// set variables to show popup messages from view file
+			$this->set('message',$message);
+			$this->set('message_theme',$message_theme);
+			$this->set('redirect_to',$redirect_to);
+
+			if ($message != null) {
+				$this->render('/element/message_boxes');
+
+			}
+
+	}
+
+
+
+	//Chemist Registration Function
+	public function chemistRegistration() {
+
+		$this->Session->write('application_dashboard','packer');
+		$this->validUser();
+		//Set Varibles For Display
+		$message = '';
+		$message_theme = '';
+		$redirect_to = '';
+		//Show button on Side menu
+		$this->Beforepageload->showButtonOnSecondaryHome();
+
+		//$url = $this->request->getParam('here');
+		//$new = explode('/',$url);
+		//$new_method = $new[3];
+		//Set the Layout
+		$this->viewBuilder()->setLayout('secondary_customer');
+
+		$already_present = 'no';
+		$present_email  = '';
+		$present_mobile = '';
+
+		$username = $this->Session->read('username');
+
+		if ($this->request->is('post')) {
+
+			//applied condition to check all post data for !empty validation on server side //on 21/10/2017 by Amol
+			if (!empty($this->request->getData('email')) && !empty($this->request->getData('mobile')) && !empty($this->request->getData('dob'))) {
+
+				$usersData = $this->request->getData();
+
+				$checkEmailExist =  $this->DmiChemistRegistrations->find('all', array('fields' => 'email', 'conditions' => array('email IS' => $usersData['email'])))->first();
+				$checkMobileExist =  $this->DmiChemistRegistrations->find('all', array('fields' => 'mobile', 'conditions' => array('mobile IS' => $usersData['mobile'])))->first();
+
+					if ($this->request->getData('chemist_fname') !="" && $this->request->getData('chemist_lname') !="" && $this->request->getData('email') !="" && $this->request->getData('mobile') !="" && $this->request->getData('dob') !="") {
+
+						if ($checkEmailExist == null) {
+
+							if ($checkMobileExist == null) {
+
+								$last_registered_record	= $this->DmiChemistRegistrations->find('all', array('fields'=>'chemist_id','order'=>'id desc'))->first();
+
+									if ($last_registered_record == null) {
+
+										$last_registered_id = substr($last_registered_record['chemist_id'],-4) + 1;
+										$chemist_id = 'CHM/'.date('y').'/'.$last_registered_id;
+
+									} else {
+
+										$chemist_id = 'CHM/'.date('y').'/1001';
+									}
+
+
+									$htmlEncoded_dob= htmlentities($this->request->getData('dob'), ENT_QUOTES);
+									$htmlEncoded_email = htmlentities($this->request->getData('email'), ENT_QUOTES);
+									$htmlEncoded_mobile = htmlentities($this->request->getData('mobile'), ENT_QUOTES);
+									$htmlEncoded_chemistFirstname = htmlentities($this->request->getData('chemist_fname'), ENT_QUOTES);
+									$htmlEncoded_chemistLastname = htmlentities($this->request->getData('chemist_lname'), ENT_QUOTES);
+
+									$certificationType = explode('/',$username);
+
+									$DmiChemistRegistrationsEntity = $this->DmiChemistRegistrations->newEntity(array(
+
+										'chemist_fname'=>$htmlEncoded_chemistFirstname,
+										'chemist_lname'=>$htmlEncoded_chemistLastname,
+										'chemist_id'=>$chemist_id,
+										'email'=>$htmlEncoded_email,
+										'password'=>'3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', // 123
+										'mobile'=>$htmlEncoded_mobile,
+										'dob'=>$htmlEncoded_dob,
+										'created_by'=>$username,
+										'usertype'=>$certificationType[1],
+										'created'=>date('Y-m-d H:i:s'),
+										'modified'=>date('Y-m-d H:i:s')
+									));
+
+
+									if ($this->DmiChemistRegistrations->save($DmiChemistRegistrationsEntity)) {
+
+										//Save Chemist Logs
+										$DmiChemistLogsEntity = $this->DmiChemistLogs->newEntity(array(
+
+											'chemist_fname'=>$htmlEncoded_chemistFirstname,
+											'chemist_lname'=>$htmlEncoded_chemistLastname,
+											'chemist_id'=>$chemist_id,
+											'email'=>$htmlEncoded_email,
+											'password'=>'3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', // 123
+											'mobile'=>$htmlEncoded_mobile,
+											'dob'=>$htmlEncoded_dob,
+											'created_by'=>$username,
+											'usertype'=>$certificationType[1],
+											'created'=>date('Y-m-d H:i:s'),
+											'modified'=>date('Y-m-d H:i:s')
+										));
+
+										$this->DmiChemistLogs->save($DmiChemistLogsEntity);
+
+										$this->set('new_customer_id',$chemist_id);
+										$this->set('htmlencodedemail',$htmlEncoded_email);
+										$this->set('htmlencodedchemist_fname',$htmlEncoded_chemistFirstname);
+										$this->set('htmlencodedchemist_lname',$htmlEncoded_chemistLastname);
+
+										//called function to send link for reset password on registered email//on 13-02-2018 by Amol
+										$this->Authentication->forgotPasswordLib('DmiChemistRegistrations', $htmlEncoded_email);
+
+										//Save Chemist Allotment Entry
+										$DmiChemistAllotmentsEntity = $this->DmiChemistAllotments->newEntity(array(
+
+											'chemist_id'=>$chemist_id,
+											'customer_id'=>$username,
+											'created_by'=>$username,
+											'usertype'=>$certificationType[1],
+											'status'=>1,
+											'incharge'=>'no',
+											'created'=> date('Y-m-d H:i:s'),
+											'modified'=>date('Y-m-d H:i:s')
+										));
+
+										$this->DmiChemistAllotments->save($DmiChemistAllotmentsEntity);
+
+										//send sms/email to [PACKER] at registration of chemist
+										//$this->DmiSmsEmailTemplates->sendMessage(113,$chemist_id);
+
+										//send sms/email to [CHEMIST] at registration of chemist
+										//$this->DmiSmsEmailTemplates->sendMessage(114,$chemist_id);
+
+										$message = 'You have registered Chemist <strong>"'.$htmlEncoded_chemistFirstname.' '.$htmlEncoded_chemistLastname.'"</strong> with chemist ID is <strong>"'.$chemist_id.'"</strong> .<br>An email has been sent to you and your chemist to set your login password. <br> <strong>Now chemist need to login and complete profile verification.';
+										$message_theme = 'success';
+										$redirect_to = '../customers/secondary_home';
+
+									} else {
+
+										$message = 'Your chemist details are not saved please check again';
+										$message_theme = 'warning';
+										$redirect_to = 'chemist_registration';
+									}
+
+							} else {
+
+								$present_mobile = 'mobile';
+								$already_present = 'yes';
+							}
+
+						} else {
+
+							$present_email = 'email';
+							$already_present = 'yes';
+						}
+
+						if ($already_present == 'yes') {
+
+							$message = 'This '.$present_email.' '.$present_mobile.' is already registered with us.';
+							$message_theme = 'info';
+							$redirect_to = '../customers/secondary_home';
+						}
+
+					} else {
+
+						$message = 'Please enter all details. Do not leave any field empty!!';
+						$message_theme = 'warning';
+						$redirect_to = 'chemist_registration';
+					}
+
+			} else {
+
+				$message = 'Please enter all details. Do not leave any field empty!!';
+				$message_theme = 'warning';
+				$redirect_to = 'chemist_registration';
+			}
+
+		}
+
+
+		// set variables to show popup messages from view file
+		$this->set('message',$message);
+		$this->set('message_theme',$message_theme);
+		$this->set('redirect_to',$redirect_to);
+
+		if ($message != null) {
+			$this->render('/element/message_boxes');
+
+		}
+
+
+	}
+
+
+
+	// Reset password for Chemist
+	public function resetPassword() {
+
+		// set variables to show popup messages from view file
+		$message = '';
+		$message_theme = '';
+		$redirect_to = '';
+
+		$this->viewBuilder()->setLayout('form_layout');
+
+		if (empty($_GET['$key']) || empty($_GET['$id'])) {
+
+			echo "Sorry You are not authorized to view this page..'<a href='../'>'Please login'</a>'";
+			exit();
+
+		} else {
+
+			$key_id = $_GET['$key'];
+			// Added the urldecode funtion to fix the issue of +,<,# etc issue in gettin through get parameter
+			// added on 26/11/2018
+
+			$user_id = $this->decrypt($_GET['$id']);
+			$this->set('user_id',$user_id);
+
+			$countspecialchar = substr_count($user_id ,"/");
+
+			if ($countspecialchar != 2) {
+
+				echo "Sorry You are not authorized to view this page..'<a href='../'>'Please login'</a>'";
+				exit();
+			}
+
+			//fetch applicant details
+			$get_record_details = $this->DmiChemistRegistrations->find('all',array('conditions'=>array('chemist_id'=>$user_id)))->first();
+			$record_id = $get_record_details['id'];
+
+			//call function to check valid key
+			$valid_key_result = $this->DmiChemistsResetpassKeys->checkValidKey($user_id,$key_id);
+
+			if ($valid_key_result == 1) {
+
+				if ($this->request->is('post')) {
+
+					$randsalt = $this->Session->read('randSalt');
+					$captchacode1 = $this->Session->read('code');
+					$changepassdata = $this->request->getData();
+					$username = $this->request->getData('chemist_id');
+					$countspecialchar = substr_count($username ,"/");
+
+					if ($countspecialchar != 2) {
+
+						$user_id_not_valid_msg = 'This User Id is not valid';
+						$this->set('user_id_not_valid_msg',$user_id_not_valid_msg);
+						return false;
+						exit;
+					}
+
+					$newpassdata = $this->request->getData('new_password');
+					$confpassdata = $this->request->getData('confirm_password');
+
+					$reset_pass_result = $this->Authentication->resetPasswordLib('DmiChemistRegistrations',$username,$newpassdata,$randsalt);
+
+					if ($reset_pass_result == 1) {
+
+						$email_id_not_matched_msg = 'Email id & User Id not Matched.';
+						$this->set('email_id_not_matched_msg',$email_id_not_matched_msg);
+						return false;
+						exit;
+
+					} elseif ($reset_pass_result == 2) {
+
+						$incorrect_captcha_msg = 'Incorrect Captcha code entered.';
+						$this->set('incorrect_captcha_msg',$incorrect_captcha_msg);
+						return false;
+						exit;
+
+					} elseif ($reset_pass_result == 3) {
+
+						$comfirm_pass_msg = 'Confirm password not matched';
+						$this->set('comfirm_pass_msg',$comfirm_pass_msg);
+						return false;
+						exit;
+
+					} elseif ($reset_pass_result == 4) {
+
+						$comfirm_pass_msg = 'This password matched with your last three passwords, Please enter different password';
+						$this->set('comfirm_pass_msg',$comfirm_pass_msg);
+						return false;
+						exit;
+
+					} else {
+
+						//update link key table status to 1 for successfully
+						$this->DmiApplicantsResetpassKeys->updateKeySuccess($user_id,$key_id);
+						$message = 'Password Changed Successfully';
+						$message_theme = 'success';
+						$redirect_to = '../../chemist/chemist_login';
+
+					}
+				}
+
+			} elseif ($valid_key_result == 2) {
+
+				$message = 'Sorry.. This link to reset password is already used or expired. Please proceed through "Forgot Password" again.';
+				$message_theme = 'failed';
+				$redirect_to = '../../customers/forgot_password';
+
+			}
+
+		}
+
+		// set variables to show popup messages from view file
+		$this->set('message',$message);
+		$this->set('message_theme',$message_theme);
+		$this->set('redirect_to',$redirect_to);
+	}
+
+
+
+	//Chemist Home Display
+	public function home(){
+
+		$this->viewBuilder()->setLayout('chemist_home_layout');
+		$this->Session->write('application_dashboard','chemist');
+	}
+
+
+
+	//Chemist Inspection Details
+	public function inspectChemistDetails($id) {
+
+		$customer_data_query = $this->DmiChemistRegistrations->find('all', array('conditions'=> array('id' => $id)))->first();
+		$customer_f_name = $customer_data_query['chemist_fname'];
+		$this->Session->write('chemist_f_name',$customer_f_name);
+
+		$customer_l_name = $customer_data_query['chemist_lname'];
+		$this->Session->write('chemist_l_name',$customer_l_name);
+		$this->Session->write('customer_id',$customer_data_query['chemist_id']);
+		$this->Session->write('application_dashboard','ro');
+		$this->redirect(array('controller'=>'chemist', 'action'=>'profile'));
+
+	}
+
+
+	//Chemist Profile Method
+	public function profile() {
+
+		$this->validUser();
+
+		$previous_btn = null;
+		$next_btn = 'education';
+		$sectionname = 'profile';
+
+		$this->set('previous_btn',$previous_btn);
+		$this->set('next_btn',$next_btn);
+		$this->set('sectionname',$sectionname);
+
+
+		$application_dashboard = $this->Session->read('application_dashboard');
+		$atleastOneComment = null;
+
+		if ($application_dashboard == 'chemist') {
+
+			$chemist_id = $this->Session->read('username');
+			$this->viewBuilder()->setLayout('chemist_layout');
+
+			$referredbacksection = $this->DmiChemistComments->find('all',array('conditions'=>array('customer_id IS'=>$chemist_id,'section_id'=>1,'is_latest'=>1)))->first();
+
+			$comment_history = $this->DmiChemistComments->find('all',array('conditions'=>array('customer_id'=>$chemist_id,'section_id'=>1)))->toArray();
+
+		} elseif ($application_dashboard == 'ro') {
+
+			$chemist_id = $this->Session->read('customer_id');
+			$username = $this->Session->read('username');
+
+			//Set Layout
+			$this->viewBuilder()->setLayout('chemist_inspection_dashboard');
+
+			$atleastOneComment = $this->DmiChemistComments->find('all',array('conditions'=>array('customer_id IS'=>$chemist_id,'is_latest'=>1,'comment_by'=>$username)))->toArray();
+
+			$comment_history = $this->DmiChemistComments->find('all',array('conditions'=>array('customer_id IS'=>$chemist_id,'section_id'=>1,'comment_by'=>$username)))->toArray();
+		}
+
+		$this->progressbarStatus($chemist_id);
+		$this->finalSubmitStatus($chemist_id);
+
+		$this->set('atleast_one_comment',$atleastOneComment);
+		$this->set('comment_history',$comment_history);
+
+		$dataArray = $this->DmiChemistProfileDetails->getSectionData($chemist_id);
+		
+		$get_registered_details = $this->DmiChemistRegistrations->find('all',array('conditions'=>array('chemist_id IS'=>$chemist_id)))->first();
+		$registered_details = $get_registered_details;
+
+		$states = $this->DmiStates->find('list', array('valueField'=>'state_name','conditions'=>array('OR'=>array('delete_status IS NULL','delete_status ='=>'no')),'order'=>array('state_name')))->toArray();
+		$this->set('states',$states);
+
+		$final_submit_record = $this->DmiChemistFinalSubmits->find('all',array('conditions'=>array('customer_id IS'=>$chemist_id),'order'=>'id desc'))->first();
+
+		$final_status = '';
+
+		if (!empty($final_submit_record)) {
+
+			$final_status = $final_submit_record['status'];
+		}
+
+		$this->set('finalSubmitStatus',$final_status);
+
+		$sectionData = $dataArray[0];
+		$sectionData['first_name'] = $registered_details['chemist_fname'];
+		$sectionData['last_name'] = $registered_details['chemist_lname'];
+		$sectionData['mobile_no'] = $registered_details['mobile'];
+		$sectionData['email'] = $registered_details['email'];
+		$sectionData['dob'] = $registered_details['dob'];
+
+		$this->set('form_status',$sectionData['status']);
+		$this->set('sectiondata',$sectionData);
+
+		$districtArray = array();
+
+		if (!empty($sectionData['state'])) {
+
+			$districtArray = $this->DmiDistricts->find('list', array('valueField'=>'district_name','conditions'=>array('state_id IS'=>$sectionData['state'],'OR'=>array('delete_status IS NULL','delete_status ='=>'no')),'order'=>array('district_name')))->toArray();
+		}
+
+		$this->set('districtarray',$districtArray);
+
+		$id = $sectionData['id'];
+		$status = 'saved';
+		$created = date('Y-m-d H:i:s');
+
+		// set variables to show popup messages from view file
+		$message = '';
+		$message_theme = '';
+		$redirect_to = '';
+
+
+		//comment history
+		if (null !== ($this->request->getData('save'))) {
+		
+			$message = 'Profile Section, Saved successfully';
+			$message_theme = 'success';
+			$redirect_to = 'education';
+
+			if (!empty($id)) {
+
+				$message = 'Profile Section, Updated successfully';
+				$message_theme = 'success';
+				$redirect_to = 'profile';
+				$created = $sectionData['created'];
+				$status = $sectionData['status'];
+			}
+
+			if ($final_status == 'referred_back') {
+
+				$message = 'Profile Section, Reply saved successfully';
+				$message_theme = 'success';
+				$redirect_to = 'profile';
+
+				$DmiChemistProfileDetailsEntity = $this->DmiChemistProfileDetails->newEntity(array(
+					'id'=>$id,
+					'is_latest'=>0
+				));
+
+				$this->DmiChemistProfileDetails->save($DmiChemistProfileDetailsEntity);
+
+				$status = 'replied';
+				$id	 = '';
+			}
+
+			//$first_name = htmlentities($this->request->getData('first_name'), ENT_QUOTES);
+			//$last_name = htmlentities($this->request->getData('last_name'), ENT_QUOTES);
+
+			$table = 'DmiStates';
+			$post_input_request = $this->request->getData('state');
+			$state = $this->Customfunctions->dropdownSelectInputCheck($table,$post_input_request);//calling library function
+
+			$table = 'DmiDistricts';
+			$post_input_request = $this->request->getData('district');
+			$district = $this->Customfunctions->dropdownSelectInputCheck($table,$post_input_request);//calling library function
+
+			$pin_code = htmlentities($this->request->getData('pin_code'), ENT_QUOTES);
+
+			//$email = htmlentities($this->request->getData('email'), ENT_QUOTES);
+			//$mobile_no = htmlentities($this->request->getData('mobile_no'), ENT_QUOTES);
+			//$dob = $this->->Customfunctions->dateFormatCheck($this->request->getData('dob'));
+
+			$gender = $this->Customfunctions->radioButtonInputCheck($this->request->getData('gender'));//calling librabry function
+			
+
+			if ($gender == null) { 
+
+				return false;
+			}
+		
+			$pan_no = htmlentities($this->request->getData('pan_no'), ENT_QUOTES);
+			$address = htmlentities($this->request->getData('address'), ENT_QUOTES);
+			$address_1 = htmlentities($this->request->getData('address_1'), ENT_QUOTES);
+
+			if (!empty($this->request->getData('profile_photo')->getClientFilename())) {
+
+				$attchment = $this->request->getData('profile_photo');
+				$file_name = $attchment->getClientFilename();
+				$file_size = $attchment->getSize();
+				$file_type = $attchment->getClientMediaType();
+				$file_local_path = $attchment->getStream()->getMetadata('uri');
+				// calling file uploading function
+				$profile_photo = $this->Customfunctions->fileUploadLib($file_name,$file_size,$file_type,$file_local_path); 
+
+			} else {
+
+				$profile_photo = $sectionData['profile_photo'];
+			}
+
+			if (!empty($this->request->getData('signature_photo')->getClientFilename())) {
+
+				$attchment = $this->request->getData('signature_photo');
+				$file_name = $attchment->getClientFilename();
+				$file_size = $attchment->getSize();
+				$file_type = $attchment->getClientMediaType();
+				$file_local_path = $attchment->getStream()->getMetadata('uri');
+				// calling file uploading function
+				$signature_photo = $this->Customfunctions->fileUploadLib($file_name,$file_size,$file_type,$file_local_path); 
+
+			} else {
+
+				$signature_photo = $sectionData['signature_photo'];
+			}
+
+			$DmiChemistProfileDetailsEntity = $this->DmiChemistProfileDetails->newEntity(array(
+
+				'id'=>$id,
+				'username'=>$chemist_id,
+				//'first_name'=>$first_name,
+				//'last_name'=>$last_name,
+				'state'=>$state,
+				'district'=>$district,
+				'pin_code'=>$pin_code,
+				//'email'=>$email,
+				//'mobile_no'=>$mobile_no,
+				//'dob'=>$dob,
+				'gender'=>$gender,
+				'pan_no'=>$pan_no,
+				'address'=>$address,
+				'address_1'=>$address_1,
+				'profile_photo'=>$profile_photo,
+				'signature_photo'=>$signature_photo,
+				'status'=>$status,
+				'created'=>$created,
+				'modified'=>date('Y-m-d H:i:s'),
+				'is_latest'=>1
+
+			));
+
+			if($this->DmiChemistProfileDetails->save($DmiChemistProfileDetailsEntity)) {
+				
+				if ($final_status == 'referred_back') {
+					$this->replyComment($this->request->getData(),1);
+				}
+
+			} else {
+
+				$message = 'Profile Section, Not Saved';
+				$message_theme = 'warning';
+				$redirect_to = 'profile';
+			}
+
+		} elseif (null !== ($this->request->getData('final_submit'))) {
+
+			if ($final_status == 'referred_back') {
+
+				$status = 'replied';
+
+			} else {
+
+				$status = 'pending';
+			}
+
+			$result = $this->finalSubmit($status,$chemist_id);
+
+			if ($result == 1) {
+
+				$message = 'The application final submited successfully';
+				$message_theme = 'success';
+				$redirect_to = 'profile';
+			}
+
+		} elseif (null !== ($this->request->getData('referred_back'))) {
+
+			$result = $this->referredBackComment($this->request->getData(),1);
+
+			if ($result == 1) {
+
+				$message = 'Referred backed comment saved successfully';
+				$message_theme = 'success';
+				$redirect_to = 'profile';
+
+			}
+
+		} elseif (null !== ($this->request->getData('final_submit_referred_back'))) {
+
+			$result = $this->finalSubmit('referred_back',$username,'DmiChemistProfileDetails');
+
+			if($result == 1){
+
+				$message = 'Application send back to chemist successfully with comments';
+				$message_theme = 'success';
+				$redirect_to = '../chemistverifications/home';
+
+			}
+
+		} elseif (null !== ($this->request->getData('approved'))) {
+
+			$result = $this->chemistApproved(1);
+
+			if ($result == 1) {
+
+				$message = 'Section Approved Successfully';
+				$message_theme = 'success';
+				$redirect_to = 'profile';
+
+			} else {
+
+				$message = 'All Sections Approved Successfully';
+				$message_theme = 'success';
+				$redirect_to = '../chemistverifications/home';
+			}
+
+		}
+
+		$this->set('message',$message);
+		$this->set('messahe_theme',$message_theme);
+		$this->set('redirect_to',$redirect_to);
+
+	}
+
+
+	//Chemist Education Method
+	public function education() {
+
+		$this->validUser();
+
+		$previous_btn = 'profile';
+		$next_btn = 'experience';
+		$sectionname = 'education';
+
+		$this->set('previous_btn',$previous_btn);
+		$this->set('next_btn',$next_btn);
+		$this->set('sectionname',$sectionname);
+
+		$message = '';
+		$message_theme = '';
+		$redirect_to = '';
+
+		$application_dashboard = $this->Session->read('application_dashboard');
+		$atleastOneComment = null;
+
+		if ($application_dashboard == 'chemist') {
+
+			$chemist_id = $this->Session->read('username');
+
+			//Set Layout
+			$this->viewBuilder()->setLayout('chemist_layout');
+
+			$referredbacksection = $this->DmiChemistComments->find('all',array('conditions'=>array('customer_id IS'=>$chemist_id,'section_id'=>2,'is_latest'=>1)))->first();
+
+			$comment_history = $this->DmiChemistComments->find('all',array('conditions'=>array('customer_id IS'=>$chemist_id,'section_id'=>2)))->toArray();
+
+		} elseif ($application_dashboard == 'ro') {
+
+			$chemist_id = $this->Session->read('customer_id');
+			$username = $this->Session->read('username');
+
+			//Set Layout
+			$this->viewBuilder()->setLayout('chemist_inspection_dashboard');
+
+			$atleastOneComment = $this->DmiChemistComments->find('all',array('conditions'=>array('customer_id IS'=>$chemist_id,'is_latest'=>1,'comment_by'=>$username)))->toArray();
+
+			$comment_history = $this->DmiChemistComments->find('all',array('conditions'=>array('customer_id IS'=>$chemist_id,'section_id'=>2,'comment_by'=>$username)))->toArray();
+		}
+
+		$this->progressbarStatus($chemist_id);
+		$this->finalSubmitStatus($chemist_id);
+		$this->set('atleast_one_comment',$atleastOneComment);
+		$this->set('comment_history',$comment_history);
+
+		$edu_type_list = $this->DmiEducationTypes->find('list', array('valueField'=>'edu_type','conditions'=>array('OR'=>array('delete_status'=>'no')),'order'=>array('edu_type')))->toArray();
+		print_r($edu_type); exit;
+		$division_list = $this->DmiDivisionGrades->find('list', array('valueField'=>'division','conditions'=>array('OR'=>array('delete_status'=>'no')),'order'=>array('division')))->toArray();
+
+		$final_submit_record = $this->DmiChemistFinalSubmits->find('all',array('conditions'=>array('customer_id IS'=>$chemist_id),'order'=>'id desc'))->first();
+
+		$final_status = '';
+		if (!empty($final_submit_record)) {
+
+			$final_status = $final_submit_record['status'];
+		}
+
+		$this->set('finalSubmitStatus',$final_status);
+
+        $edu_type = array();
+        $division = array();
+
+        foreach ($edu_type_list as $key => $value) {
+
+			$edu_type[] = array(
+				'vall' => $key,
+				'label' => $value
+			);
+		}
+
+
+		foreach ($division_list as $key => $value) {
+
+			$division[] = array(
+				'vall' => $key,
+				'label' => $value
+			);
+		}
+
+		for ($year = 1950 ; $year < date('Y'); $year++) {
+
+			$year_list[] = array(
+				'vall' => $year,
+				'label' => $year
+			);
+		}
+
+
+		$dataArray = $this->DmiChemistEducationDetails->getSectionData($chemist_id);
+
+		$this->set('form_status',$dataArray[0]['status']);
+
+		// common add more Table Header Array
+		$tableD['label'] = array(
+			'0' => array(
+				'0' => array(
+					'col' 		=> 'Sr.no',
+					'colspan' 	=> '1',
+					'rowspan' 	=> '1'
+				),
+				'1' => array(
+					'col' 		=> 'Education Type',
+					'colspan' 	=> '1',
+					'rowspan' 	=> '1'
+				),
+				'2' => array(
+					'col' 		=> 'Stream',
+					'colspan' 	=> '1',
+					'rowspan' 	=> '1'
+				),
+				'3' => array(
+					'col' 		=> 'University/Institute',
+					'colspan' 	=> '1',
+					'rowspan' 	=> '1'
+				),
+				'4' => array(
+					'col' 		=> 'Year',
+					'colspan' 	=> '1',
+					'rowspan' 	=> '1'
+				),
+				'5' => array(
+					'col' 		=> 'Division/Grade',
+					'colspan' 	=> '1',
+					'rowspan' 	=> '1'
+				),
+				'6' => array(
+					'col' 		=> '% Marks',
+					'colspan' 	=> '1',
+					'rowspan' 	=> '1'
+				)
+			)
+		);
+
+
+		$loopC = "0";
+		foreach($dataArray as $row){
+
+			$row = $row;
+
+
+			$tableD['input'][$loopC] = array(
+
+				'0' => array(
+					'name'		=> null,
+					'type'		=> null,
+					'valid'		=> null,
+					'length'	=> null
+				),
+				'1' => array(
+					'name'		=> 'education',
+					'type'		=> 'select',
+					'valid'		=> 'text',
+					'option'	=> $edu_type,
+					'selected'	=> $row['education'],
+					'class'		=> 'cvOn cvReq',
+					'id'		=> 'education'
+				),
+				'2' => array(
+					'name'		=> 'stream',
+					'type'		=> 'text',
+					'valid'		=> 'text',
+					'maxlength'	=> '100',
+					'value'		=> $row['stream'],
+					'class'		=> 'cvOn cvReq cvAlphaNum cvMaxLen',
+					'id'		=> 'stream'
+				),
+				'3' => array(
+					'name'		=> 'university',
+					'type'		=> 'text',
+					'valid'		=> 'text',
+					'maxlength'	=> '100',
+					'value'		=> $row['university'],
+					'class'		=> 'cvOn cvReq cvAlphaNum cvMaxLen',
+					'id'		=> 'university'
+				),
+				'4' => array(
+					'name'		=> 'year',
+					'type'		=> 'select',
+					'valid'		=> 'text',
+					'option'	=> $year_list,
+					'selected'	=> $row['year'],
+					'class'		=> 'cvOn cvReq',
+					'id'		=> 'year'
+				),
+				'5' => array(
+					'name'		=> 'division',
+					'type'		=> 'select',
+					'valid'		=> 'text',
+					'option'	=> $division,
+					'selected'	=> $row['division'],
+					'class'		=> 'cvOn cvReq',
+					'id'		=> 'division'
+				),
+				'6' => array(
+					'name'		=> 'marks',
+					'type'		=> 'text',
+					'valid'		=> 'text',
+					'maxlength'	=> '6',
+					'cvfloat'	=> '99.99',
+					'value'		=> $row['marks'],
+					'class'		=> 'cvOn cvReq cvFloat cvMaxLen',
+					'id'		=> 'marks'
+				)
+			);
+			$loopC++;
+
+		}
+
+
+
+		$tableForm[] = $tableD;
+		$jsonTableForm = json_encode($tableForm);
+		$this->set('tableForm',$jsonTableForm);
+
+		$id = $dataArray[0]['id'];
+		$status = 'saved';
+		$created = date('Y-m-d H:i:s');
+
+
+		if (null !== ($this->request->getData('save'))) {
+
+			$message = 'Education Section, Saved successfully';
+			$message_theme = 'success';
+			$redirect_to = 'experience';
+
+			if (!empty($id)) {
+
+				$message = 'Education Section, Updated successfully';
+				$message_theme = 'success';
+				$redirect_to = 'education';
+				$created = $dataArray[0]['created'];
+				$status = $dataArray[0]['status'];
+			}
+
+			if ($final_status == 'referred_back') {
+
+				$message = 'Education Section, Reply saved successfully';
+				$message_theme = 'success';
+				$redirect_to = 'education';
+
+				if ($status == 'saved' ){
+
+					$this->DmiChemistEducationDetails->updateAll(
+						array('is_latest' => 0),
+						array('username' => $chemist_id,'is_latest'=>'1')
+					);
+				}
+
+				$status = 'replied';
+
+			}
+
+			$row_count = count($this->request->getData('education'));
+
+			$this->DmiChemistEducationDetails->deleteAll(array('username'=>$chemist_id,'is_latest'=>1));
+
+			for ($i=0;$i<$row_count;$i++) {
+
+				$table = 'DmiEducationTypes';
+				$post_input_request = $this->request->getData('education')($i);
+				$education = $this->Customfunctions->dropdownSelectInputCheck($table,$post_input_request);//calling library function
+
+				$table = 'DmiDivisionGrades';
+				$post_input_request = $this->request->getData('division')($i);
+				$division = $this->Customfunctions->dropdownSelectInputCheck($table,$post_input_request);//calling library function
+
+				$stream = htmlentities($this->request->getData('stream')($i), ENT_QUOTES);
+				$university = htmlentities($this->request->getData('university')($i), ENT_QUOTES);
+				$year = htmlentities($this->request->getData('year')($i), ENT_QUOTES);
+				$marks = htmlentities($this->request->getData('marks')($i), ENT_QUOTES);
+
+
+				$DmiChemistEducationDetailsEntity =	$this->DmiChemistEducationDetails->newEntity(array(
+
+					'username'=>$chemist_id,
+					'education'=>$education,
+					'stream'=>$stream,
+					'university'=>$university,
+					'year'=>$year,
+					'division'=>$division,
+					'marks'=>$marks,
+					'status'=>$status,
+					'created'=>$created,
+					'modified'=>date('Y-m-d H:i:s'),
+					'is_latest'=>1
+				));
+
+				$this->DmiChemistEducationDetails->save($DmiChemistEducationDetailsEntity);
+			}
+
+
+			if ($final_status == 'referred_back') {
+
+				$this->replyComment($this->request->getData(),2);
+			}
+
+		} elseif (null !==($this->request->getData('final_submit'))) {
+
+			if ($final_status == 'referred_back') {
+				$status = 'replied';
+			} else {
+				$status = 'pending';
+			}
+
+			$result = $this->finalSubmit($status,$chemist_id);
+
+			if ($result == 1) {
+
+				$message = 'The application final submited successfully';
+				$message_theme = 'success';
+				$redirect_to = 'profile';
+
+			}
+
+		} elseif (null !== ($this->request->getData('referred_back'))) {
+
+			$result = $this->referredBackComment($this->request->getData(),2);
+
+			if ($result == 1) {
+
+				$message = 'Referred backed comment saved successfully';
+				$message_theme = 'success';
+				$redirect_to = 'education';
+
+			}
+
+		} elseif (null !== ($this->request->getData('final_submit_referred_back'))) {
+
+			$result = $this->final_submit('referred_back',$username,'DmiChemistEducationDetails');
+
+			if ($result == 1) {
+
+				$message = 'Application send back to chemist successfully with comments';
+				$message_theme = 'success';
+				$redirect_to = '../chemistverifications/home';
+
+			}
+
+		} elseif (null !== ($this->request->getData('approved'))) {
+
+			$result = $this->chemistApproved(2);
+
+			if ($result == 1) {
+
+				$message = 'Section Approved Successfully';
+				$message_theme = 'success';
+				$redirect_to = 'education';
+
+			} else {
+
+				$message = 'All Sections Approved Successfully';
+				$message_theme = 'info';
+				$redirect_to = '../chemistverifications/home';
+			}
+
+		}
+
+		$this->set('message',$message);
+		$this->set('redirect_to',$redirect_to);
+
+	}
+
+
+		//Chemist Experirnce Method
+		public function experience() {
+
+			$this->validUser();
+
+			$previous_btn = 'education';
+			$next_btn = 'training';
+			$sectionname = 'experience';
+
+			$this->set('previous_btn',$previous_btn);
+			$this->set('next_btn',$next_btn);
+			$this->set('sectionname',$sectionname);
+
+			//Variables For Displaying the Messages
+			$message = '';
+			$message_theme = '';
+			$redirect_to = '';
+
+			$application_dashboard = $this->Session->read('application_dashboard');
+			$atleastOneComment = null;
+
+			if ($application_dashboard == 'chemist') {
+
+				//get chemist id from session
+				$chemist_id = $this->Session->read('username');
+
+				//Set Layout
+				$this->viewBuilder()->setLayout('chemist_layout');
+
+				$referredbacksection = $this->DmiChemistComments->find('all',array('conditions'=>array('customer_id IS'=>$chemist_id,'section_id'=>3,'is_latest'=>1)))->first();
+
+				$comment_history = $this->DmiChemistComments->find('all',array('conditions'=>array('customer_id IS'=>$chemist_id,'section_id'=>3)))->toArray();
+
+			} elseif ($application_dashboard == 'ro') {
+
+				//get customer id from session
+				$chemist_id = $this->Session->read('customer_id');
+				$username = $this->Session->read('username');
+				//set layout
+				$this->viewBuilder()->setLayout('chemist_inspection_dashboard');
+
+				$atleastOneComment = $this->DmiChemistComments->find('all',array('conditions'=>array('customer_id IS'=>$chemist_id,'is_latest'=>1,'comment_by'=>$username)))->toArray();
+
+				$comment_history = $this->DmiChemistComments->find('all',array('conditions'=>array('customer_id IS'=>$chemist_id,'section_id'=>3,'comment_by'=>$username)))->toArray();
+			}
+
+			$this->progressbarStatus($chemist_id);
+			$this->finalSubmitStatus($chemist_id);
+			$this->set('atleast_one_comment',$atleastOneComment);
+			$this->set('comment_history',$comment_history);
+
+			$dataArray = $this->DmiChemistExperienceDetails->getSectionData($chemist_id);
+
+
+			$final_submit_record = $this->DmiChemistFinalSubmits->find('all',array('conditions'=>array('customer_id IS'=>$chemist_id),'order'=>'id desc'))->first();
+
+			$final_status = '';
+
+			if (!empty($final_submit_record)) {
+				$final_status = $final_submit_record['status'];
+			}
+
+			$this->set('finalSubmitStatus',$final_status);
+			$this->set('form_status',$dataArray[0]['status']);
+
+			// common add more Table Header Array
+			$tableD['label'] = array(
+				'0' => array(
+					'0' => array(
+						'col' 		=> 'Sr.no',
+						'colspan' 	=> '1',
+						'rowspan' 	=> '2'
+					),
+					'1' => array(
+						'col' 		=> 'Name Of Institution',
+						'colspan' 	=> '1',
+						'rowspan' 	=> '2'
+					),
+					'2' => array(
+						'col' 		=> 'Post Held',
+						'colspan' 	=> '1',
+						'rowspan' 	=> '2'
+					),
+					'3' => array(
+						'col' 		=> 'Job Description',
+						'colspan' 	=> '1',
+						'rowspan' 	=> '2'
+					),
+					'4' => array(
+						'col' 		=> 'Duration Of Job',
+						'colspan' 	=> '2',
+						'rowspan' 	=> '1'
+					),
+					'5' => array(
+						'col' 		=> 'Monthly Remuneration',
+						'colspan' 	=> '1',
+						'rowspan' 	=> '2'
+					)
+				),
+				'1' => array(
+					'0' => array(
+						'col' 		=> 'From',
+						'colspan' 	=> '1',
+						'rowspan' 	=> '1'
+					),
+					'1' => array(
+						'col' 		=> 'To',
+						'colspan' 	=> '1',
+						'rowspan' 	=> '1'
+					)
+				)
+			);
+
+
+			$loopC = "0";
+			foreach($dataArray as $row){
+
+				$row = $row['DmiChemistExperienceDetails'];
+
+
+				$tableD['input'][$loopC] = array(
+
+					'0' => array(
+						'name'		=> null,
+						'type'		=> null,
+						'valid'		=> null,
+						'length'	=> null
+					),
+					'1' => array(
+						'name'		=> 'name_of_institute',
+						'type'		=> 'text',
+						'valid'		=> 'text',
+						'maxlength'	=> '200',
+						'value'		=> $row['name_of_institute'],
+						'class'		=> 'cvOn cvNotReq cvAlphaNum cvMaxLen',
+						'id'		=> 'name_of_institute'
+					),
+					'2' => array(
+						'name'		=> 'post_held',
+						'type'		=> 'text',
+						'valid'		=> 'text',
+						'maxlength'	=> '200',
+						'value'		=> $row['post_held'],
+						'class'		=> 'cvOn cvNotReq cvAlphaNum cvMaxLen',
+						'id'		=> 'post_held'
+					),
+					'3' => array(
+						'name'		=> 'job_description',
+						'type'		=> 'textarea',
+						'valid'		=> 'text',
+						'value'		=> $row['job_description'],
+						'class'		=> 'cvOn cvNotReq cvAlphaNum cvMaxLen',
+						'id'		=> 'job_description'
+					),
+					'4' => array(
+						'name'		=> 'from_dt',
+						'type'		=> 'text',
+						'valid'		=> 'text',
+						'value'		=> $row['from_dt'],
+						'class'		=> 'cvOn cvNotReq cvDate cvMaxLen',
+						'id'		=> 'from_dt'
+					),
+					'5' => array(
+						'name'		=> 'to_dt',
+						'type'		=> 'text',
+						'valid'		=> 'text',
+						'value'		=> $row['to_dt'],
+						'class'		=> 'cvOn cvNotReq cvDate cvMaxLen',
+						'id'		=> 'to_dt'
+					),
+					'6' => array(
+						'name'		=> 'monthly_remuneration',
+						'type'		=> 'text',
+						'valid'		=> 'text',
+						'maxlength'	=> '200',
+						'value'		=> $row['monthly_remuneration'],
+						'class'		=> 'cvOn cvNotReq cvAlphaNum cvMaxLen',
+						'id'		=> 'monthly_remuneration'
+					)
+				);
+				$loopC++;
+
+			}
+
+
+			$tableForm[] = $tableD;
+			$jsonTableForm = json_encode($tableForm);
+			$this->set('tableForm',$jsonTableForm);
+
+
+			$id = $dataArray[0]['id'];
+			$status = 'saved';
+			$created = date('Y-m-d H:i:s');
+
+			if (null !== ($this->request->getData('save'))){
+
+
+				$message = 'Experience Section, Saved successfully';
+				$message_theme = 'success';
+				$redirect_to = 'training';
+
+				if (!empty($id)) {
+
+					$message = 'Experience Section, Updated successfully';
+					$message_theme = 'success';
+					$redirect_to = 'experience';
+					$created = $dataArray[0]['created'];
+					$status = $dataArray[0]['status'];
+				}
+
+				if ($final_status == 'referred_back') {
+
+					$message = 'Experience Section, Reply saved successfully';
+					$redirect_to = 'experience';
+
+					if ($status == 'saved') {
+
+						$this->DmiChemistExperienceDetails->updateAll(
+							array('is_latest' => 0),
+							array('username' => $chemist_id,'is_latest'=>'1')
+						);
+					}
+
+					$status = 'replied';
+
+				}
+
+				$row_count = count($this->request->getData('name_of_institute'));
+
+
+				$this->DmiChemistExperienceDetails->deleteAll(array('username'=>$chemist_id,'is_latest'=>1));
+
+				for ($i=0;$i<$row_count;$i++) {
+
+					$name_of_institute = htmlentities($this->request->getData('name_of_institute')($i), ENT_QUOTES);
+					$post_held = htmlentities($this->request->getData('post_held')($i), ENT_QUOTES);
+					$job_description = htmlentities($this->request->getData('job_description')($i), ENT_QUOTES);
+					$from_dt = $this->Customfunctions->dateFormatCheck($this->request->getData('from_dt')($i));
+					$to_dt = $this->Customfunctions->dateFormatCheck($this->request->getData('to_dt')($i));
+					$monthly_remuneration = htmlentities($this->request->getData('monthly_remuneration')($i), ENT_QUOTES);
+
+					//Save the Data
+					$DmiChemistExperienceDetailsEntity = $this->DmiChemistExperienceDetails->newEntity(array(
+
+						'username'=>$chemist_id,
+						'name_of_institute'=>$name_of_institute,
+						'post_held'=>$post_held,
+						'job_description'=>$job_description,
+						'from_dt'=>$from_dt,
+						'to_dt'=>$to_dt,
+						'monthly_remuneration'=>$monthly_remuneration,
+						'status'=>$status,
+						'created'=>$created,
+						'modified'=>date('Y-m-d H:i:s'),
+						'is_latest'=>1
+					));
+
+                    $this->DmiChemistExperienceDetails->save($DmiChemistExperienceDetailsEntity);
+				}
+
+				if ($final_status == 'referred_back') {
+					$this->replyComment($this->request->getData(),3);
+				}
+
+			} elseif (null !== ($this->request->getData('final_submit'))) {
+
+				if ($final_status == 'referred_back') {
+					$status = 'replied';
+				} else {
+					$status = 'pending';
+				}
+
+				$result = $this->finalSubmit($status,$chemist_id);
+
+				if ($result == 1) {
+
+					$message = 'The application final submited successfully';
+                    $message_theme = 'success';
+					$redirect_to = 'profile';
+				}
+
+			} elseif (null !== ($this->request->getData('referred_back'))){
+
+				$result = $this->referredBackComment($this->request->getData,3);
+
+				if ($result == 1) {
+
+					$message = 'Referred backed comment saved successfully';
+                    $message_theme = 'success';
+					$redirect_to = 'experience';
+				}
+
+			} elseif (null !== ($this->request->getData('final_submit_referred_back'))) {
+
+				$result = $this->finalSubmit('referred_back',$username,'DmiChemistExperienceDetails');
+
+				if ($result == 1) {
+
+					$message = 'Application send back to chemist successfully with comments';
+                    $message_theme = 'success';
+					$redirect_to = '../chemistverifications/home';
+				}
+
+			} elseif (null !== ($this->request->getData('approved'))) {
+
+					$result = $this->chemistApproved(3);
+					if ($result == 1) {
+						$message = 'Section Approved Successfully';
+                        $message_theme = 'success';
+						$redirect_to = 'experience';
+					} else {
+						$message = 'All Sections Approved Successfully';
+                        $message_theme = 'success';
+						$redirect_to = '../chemistverifications/home';
+					}
+			}
+
+			$this->set('message',$message);
+			$this->set('redirect_to',$redirect_to);
+
+		}
+
+
+        //Profile function for Training
+        public function training(){
+
+            $this->validUser();
+
+            $previous_btn = 'experience';
+            $next_btn = 'other_details';
+            $sectionname = 'training';
+
+            $this->set('previous_btn',$previous_btn);
+            $this->set('next_btn',$next_btn);
+            $this->set('sectionname',$sectionname);
+
+            //Set Variables for displaying messages
+            $message = '';
+            $message_theme = '';
+            $redirect_to = '';
+
+            $application_dashboard = $this->Session->read('application_dashboard');
+            $atleastOneComment = null;
+
+            if ($application_dashboard == 'chemist') {
+
+                $chemist_id = $this->Session->read('username');
+                //set layout
+                $this->viewBuilder()->setLayout('chemist_layout');
+
+                $referredbacksection = $this->DmiChemistComments->find('all',array('conditions'=>array('customer_id IS'=>$chemist_id,'section_id'=>4,'is_latest'=>1)))->first();
+
+                $comment_history = $this->DmiChemistComments->find('all',array('conditions'=>array('customer_id'=>$chemist_id,'section_id'=>4)))->toArray();
+
+            } elseif ($application_dashboard == 'ro') {
+
+                $chemist_id = $this->Session->read('customer_id');
+                $username = $this->Session->read('username');
+
+                //Set Layout
+                $this->viewBuilder()->setLayout('chemist_inspection_dashboard');
+
+                $atleastOneComment = $this->DmiChemistComments->find('all',array('conditions'=>array('customer_id IS'=>$chemist_id,'is_latest'=>1,'comment_by'=>$username)))->toArray();
+
+                $comment_history = $this->DmiChemistComments->find('all',array('conditions'=>array('customer_id IS'=>$chemist_id,'section_id'=>4,'comment_by'=>$username)))->toArray();
+            }
+
+            $this->progressbarStatus($chemist_id);
+            $this->finalSubmitStatus($chemist_id);
+            $this->set('atleast_one_comment',$atleastOneComment);
+            $this->set('comment_history',$comment_history);
+
+            $dataArray = $this->DmiChemistTrainingDetails->getSectionData($chemist_id);
+
+            $final_submit_record = $this->DmiChemistFinalSubmits->find('all',array('conditions'=>array('customer_id IS'=>$chemist_id),'order'=>'id desc'))->first();
+
+            $final_status = '';
+            if (!empty($final_submit_record)) {
+                $final_status = $final_submit_record['status'];
+            }
+            $this->set('finalSubmitStatus',$final_status);
+            $this->set('form_status',$dataArray[0]['status']);
+
+            $division_list = $this->DmiDivisionGrades->find('list', array('valueField'=>'division','conditions'=>array('OR'=>array('delete_status'=>'no')),'order'=>array('division')))->toArray();
+
+            foreach ($division_list as $key => $value) {
+
+                $division[] = array(
+                    'vall' => $key,
+                    'label' => $value
+                );
+            }
+            // common add more Table Header Array
+            $tableD['label'] = array(
+                '0' => array(
+                    '0' => array(
+                        'col' 		=> 'Sr.no',
+                        'colspan' 	=> '1',
+                        'rowspan' 	=> '2'
+                    ),
+                    '1' => array(
+                        'col' 		=> 'Name Of Training',
+                        'colspan' 	=> '1',
+                        'rowspan' 	=> '2'
+                    ),
+                    '2' => array(
+                        'col' 		=> 'Name Of Institute',
+                        'colspan' 	=> '1',
+                        'rowspan' 	=> '2'
+                    ),
+                    '3' => array(
+                        'col' 		=> 'Division /Grade',
+                        'colspan' 	=> '1',
+                        'rowspan' 	=> '2'
+                    ),
+                    '4' => array(
+                        'col' 		=> 'Duration Of Training',
+                        'colspan' 	=> '2',
+                        'rowspan' 	=> '1'
+                    ),
+                ),
+                '1' => array(
+                    '0' => array(
+                        'col' 		=> 'From',
+                        'colspan' 	=> '1',
+                        'rowspan' 	=> '1'
+                    ),
+                    '1' => array(
+                        'col' 		=> 'To',
+                        'colspan' 	=> '1',
+                        'rowspan' 	=> '1'
+                    )
+                )
+            );
+
+
+            $loopC = "0";
+            foreach($dataArray as $row){
+
+                $row = $row['DmiChemistTrainingDetails'];
+
+
+                $tableD['input'][$loopC] = array(
+
+                    '0' => array(
+                        'name'		=> null,
+                        'type'		=> null,
+                        'valid'		=> null,
+                        'length'	=> null
+                    ),
+                    '1' => array(
+                        'name'		=> 'name_of_training',
+                        'type'		=> 'text',
+                        'valid'		=> 'text',
+                        'maxlength'	=> '200',
+                        'value'		=> $row['name_of_training'],
+                        'class'		=> 'cvOn cvNotReq cvMaxLen',
+                        'id'		=> 'name_of_training'
+                    ),
+                    '2' => array(
+                        'name'		=> 'name_of_institute',
+                        'type'		=> 'text',
+                        'valid'		=> 'text',
+                        'maxlength'	=> '200',
+                        'value'		=> $row['name_of_institute'],
+                        'class'		=> 'cvOn cvNotReq cvMaxLen',
+                        'id'		=> 'name_of_institute'
+                    ),
+                    '3' => array(
+                        'name'		=> 'division',
+                        'type'		=> 'select',
+                        'valid'		=> 'text',
+                        'option'	=> $division,
+                        'selected'	=> $row['division'],
+                        'class'		=> 'cvOn cvNotReq',
+                        'id'		=> 'division'
+                    ),
+                    '4' => array(
+                        'name'		=> 'from_dt',
+                        'type'		=> 'text',
+                        'valid'		=> 'text',
+                        'value'		=> $row['from_dt'],
+                        'class'		=> 'cvOn cvNotReq cvDate cvMaxLen',
+                        'id'		=> 'from_dt'
+                    ),
+                    '5' => array(
+                        'name'		=> 'to_dt',
+                        'type'		=> 'text',
+                        'valid'		=> 'text',
+                        'value'		=> $row['to_dt'],
+                        'class'		=> 'cvOn cvNotReq cvDate cvMaxLen',
+                        'id'		=> 'to_dt'
+                    )
+
+                );
+                $loopC++;
+
+            }
+
+
+            $tableForm[] = $tableD;
+            $jsonTableForm = json_encode($tableForm);
+            $this->set('tableForm',$jsonTableForm);
+
+            $id = $dataArray[0]['id'];
+            $status = 'saved';
+            $created = date('Y-m-d H:i:s');
+
+            if (null !== ($this->request->getData('save'))){
+
+                $message = 'Experience Section, Saved successfully';
+                $message_theme = 'success';
+                $redirect_to = 'other_details';
+
+                if (!empty($id)) {
+
+                    $message = 'Training Section, Updated successfully';
+                    $message_theme = 'success';
+                    $redirect_to = 'training';
+                    $created = $dataArray[0]['created'];
+                    $status = $dataArray[0]['status'];
+                }
+
+                if ($final_status == 'referred_back') {
+
+                    $message = 'Training Section, Reply saved successfully';
+                    $message_theme = 'success';
+                    $redirect_to = 'training';
+
+                    if ($status == 'saved') {
+                        $this->DmiChemistEducationDetails->updateAll(
+                            array('is_latest' => 0),
+                            array('username' => $chemist_id,'is_latest'=>'1')
+                        );
+                    }
+
+                    $status = 'replied';
+
+                }
+
+                $row_count = count($this->request->getData('division'));
+
+
+                $this->DmiChemistTrainingDetails->deleteAll(array('username'=>$chemist_id,'is_latest'=>1));
+
+                for ($i=0;$i<$row_count;$i++) {
+
+                    $table = 'Dmi_division_grade';
+                    $division = $this->request->getData('division')($i);
+                    //$division = $this->dropdownSelectInputCheck($table,$post_input_request);//calling library function
+
+                    $name_of_training = htmlentities($this->request->getData('name_of_training')($i), ENT_QUOTES);
+                    $name_of_institute = htmlentities($this->request->getData('name_of_institute')($i), ENT_QUOTES);
+
+                    $from_dt = $this->Customfunctions->dateFormatCheck($this->request->getData('from_dt')($i));
+                    $to_dt = $this->Customfunctions->dateFormatCheck($this->request->getData('to_dt')($i));
+
+                    $DmiChemistTrainingDetailsEntity = $this->DmiChemistTrainingDetails->newEntity(array(
+
+                        'username'=>$chemist_id,
+                        'name_of_training'=>$name_of_training,
+                        'name_of_institute'=>$name_of_institute,
+                        'division'=>$division,
+                        'from_dt'=>$from_dt,
+                        'to_dt'=>$to_dt,
+                        'status'=>$status,
+                        'created'=>date('Y-m-d H:i:s'),
+                        'modified'=>date('Y-m-d H:i:s'),
+                        'is_latest'=>1
+                    ));
+
+                    $this->DmiChemistTrainingDetails->save($DmiChemistTrainingDetailsEntity);
+                }
+
+                if ($final_status == 'referred_back') {
+                    $this->replyComment($this->request->getData(),4);
+                }
+
+            } elseif (null !== ($this->request->getData('final_submit'))) {
+
+                if ($final_status == 'referred_back') {
+                    $status = 'replied';
+                } else {
+                    $status = 'pending';
+                }
+
+                $result = $this->finalSubmit($status,$chemist_id);
+
+                if ($result == 1) {
+
+                    $message = 'The application final submited successfully';
+                    $message_theme = 'success';
+                    $redirect_to = 'profile';
+                }
+
+            } elseif (null !== ($this->request->getData('referred_back'))) {
+
+                $result = $this->referredBackComment($this->request->getData(),4);
+
+                if ($result == 1) {
+
+                    $message = 'Referred backed comment saved successfully';
+                    $message_theme = 'success';
+                    $redirect_to = 'training';
+                }
+
+            } elseif (null !== ($this->request->getData('final_submit_referred_back'))) {
+
+                $result = $this->finalSubmit('referred_back',$username,'DmiChemistTrainingDetails');
+
+                if ($result == 1) {
+
+                    $message = 'Application send back to chemist successfully with comments';
+                    $message_theme = 'success';
+                    $redirect_to = '../chemistverifications/home';
+                }
+
+            } elseif (null !== ($this->request->getData('approved'))) {
+
+                    $result = $this->chemistApproved(4);
+                    if ($result == 1) {
+                        $message = 'Section Approved Successfully';
+                        $message_theme = 'success';
+                        $redirect_to = 'training';
+                    }else{
+                        $message = 'All Sections Approved Successfully';
+                        $message_theme = 'success';
+                        $redirect_to = '../chemistverifications/home';
+                    }
+
+            }
+
+            //set varibles to view
+            $this->set('message',$message);
+            $this->set('message_theme',$message_theme);
+            $this->set('redirect_to',$redirect_to);
+
+        }
+
+
+        //Chemist Profile Other Details Method
+        public function otherDetails(){
+
+            $this->validUser();
+            $previous_btn = 'training';
+            $next_btn = null;
+
+            $sectionname = 'other_details';
+
+            $this->set('previous_btn',$previous_btn);
+            $this->set('next_btn',$next_btn);
+            $this->set('sectionname',$sectionname);
+
+            // set variables to show popup messages from view file
+            $message = '';
+            $message_theme = '';
+            $redirect_to = '';
+
+            //Set Layout
+            $this->viewBuilder()->setLayout('chemist_layout');
+
+            $application_dashboard = $this->Session->read('application_dashboard');
+            $atleastOneComment = null;
+            if ($application_dashboard == 'chemist') {
+
+                //read the chemist id from session
+                $chemist_id = $this->Session->read('username');
+
+                //Set Layout
+                $this->viewBuilder()->setLayout('chemist_layout');
+
+                $referredbacksection = $this->DmiChemistComments->find('all',array('conditions'=>array('customer_id IS'=>$chemist_id,'section_id'=>5,'is_latest'=>1)))->first();
+
+                $comment_history = $this->DmiChemistComments->find('all',array('conditions'=>array('customer_id IS'=>$chemist_id,'section_id'=>5)))->toArray();
+
+            } elseif ($application_dashboard == 'ro') {
+
+                //get the chemist id and username from the session
+                $chemist_id = $this->Session->read('customer_id');
+                $username = $this->Session->read('username');
+
+                //Set Layout
+                $this->viewBuilder()->setLayout('chemist_inspection_dashboard');
+
+                $atleastOneComment = $this->DmiChemistComments->find('all',array('conditions'=>array('customer_id IS'=>$chemist_id,'is_latest'=>1,'comment_by'=>$username)))->toArray();
+
+                $comment_history = $this->DmiChemistComments->find('all',array('conditions'=>array('customer_id IS'=>$chemist_id,'section_id'=>5,'comment_by'=>$username)))->toArray();
+            }
+
+            $this->progressbarStatus($chemist_id);
+            $this->finalSubmitStatus($chemist_id);
+            $this->set('atleast_one_comment',$atleastOneComment);
+            $this->set('comment_history',$comment_history);
+
+            $dataArray = $this->DmiChemistOtherDetails->getSectionData($chemist_id);
+            $sectionData = $dataArray[0];
+
+            $final_submit_record = $this->DmiChemistFinalSubmits->find('all',array('conditions'=>array('customer_id IS'=>$chemist_id),'order'=>'id desc'))->first();
+
+            $final_status = '';
+            if (!empty($final_submit_record)) {
+                $final_status = $final_submit_record['status'];
+            }
+            $this->set('finalSubmitStatus',$final_status);
+            $this->set('form_status',$dataArray[0]['status']);
+            $this->set('sectiondata',$sectionData);
+
+
+            $id = $sectionData['id'];
+            $status = 'saved';
+            $created = date('Y-m-d H:i:s');
+
+            if (null !== ($this->request->getData('save'))) {
+
+                $message = 'Other Details Section, Saved successfully';
+                $message_theme = 'success';
+                $redirect_to = 'other_details';
+
+                if (!empty($id)) {
+
+                    $message = 'Other Details, Updated successfully';
+                    $message_theme = 'success';
+                    $redirect_to = 'other_details';
+                    $created = $sectionData['created'];
+                    $status = $sectionData['status'];
+                }
+
+                if ($final_status == 'referred_back') {
+
+                    $message = 'Other Details, Reply saved successfully';
+                    $message_theme = 'success';
+                    $redirect_to = 'other_details';
+
+                    $DmiChemistOtherDetailsEntity = $this->DmiChemistOtherDetails->newEntity(array(
+
+                        'id'=>$id,
+                        'is_latest'=>0
+                    ));
+
+                    if ($this->DmiChemistOtherDetails->save($DmiChemistOtherDetailsEntity));
+
+                        $status = 'replied';
+                        $id	 = '';
+                }
+
+                $social_work = htmlentities($this->request->getData('social_work'), ENT_QUOTES);
+                $prest_instit = htmlentities($this->request->getData('prest_instit'), ENT_QUOTES);
+                $academic_focus = htmlentities($this->request->getData('academic_focus'), ENT_QUOTES);
+                $articles_pub = htmlentities($this->request->getData('articles_pub'), ENT_QUOTES);
+
+                $DmiChemistOtherDetailsEntity = $this->DmiChemistOtherDetails->newEntity(array(
+
+                    'id'=>$id,
+                    'username'=>$chemist_id,
+                    'social_work'=>$social_work,
+                    'prest_instit'=>$prest_instit,
+                    'academic_focus'=>$academic_focus,
+                    'articles_pub'=>$articles_pub,
+                    'status'=>$status,
+                    'created'=>$created,
+                    'modified'=>date('Y-m-d H:i:s'),
+                    'is_latest'=>1
+
+                ));
+
+                if ($this->DmiChemistOtherDetails->save($DmiChemistOtherDetailsEntity)) {
+
+                        if ($final_status == 'referred_back') {
+
+                            $this->replyComment($this->request->getData(),5);
+                        }
+
+                } else {
+
+                    $message = 'Other Details, Not Saved';
+                    $message_theme = 'warning';
+                    $redirect_to = 'other_details';
+                }
+
+            } elseif (null !== ($this->request->getData('final_submit'))){
+
+                if ($final_status == 'referred_back') {
+                    $status = 'replied';
+                } else {
+                    $status = 'pending';
+                }
+
+                $result = $this->finalSubmit($status,$chemist_id);
+
+                if ($result == 1) {
+
+                    $message = 'The application final submited successfully';
+                    $message_theme = 'success';
+                    $redirect_to = 'profile';
+                }
+
+            } elseif (null !== ($this->request->getData('referred_back'))) {
+
+                $result = $this->referredBackComment($this->request->getData(),5);
+
+                if ($result == 1) {
+
+                    $message = 'Referred backed comment saved successfully';
+                    $message_theme = 'success';
+                    $redirect_to = 'other_details';
+                }
+
+            } elseif (null !== ($this->request->getData('final_submit_referred_back'))) {
+
+                $result = $this->finalSubmit('referred_back',$username);
+
+                if ($result == 1) {
+
+                    $message = 'Application send back to chemist successfully with comments';
+                    $message_theme = 'success';
+                    $redirect_to = '../chemistverifications/home';
+                }
+
+            } elseif (null !== ($this->request->getData('approved'))) {
+
+                $result = $this->chemistApproved(5);
+                if ($result == 1) {
+                    $message = 'Section Approved Successfully';
+                    $message_theme = 'success';
+                    $redirect_to = 'other_details';
+                } else {
+                    $message = 'All Sections Approved Successfully';
+                    $message_theme = 'success';
+                    $redirect_to = '../chemistverifications/home';
+                }
+
+            }
+
+            $this->set('message',$message);
+            $this->set('message_theme',$message_theme);
+            $this->set('redirect_to',$redirect_to);
+
+        }
+
+        //Final Submit Method
+        public function finalSubmit($status,$current_level) {
+
+            $application_dashboard = $this->Session->read('application_dashboard');
+
+            if ($application_dashboard == 'chemist') {
+                $chemist_id = $this->Session->read('username');
+            } elseif ($application_dashboard == 'ro') {
+                $chemist_id = $this->Session->read('customer_id');
+            }
+
+            $return  = false;
+
+            $chemist_created_by = $this->DmiChemistRegistrations->find('all',array('fields'=>'created_by','conditions'=>array('chemist_id IS'=>$chemist_id,'delete_status IS NULL')))->first();
+
+            $chemist_created_id =  $chemist_created_by['created_by'];
+
+            //Create the Data Entity for Saving for final submit
+            $DmiChemistFinalSubmitsEntity = $this->DmiChemistFinalSubmits->newEntity(array(
+
+                'customer_id'=>$chemist_id,
+                'status'=>$status,
+                'created'=>date('Y-m-d H:i:s'),
+                'modified'=>date('Y-m-d H:i:s'),
+                'current_level'=>$current_level
+
+            ));
+
+            //Save the data entity
+            if ($this->DmiChemistFinalSubmits->save($DmiChemistFinalSubmitsEntity)) {
+
+                $allocated = $this->DmiChemistAllocations->find('all',array('conditions'=>array('customer_id IS'=>$chemist_id)))->first();
+                if (empty($allocated)) {
+
+                    $split_customer_id = explode('/',$chemist_created_id);
+                    $district_ro_code = $split_customer_id[2];
+                    $find_ro_email_id = $this->DmiRoOffices->find('all',array('fields'=>'ro_email_id','conditions'=>array('short_code IS'=>$district_ro_code, 'OR'=>array('delete_status IS null','delete_status ='=>'no'))))->first();
+                    $ro_email_id = $find_ro_email_id['ro_email_id'];
+
+                    //Create the data entity for the DmiChemistAllocations to save the data
+                    $DmiChemistAllocationsEntity = $this->DmiChemistAllocations->newEntity(array(
+
+                        'customer_id'=>$chemist_id,
+                        'level_1'=>$ro_email_id,
+                        'current_level'=>$ro_email_id,
+                        'created'=>date('Y-m-d H:i:s'),
+                        'modified'=>date('Y-m-d H:i:s')
+
+                    ));
+
+                    //Save the data entity
+                    if ($this->DmiChemistAllocations->save($DmiChemistAllocationsEntity)) {
+
+                        $return  = true;
+                    }
+
+                } else {
+                    $return  = true;
+                }
+
+                if ($status == 'replied') {
+                    $this->replyFinalSubmit();
+                }
+
+                if ($status == 'pending') {
+
+                    //send SMS/EMAIL to [CHEMIST] when application final submitted by chemist
+                    $this->DmiSmsEmailTemplates->sendMessage(115,$chemist_id);
+
+                    //send SMS/EMAIL to [RO/SO] when application final submitted by chemist
+                    $this->DmiSmsEmailTemplates->sendMessage(116,$chemist_id);
+
+                } elseif ($status == 'replied') {
+
+                    //send SMS/EMAIL to [RO/SO] when chemist replied to referred back
+                    $this->DmiSmsEmailTemplates->sendMessage(118,$chemist_id);
+
+                } elseif ($status == 'referred_back') {
+
+                    //send SMS/EMAIL to [CHEMIST] when RO/SO has referred back the application
+                    $this->DmiSmsEmailTemplates->sendMessage(117,$chemist_id);
+
+                }
+
+
+            }
+
+            return $return;
+
+        }
+
+
+        //Chemist Approved Method
+        public function chemistApproved($section_id) {
+
+            $chemist_id = $this->Session->read('customer_id');
+            $username = $this->Session->read('username');
+
+            $tableArray = array('1'=>'DmiChemistProfileDetails','2'=>'DmiChemistEducationDetails','3'=>'DmiChemistExperienceDetails','4'=>'DmiChemistTrainingDetails','5'=>'DmiChemistOtherDetails');
+
+            $formtable = $tableArray[$section_id];
+
+            $this->$formtable->updateAll(
+                array('status' => "'approved'"),
+                array('username'=>$chemist_id,'is_latest'=>'1')
+            );
+
+            foreach ($tableArray as $table) {
+
+                $result = $this->$table->find('all',array('fields'=>'status','conditions'=>array('username IS'=>$chemist_id,'is_latest'=>1)))->first();
+
+                if ($result[$table]['status'] == 'approved') {
+                    $approved = 'yes';
+                } else {
+                    $approved = 'no';
+                    break;
+                }
+            }
+
+
+            if ($approved == 'yes') {
+
+                //Create the entity for saving the data DmiChemistFinalSubmits for save the data
+                $DmiChemistFinalSubmitsEntity = $this->DmiChemistFinalSubmits->newEntity(array(
+
+                    'customer_id'=>$chemist_id,
+                    'status'=>'approved',
+                    'created'=>date('Y-m-d H:i:s'),
+                    'modified'=>date('Y-m-d H:i:s'),
+                    'current_level'=>$username
+
+                ));
+
+                //Save the entity
+                if ($this->DmiChemistFinalSubmits->save($DmiChemistFinalSubmitsEntity)) {
+
+                    $chemist_created_by = $this->DmiChemistRegistrations->find('all',array('fields'=>'created_by','conditions'=>array('chemist_id IS'=>$chemist_id,'delete_status IS NULL')))->first();
+
+                    $chemist_created_id =  $chemist_created_by['created_by'];
+
+                    //send to [CHEMIST] when chemist is approved.
+                    $this->DmiSmsEmailTemplates->sendMessage(119,$chemist_id);
+
+                    //send to respective [PACKER] when chemist is approved.
+                    $this->DmiSmsEmailTemplates->sendMessage(120,$chemist_id);
+
+                    $return = 2;
+                }
+
+            } else {
+
+                $return = 1;
+            }
+
+            return $return;
+        }
+
+
+        //Reply Final Submit For Chemist
+        public function replyFinalSubmit() {
+
+            $tables = array(1,2,3,4,5);
+            $username = $this->Session->read('username');
+
+            foreach ($tables as $each) {
+
+                $currCommentRecord =  $this->DmiChemistComments->find('all',array('conditions'=>array('customer_id IS'=>$username,'section_id'=>$each,'is_latest'=>'1')))->first();
+                if (!empty($currCommentRecord)) {
+                    $commentid = $currCommentRecord['id'];
+
+                    //Create the data entity for saving the data in 'DmiChemistComments'
+                    $DmiChemistCommentsEntity = $this->DmiChemistComments->newEntity(array(
+                        'id'=>$commentid,
+                        'is_latest'=>0
+                    ));
+                    //Save the entity
+                    $this->DmiChemistComments->save($DmiChemistCommentsEntity);
+                }
+            }
+
+        }
+
+
+        //Reply Comment Method
+        public function replyComment($data,$section_id) {
+
+            $username = $this->Session->read('username');
+
+            $currCommentRecord =  $this->DmiChemistComments->find('all',array('conditions'=>array('customer_id IS'=>$username,'section_id IS'=>$section_id,'is_latest'=>'1')))->first();
+
+            $commentid = $currCommentRecord['id'];
+            $reply_to = $currCommentRecord['comment_by'];
+
+            $comment = htmlentities($data['reffered_back_comment'], ENT_QUOTES);
+
+            //Create the data entity to save the data in 'DmiChemistComments'
+            $DmiChemistCommentsEntity = $this->DmiChemistComments->newEntity(array(
+
+                'id'=>$commentid,
+                'reply_by'=>$username,
+                'reply_to'=>$reply_to,
+                'replyComment'=>$comment,
+                'reply_dt'=>date('Y-m-d H:i:s')
+
+            ));
+
+            //Save the entity
+            if($this->DmiChemistComments->save($DmiChemistCommentsEntity)){
+
+                return 1;
+            }
+
+        }
+
+
+        //Referred Back Comment
+        public function referredBackComment($data,$section_id) {
+
+            $comment_to = $this->Session->read('customer_id');
+            $comment_by = $this->Session->read('username');
+            $commentid= null;
+
+            $commentDetails = $this->DmiChemistComments->find('all',array('conditions'=>array('customer_id IS' => $comment_to,'comment_by'=>$comment_by,'section_id'=>"$section_id",'is_latest'=>'1')))->first();
+
+            if (!empty($commentDetails)) {
+                $prevComments = $commentDetails;
+                $commentid = $prevComments['id'];
+
+                if ($data['reffered_back_id'] == '') {
+                    $comment = $prevComments['comments'].' '.htmlentities($data['reffered_back_comment'], ENT_QUOTES);
+                } else {
+                    $comment = htmlentities($data['reffered_back_comment'], ENT_QUOTES);
+                }
+
+
+                if (!empty($prevComments['replyComment'])&& !empty($prevComments['reply_dt'])) {
+                    $commentid= null;
+                    $this->DmiChemistComments->updateAll(
+                        array('is_latest' => 0),
+                        array('customer_id' => $comment_to,'comment_by'=>$comment_by,'section_id'=>"$section_id",'is_latest'=>'1')
+                    );
+                    $comment = htmlentities($data['reffered_back_comment'], ENT_QUOTES);
+                }
+
+            } else {
+                $comment = htmlentities($data['reffered_back_comment'], ENT_QUOTES);
+            }
+
+            $tableArray = array('1'=>'DmiChemistProfileDetails','2'=>'DmiChemistEducationDetails','3'=>'DmiChemistExperienceDetails','4'=>'DmiChemistTrainingDetails','5'=>'DmiChemistOtherDetails');
+
+            //Create the data entity to save the data in table 'DmiChemistComments'
+            $DmiChemistCommentsEntity = $this->DmiChemistComments->newEntity(array(
+
+                'id'=>$commentid,
+                'customer_id'=>$comment_to,
+                'comment_by'=>$comment_by,
+                'comment_to'=>$comment_to,
+                'comments'=>$comment,
+                'comment_dt'=>date('Y-m-d H:i:s'),
+                'section_id'=>$section_id,
+                'is_latest'=>1
+
+            ));
+
+            //Save the Entity
+            if ($this->DmiChemistComments->save($DmiChemistCommentsEntity)) {
+
+                $formtable = $tableArray[$section_id];
+
+                $this->$formtable->updateAll(
+                    array('status' => "'referred_back'"),
+                    array('username'=>$comment_to,'is_latest'=>'1')
+                );
+
+                return 1;
+            }
+
+        }
+
+
+		//Chemist Delete Referred Back Method
+		public function chemistDeleteReferredBack($id,$section) {
+
+			$this->autoRender = false;
+			$username = $this->Session->read('username');
+
+			$tableArray = array('profile'=>'DmiChemistProfileDetails','education'=>'DmiChemistEducationDetails','experience'=>'DmiChemistExperienceDetails','training'=>'DmiChemistTrainingDetails','other_details'=>'DmiChemistOtherDetails');
+
+			if ($this->Session->read('application_dashboard')=='ro') {
+
+				$this->DmiChemistComments->id = $id;
+				$this->DmiChemistComments->delete();
+
+			} elseif ($this->Session->read('application_dashboard')=='chemist') {
+
+				$DmiChemistCommentsEntity = $this->DmiChemistComments->newEntity(array(
+					'id'=>$id,
+					'reply_by'=>'',
+					'reply_to'=>'',
+					'replyComment'=>'',
+					'reply_dt'=>''
+				));
+
+				$this->DmiChemistComments->save($DmiChemistCommentsEntity);
+
+				$formtable = $tableArray[$section];
+
+				$this->$formtable->updateAll(
+					array('status' => "'referred_back'"),
+					array('username'=>$username,'is_latest'=>'1')
+				);
+
+			}
+
+			$this->redirect($section);
+
+		}
+
+
+	//FOR LISTING OF CHEMIST REGISTERED
+	public function replicaAllotedList() {
+
+		$this->viewBuilder()->setLayout('chemist_home_layout');
+		$this->Customfunctions->replicaAllotedListCall();
+	}
+
+
+
+	//Chemist Logout
+	public function logout() {
+		//LOAD MODEL
+		$this->loadModel('DmiChemistLogs');
+		$list_id = $this->DmiChemistLogs->find('list', array('valueField' => 'id', 'conditions' => array('customer_id IS' => $this->Session->read('username'))))->toArray();
+
+		if (!empty($list_id)) {
+
+			$fetch_last_id_query = $this->DmiChemistLogs->find('all', array('fields' => 'id', 'conditions' => array('id' => max($list_id), 'remark' => 'Success')))->first();
+			$fetch_last_id = $fetch_last_id_query['id'];
+			$DmiChemistLogsEntity = $this->DmiChemistLogs->newEntity(array('id' => $fetch_last_id,'time_out' => date('H:i:s')));
+			$this->DmiChemistLogs->save($DmiChemistLogsEntity);
+
+			// Update status of browser login history, Done By Pravin Bhakare 12-11-2020 & Added on 28-04-2021 by Akash
+			// $this->Authentication->browserLoginStatus($this->Session->read('username'),null);
+			$this->Session->destroy();
+			$this->redirect('/');
+		} else {
+
+			echo "Sorry You are not authorized to view this page..'<a href='../'>'Please login'</a>'";
+			exit();
+		}
+
+	}
+
+
+
+
+
+}
+
+?>

@@ -1,0 +1,12 @@
+.glyphicon{margin-right:2px;}
+.allocate{color:green;cursor:pointer;}
+.allocate:hover{color:green;cursor:pointer;}
+.reallocate{color:orange;cursor:pointer;}
+.reallocate:hover{color:orange;cursor:pointer;}
+#common_app_list_div input[type="text"]{max-width:126px;border:none;background:#f9f9f9;}
+
+.reject{color:red;cursor:pointer;}
+.reject:hover{color:red;cursor:pointer;}
+.change_date{padding:0 5px; margin-top:5px; float:right;}
+#common_app_list_table{width:100%}
+.io_scheduled_date{float:left; width:80%;}

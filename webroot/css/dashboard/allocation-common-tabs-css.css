@@ -1,0 +1,18 @@
+ #ro_tabs_div ul li a{background:#fff; color:#0068b7; font-weight:bold; padding:5px 10px;}
+ #ro_tabs_div ul .active a{background:#0068b7; color:#fff; border:none;}
+ .nav-tabs{cursor:pointer;}
+
+ .modal-content{background:linear-gradient(#343a40,#17a2b8,#343a40); border:2px solid #fff;}
+ .modal-content h4{color:#fff;}
+ 
+ #allocation_popup_box input[type="text"]{max-width:130px;border:none;background:#f9f9f9;font-size:14px;}
+#allocation_popup_box select{max-width:150px;}
+
+.allocate_btn{padding:7px 10px; background:#30a5ff; color:#fff; font-weight:bold;}
+.allocate_btn:hover{color:#fff;}
+
+#scrutiny_alloction_Modal{background-color: rgba(0,0,0,0.7);}
+#inspection_alloction_Modal{background-color: rgba(0,0,0,0.7);}
+.modal-dialog{min-width:60% !important;}
+.close{color:#fff;}
+#tab-content-bg{background:#d0eaff;}
