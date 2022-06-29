@@ -400,6 +400,13 @@
 								<p class="nav-icon-p badge">Advance Payment Verification</p>
 							</a>
 						</li>
+						
+						<li class="nav-item">
+							<a href="<?php echo $this->request->getAttribute('webroot');?>commercial/commercial_verfication" class="nav-link">
+								<i class="fas fa-money-check-alt nav-icon"></i>
+								<p class="nav-icon-p badge">LIMS Payment Verification</p>
+							</a>
+						</li>
 
 					<?php }?>
 					
