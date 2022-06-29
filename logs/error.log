@@ -8845,3 +8845,37 @@ Cake\Http\Runner::run() - CORE/src/Http/Runner.php, line 58
 Cake\Http\Server::run() - CORE/src/Http/Server.php, line 90
 [main] - ROOT/webroot/index.php, line 40
 
+2022-06-29 19:20:26 Error: [Cake\ORM\Exception\MissingTableClassException] Table class for alias `LimsSamplePaymentDetails` could not be found. in C:\xampp\htdocs\DMI-phase2\vendor\cakephp\cakephp\src\ORM\Locator\TableLocator.php on line 245
+Exception Attributes: array (
+  0 => 'for alias `LimsSamplePaymentDetails`',
+)
+Stack Trace:
+- C:\xampp\htdocs\DMI-phase2\vendor\cakephp\cakephp\src\Datasource\Locator\AbstractLocator.php:62
+- C:\xampp\htdocs\DMI-phase2\vendor\cakephp\cakephp\src\ORM\Locator\TableLocator.php:205
+- C:\xampp\htdocs\DMI-phase2\vendor\cakephp\cakephp\src\Datasource\ModelAwareTrait.php:124
+- C:\xampp\htdocs\DMI-phase2\src\Controller\CommercialController.php:69
+- C:\xampp\htdocs\DMI-phase2\vendor\cakephp\cakephp\src\Controller\Controller.php:531
+- C:\xampp\htdocs\DMI-phase2\vendor\cakephp\cakephp\src\Controller\ControllerFactory.php:146
+- C:\xampp\htdocs\DMI-phase2\vendor\cakephp\cakephp\src\Http\BaseApplication.php:313
+- C:\xampp\htdocs\DMI-phase2\vendor\cakephp\cakephp\src\Http\Runner.php:77
+- C:\xampp\htdocs\DMI-phase2\vendor\cakephp\cakephp\src\Http\Middleware\CsrfProtectionMiddleware.php:185
+- C:\xampp\htdocs\DMI-phase2\vendor\cakephp\cakephp\src\Http\Runner.php:73
+- C:\xampp\htdocs\DMI-phase2\vendor\cakephp\cakephp\src\Http\Middleware\BodyParserMiddleware.php:159
+- C:\xampp\htdocs\DMI-phase2\vendor\cakephp\cakephp\src\Http\Runner.php:73
+- C:\xampp\htdocs\DMI-phase2\vendor\cakephp\cakephp\src\Routing\Middleware\RoutingMiddleware.php:161
+- C:\xampp\htdocs\DMI-phase2\vendor\cakephp\cakephp\src\Http\Runner.php:73
+- C:\xampp\htdocs\DMI-phase2\vendor\cakephp\cakephp\src\Routing\Middleware\AssetMiddleware.php:68
+- C:\xampp\htdocs\DMI-phase2\vendor\cakephp\cakephp\src\Http\Runner.php:73
+- C:\xampp\htdocs\DMI-phase2\vendor\cakephp\cakephp\src\Error\Middleware\ErrorHandlerMiddleware.php:121
+- C:\xampp\htdocs\DMI-phase2\vendor\cakephp\cakephp\src\Http\Runner.php:73
+- C:\xampp\htdocs\DMI-phase2\vendor\cakephp\debug_kit\src\Middleware\DebugKitMiddleware.php:60
+- C:\xampp\htdocs\DMI-phase2\vendor\cakephp\cakephp\src\Http\Runner.php:73
+- C:\xampp\htdocs\DMI-phase2\vendor\cakephp\cakephp\src\Http\Runner.php:58
+- C:\xampp\htdocs\DMI-phase2\vendor\cakephp\cakephp\src\Http\Server.php:90
+- C:\xampp\htdocs\DMI-phase2\webroot\index.php:40
+
+Request URL: /commercial/commercial_verfication
+Referer URL: http://localhost/DMI-phase2/dashboard/home
+Client IP: 127.0.0.1
+
+
