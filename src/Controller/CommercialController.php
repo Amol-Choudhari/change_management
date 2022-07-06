@@ -70,15 +70,15 @@
       		$this->loadModel('LimsSamplePaymentDetails');
 
 			$plist = $this->LimsSamplePaymentDetails->find('list',array('keyField'=>'id','valueField'=>array('sample_code'),'conditions'=>array('pao_id IS'=> $paoid['id'])))->toArray();
-		
+
 			$pendinglist = array_unique($plist);
-		
+
 			foreach ($pendinglist as $key => $sample_code) {
-				
+
 				if ($sample_code != null ) {
 
 					$payStatus =  $this->LimsSamplePaymentDetails->find('all',array('conditions'=>array('sample_code IS'=> $sample_code),'order'=>'id desc'))->first();
-					
+
 					if ($payStatus['payment_confirmation'] == 'pending') {
 
 						$paymentPendingList[] = $payStatus;
@@ -100,7 +100,7 @@
 					}
 				}
 			}
-			
+
 
 			//pr($paymemtReplied); exit;
 			$this->set('payment_pendingList',$paymentPendingList);
@@ -133,13 +133,13 @@
 
 			if (!empty($sample_code)) {
 
-				
+
 				$office_table = 'DmiRoOffices';
 				$field_name = 'ro_email_id';
-			
-		
+
+
 				$this->loadModel($office_table);
-			
+
 				$this->loadModel('SampleInward');
 				$this->loadModel('MCommodityCategory');
 				$this->loadModel('MCommodity');
@@ -205,13 +205,11 @@
 				$pao_user_id = $this->DmiPaoDetails->find('all',array('fields'=>'pao_user_id', 'conditions'=>array('id IS'=>$pao_id['pao_id'])))->first();
 				$pao_user_email_id = $this->DmiUsers->find('all',array('fields'=>'email', 'conditions'=>array('id IS'=>$pao_user_id['pao_user_id'])))->first();
 
+				//Get User details
+				$workflowQuery =	$this->Workflow->find('all')->where(['org_sample_code IS'=>$sample_code,'stage_smpl_flag'=>'SI'])->first();
 
-				// Workflow Entities Variables
-				$workflowQuery = $this->Workflow->find('all')->where(['org_sample_code IS' => $sample_code])->order('id desc')->first();
-				
-				// For workflow enitity swap the loc user code and destination code for saving
-				$src_loc_id = $workflowQuery['dst_loc_id'];
-				$src_usr_cd = $workflowQuery['dst_usr_cd'];
+				$src_loc_id = $this->DmiUsers->getPostedOffId($_SESSION['username']);
+				$src_usr_cd = $this->DmiUsers->getUserTableId($_SESSION['username']);
 				$dst_loc_id = $workflowQuery['src_loc_id'];
 				$dst_usr_cd = $workflowQuery['src_usr_cd'];
 
@@ -228,7 +226,7 @@
 					if ($payment_verification_action == 1) {
 
 						$paymentEntity = $this->LimsSamplePaymentDetails->newEntity(array(
-							
+
 							'sample_code'=>$payment_confirmation_query['sample_code'],
 							'sample_type'=>$payment_confirmation_query['sample_type'],
 							'amount_paid'=>$payment_confirmation_query['amount_paid'],
@@ -247,24 +245,28 @@
 
 						if ($this->LimsSamplePaymentDetails->save($paymentEntity)) {
 
+
+
 							//Save the Workflow entry
 							$workflow_data = array(
 
-								'org_sample_code'	=>	$sample_code,
-								'src_loc_id'		=>	$src_loc_id,
-								'src_usr_cd'		=>	$src_usr_cd,
-								'dst_loc_id'		=>	$dst_loc_id,
-								'dst_usr_cd'		=>	$dst_usr_cd,
-								'user_code'			=>	$src_usr_cd,
-								'stage_smpl_cd'		=>	$sample_code,
-								'tran_date'			=>	date('Y-m-d'),
-								'stage'				=>	'3',
-								'stage_smpl_flag'	=>	'PR' // Added this flag for "Payment Referred"
+								'org_sample_code'=>$sample_code,
+								'src_loc_id'=>$src_loc_id,
+								'src_usr_cd'=>$src_usr_cd,
+								'dst_loc_id'=>$dst_loc_id,
+								'dst_usr_cd'=>$dst_usr_cd,
+								'user_code'=>	$src_usr_cd,
+								'stage_smpl_cd'=>	$sample_code,
+								'tran_date'=>	date('Y-m-d'),
+								'stage'=>	'3',
+								'stage_smpl_flag'=>'PR' // Added this flag for "Payment Referred"
 							);
 
-								$workflowEntity = $this->Workflow->newEntity($workflow_data);
+							if ($this->Workflow->save($workflow_data)) {
 
-							if ($this->Workflow->save($workflowEntity)) {
+								//added the "acc_rej_flg" => {PR} flag to show in the confirmed sample list on 05-07-2022
+								$this->SampleInward->updateAll(array('status_flag'=>'S','acc_rej_flg'=>'PR'),array('org_sample_code'=>$sample_code));
+
 								//Entry in all applications current position table
 								$user_email_id = $pao_user_email_id['email'];
 								$this->loadModel('DmiSmsEmailTemplates');
@@ -274,7 +276,7 @@
 								$message_theme = 'success';
 								$redirect_to = '../commercial_verfication';
 							}
-						
+
 						}
 
 					} elseif ($payment_verification_action == 0) {
