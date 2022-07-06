@@ -237,13 +237,14 @@ class AuthenticationComponent extends Component {
 
 			$url = 'home.?'.'$key='.$key_id.'&'.'$id='.$encrypted_user_id;
 			$host_path = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
-			$sendlink = "<html><body><a href='$host_path/DMI_test/$controller/reset_password/$url'>Please click here to set Password</a></body></html>";
+			$sendlink = "<html><body><a href='$host_path/DMI/$controller/reset_password/$url'>Please click here to set Password</a></body></html>";
 			$to = base64_encode($emailforrecovery);//for email encoding
 			$subject = 'DMI AGMARK Set Password Link';
 			//updated on 18-03-2019, email pattern changed
 			$txt = 	'Hello' .
 					"<html><body><br></body></html>".'Click the below link OR copy it to browser address bar:' .
-					"<html><body><br></body></html>" .$host_path.'/DMI_test/'.$controller.'/reset_password/'.$url.
+					"<html><body><br></body></html>" .$host_path.'/DMI/'.$controller.'/reset_password/'.$url.
+					"<html><body><br></body></html>" .$host_path.'/DMI/'.$controller.'/reset_password/'.$url.
 					"<html><body><br></body></html>".'Above link will be active only for 24 hours. If expired, then try to set your password from forgot Password option on DMI portal'.
 					"<html><body><br></body></html>".'Thanks & Regards,' .
 					"<html><body><br></body></html>" .'Directorate of Marketing & Inspection,' .

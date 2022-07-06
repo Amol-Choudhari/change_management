@@ -192,7 +192,7 @@ class NswsController extends AppController {
 		$departmentId = "D001";
 		$licenseId = "M001_D001_A016";
 		$ministryId = "M001";
-		$redirectionUrl = "https://10.153.72.52/DMI_test/Nsws/invstrDashRedirect";
+		$redirectionUrl = "https://10.153.72.52/DMI/Nsws/invstrDashRedirect";
 	
 		$URL="https://uat-nsws.investindia.gov.in/gateway/form-builder/caf/redirection";
 		// Create and initialize a new cURL resource

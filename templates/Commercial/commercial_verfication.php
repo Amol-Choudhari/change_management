@@ -3,7 +3,7 @@
 	<div class="content-header">
 		<div class="container-fluid">
 			<div class="row mb-2">
-				<div class="col-sm-6"><label class="badge badge-info">Commercal Sample Payment</label></div>
+				<div class="col-sm-6"><label class="badge badge-info">Sample Payment Verification</label></div>
 				<div class="col-sm-6">
 					<ol class="breadcrumb float-sm-right">
 						<li class="breadcrumb-item"><?php echo $this->Html->link('Dashboard', array('controller' => 'dashboard', 'action'=>'home'));?></a></li>
@@ -18,7 +18,7 @@
 			<div class="row">
 				<div class="col-md-12">
           <div class="card card-success">
-            <div class="card-header bg-success"><h3 class="card-title-new">Status of LIMS Payments</h3></div>
+            <div class="card-header bg-success"><h3 class="card-title-new">Status of Sample Payments</h3></div>
             <div class="form-horizontal">
             	<div class="card-body">
                 <div class="row">
@@ -35,7 +35,7 @@
 
                       <!-- Pending List -->
                       <div class="col-sm-12 m_minus_one" id="pending_list_table">
-                          <div class="card-header"><h3 class="card-title-new">List of LIMS Advance Payments</h3></div>
+                          <div class="card-header"><h3 class="card-title-new">List of Pending Payments</h3></div>
                               <div class="form-horizontal">
                                   <table id="pending_list_table_data" class="table m-0 table-bordered table-striped table-hover">
                                       <thead class="tablehead">
@@ -71,7 +71,7 @@
 
                           <!-- Not Confirmed -->
                           <div class="col-sm-12 m_minus_one" id="notconfirm_list_table">
-                              <div class="card-header"><h3 class="card-title-new">List of Not Confirmed LIMS Payments</h3></div>
+                              <div class="card-header"><h3 class="card-title-new">List of Not Confirmed Payments</h3></div>
                                   <div class="form-horizontal">
                                       <table id="notconfirm_list_table_data" class="table m-0 table-bordered table-striped table-hover">
                                           <thead class="tablehead">
@@ -91,6 +91,7 @@
                                                     foreach ($payment_notconfirmed as $key => $value) { ?>
 
                                                   <tr>
+                                                      <td><?php echo $sr_no; ?></td>
                                                       <td><?php echo $value['sample_code']; ?></td>
                                                       <td><?php echo chop($value['transaction_date'],"00:00:00"); ?></td>
                                                       <td><?php echo $value['amount_paid']; ?></td>
@@ -106,7 +107,7 @@
 
                               <!-- Replied -->
                               <div class="col-sm-12 m_minus_one" id="replied_list_table">
-                                  <div class="card-header"><h3 class="card-title-new">List of Replied Payments Application</h3></div>
+                                  <div class="card-header"><h3 class="card-title-new">List of Replied Payments</h3></div>
                                       <div class="form-horizontal">
                                           <table id="replied_list_table_data" class="table m-0 table-bordered table-striped table-hover">
                                               <thead class="tablehead">
@@ -125,6 +126,7 @@
                                                     
                                                     foreach ($paymemt_replied as $key => $value) { ?>
                                                         <tr>
+                                                            <td><?php echo $sr_no; ?></td>
                                                             <td><?php echo $value['sample_code']; ?></td>
                                                             <td><?php echo chop($value['transaction_date'],"00:00:00"); ?></td>
                                                             <td><?php echo $value['amount_paid']; ?></td>
@@ -140,7 +142,7 @@
 
 	                            <!-- Confirm -->
 	                            <div class="col-sm-12 m_minus_one" id="confirm_list_table">
-                                <div class="card-header"><h3 class="card-title-new">List of Confirmed LIMS Payments</h3></div>
+                                <div class="card-header"><h3 class="card-title-new">List of Confirmed Payments</h3></div>
                                     <div class="form-horizontal">
                                         <table id="confirm_list_table_data" class="table m-0 table-bordered table-striped table-hover">
                                             <thead class="tablehead">
@@ -160,6 +162,7 @@
                                                         foreach ($payment_confirmed as $key => $value) { ?>
 
                                                             <tr>
+                                                                <td><?php echo $sr_no; ?></td>
                                                                 <td><?php echo $value['sample_code']; ?></td>
                                                                 <td><?php echo chop($value['transaction_date'],"00:00:00"); ?></td>
                                                                 <td><?php echo $value['amount_paid']; ?></td>

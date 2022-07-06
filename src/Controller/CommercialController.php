@@ -23,13 +23,15 @@
 			$this->viewBuilder()->setHelpers(['Form','Html','Time']);
 			$this->viewBuilder()->setLayout('admin_dashboard');
 
+			$this->loadModel('SampleInward');
+
 		}
 
   		//Before Filter Method
   	  public function beforeFilter($event) {
   		parent::beforeFilter($event);
 
-      $this->loadModel('DmiUserRoles');
+     		$this->loadModel('DmiUserRoles');
 			$paouser =  $this->DmiUserRoles->find('all',array('conditions'=>array('pao'=>'yes','user_email_id IS'=>$this->Session->read('username'))))->first();
 
 			if (empty($paouser)) {
@@ -37,7 +39,6 @@
 				echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot');?>">Please Login</a><?php
 				exit();
 			}
-
 		}
 
 
@@ -100,6 +101,8 @@
 				}
 			}
 			
+
+			//pr($paymemtReplied); exit;
 			$this->set('payment_pendingList',$paymentPendingList);
 			$this->set('payment_notconfirmed',$paymentNotconfirmed);
 			$this->set('paymemt_replied',$paymemtReplied);
@@ -116,6 +119,7 @@
 			$message = '';
 			$message_theme = '';
 			$redirect_to = '';
+
 
 			$this->loadModel('LimsSamplePaymentDetails');
 			$sample_id_result = $this->LimsSamplePaymentDetails->find('all',array('fields'=>'sample_code', 'conditions'=>array('id IS'=>$id)))->first();
@@ -139,6 +143,7 @@
 				$this->loadModel('SampleInward');
 				$this->loadModel('MCommodityCategory');
 				$this->loadModel('MCommodity');
+				$this->loadmodel('Workflow');
 
 				$sample_information = $this->SampleInward->find('all', array('conditions' => array('org_sample_code IS'=>$sample_code)))->first();
 				$this->set('sample_information',$sample_information);
@@ -182,7 +187,9 @@
 
 				$this->loadModel('DmiPaoDetails');
 				$this->loadModel('DmiUsers');
+
 				$selected_pao_alias_name = $this->DmiPaoDetails->find('all',array('fields'=>'pao_alias_name','conditions'=>array('id IS'=>$payment_confirmation_query['pao_id'])))->first();
+
 				$this->set('selected_pao_alias_name',$selected_pao_alias_name);
 				$this->set('payment_confirmation_query',$payment_confirmation_query);
 				$this->set('action_value',$action_value);
@@ -191,7 +198,6 @@
 				// Fetch all referred back commment data
 				$fetch_pao_referred_back = array();
 				$fetch_pao_referred_back = $this->LimsSamplePaymentDetails->find('all', array('conditions'=>array('sample_code IS'=>$sample_code,'payment_confirmation'=>'not_confirmed')))->toArray();
-
 				$this->set('fetch_pao_referred_back',$fetch_pao_referred_back);
 
 				//find PAO email id
@@ -200,7 +206,16 @@
 				$pao_user_email_id = $this->DmiUsers->find('all',array('fields'=>'email', 'conditions'=>array('id IS'=>$pao_user_id['pao_user_id'])))->first();
 
 
-					// Save payment details by applicant
+				// Workflow Entities Variables
+				$workflowQuery = $this->Workflow->find('all')->where(['org_sample_code IS' => $sample_code])->order('id desc')->first();
+				
+				// For workflow enitity swap the loc user code and destination code for saving
+				$src_loc_id = $workflowQuery['dst_loc_id'];
+				$src_usr_cd = $workflowQuery['dst_usr_cd'];
+				$dst_loc_id = $workflowQuery['src_loc_id'];
+				$dst_usr_cd = $workflowQuery['src_usr_cd'];
+
+				// Save payment details by applicant
 				if (null!==($this->request->getData('payment_verificatin_action'))) {
 
 					$payment_verification_action = $this->request->getData('action');
@@ -209,9 +224,11 @@
 					$transaction_date = $this->Customfunctions->dateFormatCheck($payment_confirmation_query['transaction_date']);
 					$created = $this->Customfunctions->dateFormatCheck($payment_confirmation_query['created']);
 
+
 					if ($payment_verification_action == 1) {
 
 						$paymentEntity = $this->LimsSamplePaymentDetails->newEntity(array(
+							
 							'sample_code'=>$payment_confirmation_query['sample_code'],
 							'sample_type'=>$payment_confirmation_query['sample_type'],
 							'amount_paid'=>$payment_confirmation_query['amount_paid'],
@@ -220,7 +237,7 @@
 							'payment_receipt_docs'=>$payment_confirmation_query['payment_receipt_docs'],
 							'payment_confirmation'=>'not_confirmed',
 							'pao_id'=>$payment_confirmation_query['pao_id'],
-							'district_id'=>$payment_confirmation_query['district_id'],
+							'district_id'=>$payment_confirmation_query['district_id'],  // Save District id to find list District wise
 							'bharatkosh_payment_done'=>$payment_confirmation_query['bharatkosh_payment_done'],
 							'reason_option_comment'=>$reason_option_comment,
 							'reason_comment'=>$reasone_comment,
@@ -230,14 +247,34 @@
 
 						if ($this->LimsSamplePaymentDetails->save($paymentEntity)) {
 
-							//Entry in all applications current position table
-							$user_email_id = $pao_user_email_id['email'];
-							$this->loadModel('DmiSmsEmailTemplates');
-							//$this->DmiSmsEmailTemplates->sendMessage(49,$customer_id);
+							//Save the Workflow entry
+							$workflow_data = array(
 
-							$message = 'Payment not confirmed and Referred Back to Applicant';
-							$message_theme = 'success';
-							$redirect_to = $redirect_url;
+								'org_sample_code'	=>	$sample_code,
+								'src_loc_id'		=>	$src_loc_id,
+								'src_usr_cd'		=>	$src_usr_cd,
+								'dst_loc_id'		=>	$dst_loc_id,
+								'dst_usr_cd'		=>	$dst_usr_cd,
+								'user_code'			=>	$src_usr_cd,
+								'stage_smpl_cd'		=>	$sample_code,
+								'tran_date'			=>	date('Y-m-d'),
+								'stage'				=>	'3',
+								'stage_smpl_flag'	=>	'PR' // Added this flag for "Payment Referred"
+							);
+
+								$workflowEntity = $this->Workflow->newEntity($workflow_data);
+
+							if ($this->Workflow->save($workflowEntity)) {
+								//Entry in all applications current position table
+								$user_email_id = $pao_user_email_id['email'];
+								$this->loadModel('DmiSmsEmailTemplates');
+								//$this->DmiSmsEmailTemplates->sendMessage(49,$customer_id);
+
+								$message = 'Payment not confirmed and Referred Back to Applicant';
+								$message_theme = 'success';
+								$redirect_to = '../commercial_verfication';
+							}
+						
 						}
 
 					} elseif ($payment_verification_action == 0) {
@@ -261,15 +298,41 @@
 						));
 
 
+						//added the "acc_rej_flg" => A flag to show in the confirmed sample list on 05-07-2022
+						$this->SampleInward->updateAll(array('status_flag'=>'S','acc_rej_flg'=>'A'),array('org_sample_code'=>$sample_code));
+
+
+
 						if ($this->LimsSamplePaymentDetails->save($paymentEntity)) {
 
-							$this->loadModel('DmiSmsEmailTemplates');
-							//$this->DmiSmsEmailTemplates->sendMessage(51,$customer_id);
-							//$this->DmiSmsEmailTemplates->sendMessage(52,$customer_id);
+
+							//Save the Workflow entry
+							$workflow_data = array(
+
+								'org_sample_code'	=>	$sample_code,
+								'src_loc_id'		=>	$src_loc_id,
+								'src_usr_cd'		=>	$src_usr_cd,
+								'dst_loc_id'		=>	$dst_loc_id,
+								'dst_usr_cd'		=>	$dst_usr_cd,
+								'user_code'			=>	$src_usr_cd,
+								'stage_smpl_cd'		=>	$sample_code,
+								'tran_date'			=>	date('Y-m-d'),
+								'stage'				=>	'3',
+								'stage_smpl_flag'	=>	'PC' // Added this flag for "Payment Confirmed"
+							);
+
+							$workflowEntity = $this->Workflow->newEntity($workflow_data);
+
+							if ($this->Workflow->save($workflowEntity)) {
+
+								$this->loadModel('DmiSmsEmailTemplates');
+								//$this->DmiSmsEmailTemplates->sendMessage(51,$customer_id);
+								//$this->DmiSmsEmailTemplates->sendMessage(52,$customer_id);
 
 								$message = 'Payment Confirmed Successfully';
 								$message_theme = 'success';
-								$redirect_to = $redirect_url;
+								$redirect_to = '../commercial_verfication';
+							}
 						}
 					}
 				}
@@ -277,8 +340,9 @@
 			} else {
 
 				$message = '';
-				$redirect_to = $redirect_url;
+				$redirect_to = '../commercial_verfication';
 			}
+
 			// set variables to show popup messages from view file
 			$this->set('message',$message);
 			$this->set('message_theme',$message_theme);
