@@ -248,19 +248,19 @@
 
 
 							//Save the Workflow entry
-							$workflow_data = array(
+							$workflow_data = $this->Workflow->newEntity(array(
 
 								'org_sample_code'=>$sample_code,
 								'src_loc_id'=>$src_loc_id,
 								'src_usr_cd'=>$src_usr_cd,
 								'dst_loc_id'=>$dst_loc_id,
 								'dst_usr_cd'=>$dst_usr_cd,
-								'user_code'=>	$src_usr_cd,
-								'stage_smpl_cd'=>	$sample_code,
-								'tran_date'=>	date('Y-m-d'),
-								'stage'=>	'3',
+								'user_code'=>$src_usr_cd,
+								'stage_smpl_cd'=>$sample_code,
+								'tran_date'=>date('Y-m-d'),
+								'stage'=>'3',
 								'stage_smpl_flag'=>'PR' // Added this flag for "Payment Referred"
-							);
+							));
 
 							if ($this->Workflow->save($workflow_data)) {
 
@@ -307,28 +307,30 @@
 
 						if ($this->LimsSamplePaymentDetails->save($paymentEntity)) {
 
-
 							//Save the Workflow entry
-							$workflow_data = array(
+							$workflow_data = $this->Workflow->newEntity(array(
 
-								'org_sample_code'	=>	$sample_code,
-								'src_loc_id'		=>	$src_loc_id,
-								'src_usr_cd'		=>	$src_usr_cd,
-								'dst_loc_id'		=>	$dst_loc_id,
-								'dst_usr_cd'		=>	$dst_usr_cd,
-								'user_code'			=>	$src_usr_cd,
-								'stage_smpl_cd'		=>	$sample_code,
-								'tran_date'			=>	date('Y-m-d'),
-								'stage'				=>	'3',
-								'stage_smpl_flag'	=>	'PC' // Added this flag for "Payment Confirmed"
-							);
+								'org_sample_code'=>$sample_code,
+								'src_loc_id'=>$src_loc_id,
+								'src_usr_cd'=>$src_usr_cd,
+								'dst_loc_id'=>$dst_loc_id,
+								'dst_usr_cd'=>$dst_usr_cd,
+								'user_code'=>$src_usr_cd,
+								'stage_smpl_cd'=>$sample_code,
+								'tran_date'=>date('Y-m-d'),
+								'stage'=>'3',
+								'stage_smpl_flag'=>'PC' // Added this flag for "Payment Confirmed"
+							));
 
-							$workflowEntity = $this->Workflow->newEntity($workflow_data);
-
-							if ($this->Workflow->save($workflowEntity)) {
+							if ($this->Workflow->save($workflow_data)) {
 
 								$this->loadModel('DmiSmsEmailTemplates');
+
+								#TO DDO
 								//$this->DmiSmsEmailTemplates->sendMessage(51,$customer_id);
+								#TO ROSOOIC/INWARD
+								//$this->DmiSmsEmailTemplates->sendMessage(52,$customer_id);
+								#TO RO
 								//$this->DmiSmsEmailTemplates->sendMessage(52,$customer_id);
 
 								$message = 'Payment Confirmed Successfully';
