@@ -304,7 +304,7 @@ class OthermodulesController extends AppController{
 
 
 				//get scrutiny officers list
-				$scrutiny_officers = $this->DmiUserRoles->find('list',array('keyField'=>'user_email_id','valueField'=>'user_email_id','conditions'=>array('mo_smo_inspection'=>'yes')))->toArray();
+				$scrutiny_officers = $this->DmiUserRoles->find('list',array('keyField'=>'user_email_id','valueField'=>'user_email_id','conditions'=>array('OR'=>array('mo_smo_inspection'=>'yes','ho_mo_smo'=>'yes'))))->toArray();
 				//added below loop //for email encoding
 					$newArray = array();
 					foreach($scrutiny_officers as $key => $emailId) {
@@ -508,7 +508,7 @@ class OthermodulesController extends AppController{
 			if ($rels_from == 'Scrutiny Allocation(HO)') {
 				
 				$allocation_table = $DmiHoLevelAllocations;
-				$level_to_update = 'ho_mo_sms';
+				$level_to_update = 'ho_mo_smo';
 
 			} else {// else other allocation tables
 

@@ -98,7 +98,7 @@
 
 																			<?php if ($ho_perm_status == 'Permitted') { ?>
 																			<td>
-																				<?php if ($eachwork['rels_from'] == 'Scrutiny Allocation') {
+																				<?php if ($eachwork['rels_from'] == 'Scrutiny Allocation' || $eachwork['rels_from'] == 'Scrutiny Allocation(HO)') {
 																					echo $this->Form->control('allocate_to', array('label'=>'', 'type'=>'select', 'id'=>'allocate_to'.$i, 'empty'=>'---Select---', 'options'=>$scrutiny_officers,'class'=>'form-control'));
 																				} elseif ($eachwork['rels_from'] == 'Inspection Allocation') {
 																					echo $this->Form->control('allocate_to', array('label'=>'', 'type'=>'select', 'id'=>'allocate_to'.$i, 'empty'=>'---Select---', 'options'=>$inspection_officers,'class'=>'form-control'));
