@@ -1555,7 +1555,7 @@ class CustomersController extends AppController {
     }
 
     //function to encode email id columns for flow wise tables and speficied tables
-/*    public function updateEmailWithId(){			
+   /* public function updateEmailWithId(){			
 			
         $this->autoRender=false;
 
@@ -1667,10 +1667,9 @@ class CustomersController extends AppController {
                     $record_id = $eachRecord['id'];
                     $user_email_id = $eachRecord['user_email_id'];
                     
-                    $UpdateValueArray = array('user_email_id'=>"$user_email_id");
-
                     if($this->is_base64_encoded($user_email_id)==false && $this->is_email_valid($user_email_id)==true && !empty($user_email_id)){
                         $user_email_id = base64_encode($user_email_id);
+						$UpdateValueArray = array('user_email_id'=>"$user_email_id");
                         $this->$grantTable->updateAll($UpdateValueArray,array('id'=>$record_id));
                     }
             }
@@ -1801,7 +1800,7 @@ class CustomersController extends AppController {
                         'DmiReplicaChargesDetailsLogs','DmiReEsignGrantLogs','DmiRoAllocationLogs','DmiRoOffices','DmiSentEmailLogs','DmiSiteinspectionLaboratoryDetails',
                         'DmiSiteinspectionOtherDetails','DmiSiteinspectionPremisesDetails','DmiSiteinspectionPremisesProfiles','DmiSmsEmailTemplates','DmiStates','DmiTankShapes',
                         'DmiTempEsignStatuses','DmiUsers','DmiUsersResetpassKeys','DmiUserActionLogs','DmiUserFileUploads','DmiUserHistoryLogs','DmiUserLogs','DmiUserRoles',
-                        'DmiUserRolesManagmentLogs','DmiWorkTransferHoPermission','DmiWorkTransferLogs','LimsSampleCharges');
+                        'DmiUserRolesManagmentLogs','DmiWorkTransferHoPermissions','DmiWorkTransferLogs','LimsSampleCharges');
                             
         foreach($modelArray as $eachModel){
             
@@ -2147,10 +2146,11 @@ class CustomersController extends AppController {
                     $record_id = $eachRecord['id'];
                     $email_id = $eachRecord['email_id'];
                     
-                    $UpdateValueArray = array('email_id'=>"$email_id");
+                    
 
                     if($this->is_base64_encoded($email_id)==false && $this->is_email_valid($email_id)==true && !empty($email_id)){
                         $email_id = base64_encode($email_id);
+						$UpdateValueArray = array('email_id'=>"$email_id");
                         $this->$eachModel->updateAll($UpdateValueArray,array('id'=>$record_id));
                     }
                 }
@@ -2172,7 +2172,7 @@ class CustomersController extends AppController {
                         $this->$eachModel->updateAll(array('to_user'=>"$to_user"),array('id'=>$record_id));
                     }
                 }
-            }elseif($eachModel=='DmiWorkTransferHoPermission'){
+            }elseif($eachModel=='DmiWorkTransferHoPermissions'){
 
                 foreach($getRecords as $eachRecord){
             
@@ -2195,9 +2195,49 @@ class CustomersController extends AppController {
         }
 
     }*/
+	
+	/*public function tempForLabRecords(){
+		
+		$this->loadModel('DmiCustomerLaboratoryDetails');
+		$getRecords = $this->DmiCustomerLaboratoryDetails->tempConn();
+		
+		
+	} */
+	
+	//function to manage the double encoded values from any table
+	/*public function checkIfDoubleEncoded($tableName=null){
+		
+		$tableName = 'DmiCustomerLaboratoryDetails';
+		$this->autoRender=false;
+		$this->loadModel($tableName);
+		$getRecords = $this->$tableName->find('all',array('order'=>'id ASC'))->toArray();
+
+		foreach($getRecords as $eachRecord){
+                
+			if (!empty($eachRecord) && !empty($eachRecord['user_email_id'])) {
+				
+				//$lab_email_id = $eachRecord['lab_email_id'];
+				$user_email_id = base64_decode($eachRecord['user_email_id']);
+				$record_id = $eachRecord['id'];
+				
+				//check if getting proper email value after decoding, else rotate till last value is proper email
+				if (str_contains($user_email_id, '@')== false) {
+					
+					while (str_contains($user_email_id, '@')== false) {
+					
+						$lastWithEncoded = $user_email_id;//take last value before decoding to email id.
+						$user_email_id = base64_decode($user_email_id);
+					}
+
+					//$this->$tableName->updateAll(array('user_email_id'=>"$lastWithEncoded"),array('id'=>$record_id));
+					
+				}
+			}	
+		}
+	}*/
 
     //function to encode the email id for some standard tables
- /*   public function encodeAllEmailIds(){			
+    /*public function encodeAllEmailIds(){			
 			
         $this->autoRender=false;
 
@@ -2216,10 +2256,19 @@ class CustomersController extends AppController {
                 foreach($getRecords as $eachRecord){
                 
                     $record_id = $eachRecord['id'];
-                    $lab_email_id = base64_encode($eachRecord['lab_email_id']);
-                    
-                    $UpdateValueArray = array('lab_email_id'=>"$lab_email_id");
-                    $this->$eachModel->updateAll($UpdateValueArray,array('id'=>$record_id));
+                    $lab_email_id = $eachRecord['lab_email_id'];
+					$user_email_id = $eachRecord['user_email_id'];
+
+					if($this->is_base64_encoded($lab_email_id)==false && $this->is_email_valid($lab_email_id)==true && !empty($lab_email_id)){
+                        $lab_email_id = base64_encode($lab_email_id);
+                        $this->$eachModel->updateAll(array('lab_email_id'=>"$lab_email_id"),array('id'=>$record_id));
+                    }
+					
+					if($this->is_base64_encoded($user_email_id)==false && $this->is_email_valid($user_email_id)==true && !empty($user_email_id)){
+                        $user_email_id = base64_encode($user_email_id);
+                        $this->$eachModel->updateAll(array('user_email_id'=>"$user_email_id"),array('id'=>$record_id));
+                    }
+
                 }
 
             }else{
@@ -2227,10 +2276,13 @@ class CustomersController extends AppController {
                 foreach($getRecords as $eachRecord){
                     
                     $record_id = $eachRecord['id'];
-                    $email = base64_encode($eachRecord['email']);
-                    
-                    $UpdateValueArray = array('email'=>"$email");
-                    $this->$eachModel->updateAll($UpdateValueArray,array('id'=>$record_id));
+                    $email = $eachRecord['email'];
+					
+					if($this->is_base64_encoded($email)==false && $this->is_email_valid($email)==true && !empty($email)){
+                        $email = base64_encode($email);
+                        $this->$eachModel->updateAll(array('email'=>"$email"),array('id'=>$record_id));
+                    }
+
                 }
 
             }
@@ -2491,7 +2543,7 @@ class CustomersController extends AppController {
                         'DmiReplicaChargesDetailsLogs','DmiReEsignGrantLogs','DmiRoAllocationLogs','DmiRoOffices','DmiSentEmailLogs','DmiSiteinspectionLaboratoryDetails',
                         'DmiSiteinspectionOtherDetails','DmiSiteinspectionPremisesDetails','DmiSiteinspectionPremisesProfiles','DmiSmsEmailTemplates','DmiStates','DmiTankShapes',
                         'DmiTempEsignStatuses','DmiUsers','DmiUsersResetpassKeys','DmiUserActionLogs','DmiUserFileUploads','DmiUserHistoryLogs','DmiUserLogs','DmiUserRoles',
-    'DmiUserRolesManagmentLogs','DmiWorkTransferHoPermission','DmiWorkTransferLogs','LimsSampleCharges');
+    'DmiUserRolesManagmentLogs','DmiWorkTransferHoPermissions','DmiWorkTransferLogs','LimsSampleCharges');
                             
         foreach($modelArray as $eachModel){
             
@@ -2875,7 +2927,7 @@ class CustomersController extends AppController {
                     }
 
                 }
-            }elseif($eachModel=='DmiWorkTransferHoPermission'){
+            }elseif($eachModel=='DmiWorkTransferHoPermissions'){
 
                 foreach($getRecords as $eachRecord){
             
@@ -3505,7 +3557,7 @@ class CustomersController extends AppController {
 			//update each district
 			foreach($getDistricts as $eachDistrict){
 				
-				$distId = $eachDistrict['id'];print($office_id.'@'.$ro_id.' ');
+				$distId = $eachDistrict['id'];//print($office_id.'@'.$ro_id.' ');
 				$this->DmiDistricts->updateAll(array('ro_id'=>"$ro_id",'so_id'=>"$office_id"),array('id'=>$distId));
 			
 			}

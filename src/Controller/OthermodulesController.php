@@ -254,7 +254,7 @@ class OthermodulesController extends AppController{
 		public function userWorkTransfer(){
 
 			//Load Models
-			$this->loadModel('DmiWorkTransferHoPermission');
+			$this->loadModel('DmiWorkTransferHoPermissions');
 			$this->loadModel('DmiRoOffices');
 			$this->loadModel('DmiUsers');
 			$this->loadModel('DmiUserRoles');
@@ -291,7 +291,7 @@ class OthermodulesController extends AppController{
 				$inProgressWork = array();
 
 				//get ho permission status
-				$get_ho_perm_status = $this->DmiWorkTransferHoPermission->find('all',array('fields'=>'status','conditions'=>array('req_by_office IN'=>$req_by_office,'req_by_user IS'=>$ro_email_id,'req_for_user IS'=>$user_email_id),'order'=>'id desc'))->first();
+				$get_ho_perm_status = $this->DmiWorkTransferHoPermissions->find('all',array('fields'=>'status','conditions'=>array('req_by_office IN'=>$req_by_office,'req_by_user IS'=>$ro_email_id,'req_for_user IS'=>$user_email_id),'order'=>'id desc'))->first();
 
 				if (!empty($get_ho_perm_status)) {
 
@@ -444,7 +444,7 @@ class OthermodulesController extends AppController{
 				$user_email_id = $postData['users_list'];
 
 
-				$DmiWorkTranferEntity = $this->DmiWorkTransferHoPermission->newEntity(array(
+				$DmiWorkTranferEntity = $this->DmiWorkTransferHoPermissions->newEntity(array(
 
 					'req_by_office'=>$req_by_office,
 					'req_by_user'=>$ro_email_id,
@@ -455,7 +455,7 @@ class OthermodulesController extends AppController{
 				));
 
 				//save request record in ho permission table
-				if ($this->DmiWorkTransferHoPermission->save($DmiWorkTranferEntity)) { //for email encoding
+				if ($this->DmiWorkTransferHoPermissions->save($DmiWorkTranferEntity)) { //for email encoding
 
 					$message = 'The request for HO(QC) permisssion to transfer work of user id "'.base64_decode($user_email_id).'" has been made successfully. <br><br> Once HO(QC) permits the request, you will be able to transfer the work to another users. Thank you';
 					$redirect_to = 'user_work_transfer';
@@ -572,9 +572,9 @@ class OthermodulesController extends AppController{
 		public function workTransferRequests(){
 
 			$this->viewBuilder()->setLayout('admin_dashboard');
-			$this->loadModel('DmiWorkTransferHoPermission');
+			$this->loadModel('DmiWorkTransferHoPermissions');
 			$this->loadModel('DmiRoOffices');
-			$allRequests = $this->DmiWorkTransferHoPermission->find('all',array('order'=>'id desc'))->toArray();
+			$allRequests = $this->DmiWorkTransferHoPermissions->find('all',array('order'=>'id desc'))->toArray();
 
 			//get office name from office id
 			$i=1;
@@ -611,8 +611,8 @@ class OthermodulesController extends AppController{
 			$req_for_user = base64_encode($_POST['req_for_user']); //for email encoding
 			$mod_date = date('Y-m-d H:i:s');
 
-			$this->loadModel('DmiWorkTransferHoPermission');
-			$this->DmiWorkTransferHoPermission->updateAll(array('status'=>'Permitted','modified'=>"$mod_date"),array('req_by_user'=>$req_by_user,'req_for_user'=>$req_for_user));
+			$this->loadModel('DmiWorkTransferHoPermissions');
+			$this->DmiWorkTransferHoPermissions->updateAll(array('status'=>'Permitted','modified'=>"$mod_date"),array('req_by_user'=>$req_by_user,'req_for_user'=>$req_for_user));
 
 			echo '~done~';
 
@@ -630,8 +630,8 @@ class OthermodulesController extends AppController{
 			$req_for_user = base64_encode($_POST['req_for_user']); //for email encoding
 			$mod_date = date('Y-m-d H:i:s');
 
-			$this->loadModel('DmiWorkTransferHoPermission');
-			$this->DmiWorkTransferHoPermission->updateAll(array('status'=>'Rejected','modified'=>"$mod_date"),array('req_by_user'=>$req_by_user,'req_for_user'=>$req_for_user));
+			$this->loadModel('DmiWorkTransferHoPermissions');
+			$this->DmiWorkTransferHoPermissions->updateAll(array('status'=>'Rejected','modified'=>"$mod_date"),array('req_by_user'=>$req_by_user,'req_for_user'=>$req_for_user));
 
 			echo '~done~';
 
