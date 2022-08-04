@@ -58,13 +58,13 @@
 			
 			if ($(this).prop('checked') == true) {
 				
-				//if(dyama_set_role_detail == '' || dyama_set_role_detail == null){ dyama_set_role_detail = null; }
+				if(dyama_set_role_detail == '' || dyama_set_role_detail == null){ dyama_set_role_detail = null; }
 				//alert(dyama_set_role_detail);
-				if (dyama_set_role_detail != null || dyama_set_role_detail == '') {
+				if (dyama_set_role_detail != null) {
 
 					$.alert({
 						title: "Alert!",
-					    content: 'The role of Dy. AMA (QC) is already asigned to '+dyama_set_role_detail+'. Only one user ID can be allocated the role of Dy. AMA (QC)',
+					    content: 'The role of Dy. AMA (QC) is already asigned to '+atob(dyama_set_role_detail)+'. Only one user ID can be allocated the role of Dy. AMA (QC)',
 					    type: 'red',
 						icon: 'fa fa-warning',
 				     	columnClass: 'medium',
@@ -100,13 +100,13 @@
 
 			if ($(this).prop('checked') == true) {
 
-				//if(jtama_set_role_detail == '' || jtama_set_role_detail == null){ jtama_set_role_detail = null; }
+				if(jtama_set_role_detail == '' || jtama_set_role_detail == null){ jtama_set_role_detail = null; }
 
-				if (jtama_set_role_detail != null || jtama_set_role_detail == '') {
+				if (jtama_set_role_detail != null) {
 
 					$.alert({
 						title: "Alert!",
-					    content: 'The role of Jt. AMA is already asigned to '+jtama_set_role_detail+'. Only one user ID can be allocated the role of Jt. AMA',
+					    content: 'The role of Jt. AMA is already asigned to '+atob(jtama_set_role_detail)+'. Only one user ID can be allocated the role of Jt. AMA',
 					    type: 'red',
 						icon: 'fa fa-warning',
 				     	columnClass: 'medium',
@@ -137,13 +137,13 @@
 
 			if ($(this).prop('checked') == true) {
 
-				//if(ama_set_role_detail == '' || ama_set_role_detail == null) { ama_set_role_detail = null; }
+				if(ama_set_role_detail == '' || ama_set_role_detail == null) { ama_set_role_detail = null; }
 
-				 if (ama_set_role_detail != null || ama_set_role_detail == '') {
+				 if (ama_set_role_detail != null) {
 					
 					$.alert({
 						title: "Alert!",
-					    content: 'The role of AMA is already asigned to '+ama_set_role_detail+'. Only one user ID can be allocated the role of AMA',
+					    content: 'The role of AMA is already asigned to '+atob(ama_set_role_detail)+'. Only one user ID can be allocated the role of AMA',
 					    type: 'red',
 						icon: 'fa fa-warning',
 				     	columnClass: 'medium',
@@ -177,18 +177,49 @@
 		var ro_office_details = $('#ro_office_details').val();
 		var user_id = $('#user_id').val();
 		var ro_office = $('#ro_office').val();
+		
 
 		$("#ro_inspection").change(function() {
 
 			if ($(this).prop('checked') == false) {
 
 				if(ro_office_details == '' || ro_office_details == null) { ro_office_details = null; }
-
-				if (ro_office_details != null || ro_office_details == '') {
+			
+				//to check if the user is currently Incharge of any office, then alert and revert
+				if (ro_office_details != null) {
 
 					$.alert({
 						title: "Alert!",
-					    content: 'Currently this id '+user_id+' have RO In-charge of '+ro_office+'. The role of RO In-charge cannot be removed unless new RO In-charge is re-allocated.',
+					    content: 'Currently this id '+atob(user_id)+' have RO In-charge of '+ro_office+'. The role of RO In-charge cannot be removed unless new RO In-charge is re-allocated.',
+					    type: 'red',
+						icon: 'fa fa-warning',
+				     	columnClass: 'medium',
+					    typeAnimated: true,
+					    buttons: {
+					        Ok: {
+					            text: 'Ok',
+					            btnClass: 'btn-red',
+					            action: function(){
+					            	$('#ro_inspection').prop('checked', true);
+					            }
+					        },
+						}
+					});
+					/*if (!alert('')) {
+
+						$(this).prop('checked',true);
+					}*/
+					
+				}
+			
+			//to check if the user is currently having SO incharge role, then alert to remove and revert
+			}else if ($(this).prop('checked') == true) { 
+			
+				if ($("#so_inspection").prop('checked') == true) {
+					
+					$.alert({
+						title: "Alert!",
+					    content: 'Please remove SO In-charge role to assign RO In-charge role',
 					    type: 'red',
 						icon: 'fa fa-warning',
 				     	columnClass: 'medium',
@@ -203,11 +234,8 @@
 					        },
 						}
 					});
-					if (!alert('')) {
-
-						$(this).prop('checked',true);
-					}
 				}
+			
 			}
 		});
 
@@ -215,6 +243,7 @@
 		//apply validation before remove SO incharge role
 		// By Amol on 11-05-2021
 		var so_office_details = $('#so_office_details').val();
+		var so_office = $('#so_office').val();
 
 		$("#so_inspection").change(function() {
 
@@ -222,14 +251,53 @@
 
 				if(so_office_details == '' || so_office_details == null) { so_office_details = null; }
 
-				if (!empty($so_office_details)) {
+				//to check if the user is currently Incharge of any office, then alert and revert
+				if (so_office_details != null) {
 
-					if (!alert('Currently this id '+user_id+' have SO In-charge of '+ro_office+'. The role of SO In-charge cannot be removed unless new SO In-charge is re-allocated.')) {
-
-						$(this).prop('checked',true);
-					}
+					$.alert({
+						title: "Alert!",
+					    content: 'Currently this id '+atob(user_id)+' have SO In-charge of '+so_office+'. The role of SO In-charge cannot be removed unless new SO In-charge is re-allocated.',
+					    type: 'red',
+						icon: 'fa fa-warning',
+				     	columnClass: 'medium',
+					    typeAnimated: true,
+					    buttons: {
+					        Ok: {
+					            text: 'Ok',
+					            btnClass: 'btn-red',
+					            action: function(){
+					            	$('#so_inspection').prop('checked', true);
+					            }
+					        },
+						}
+					});
 				}
-			 }
+			
+			//to check if the user is currently having RO incharge role, then alert to remove and revert
+			 }else if ($(this).prop('checked') == true) { 
+			
+				if ($("#ro_inspection").prop('checked') == true) {
+					
+					$.alert({
+						title: "Alert!",
+					    content: 'Please remove RO In-charge role to assign SO In-charge role',
+					    type: 'red',
+						icon: 'fa fa-warning',
+				     	columnClass: 'medium',
+					    typeAnimated: true,
+					    buttons: {
+					        Ok: {
+					            text: 'Ok',
+					            btnClass: 'btn-red',
+					            action: function(){
+					            	$('#so_inspection').prop('checked', false);
+					            }
+					        },
+						}
+					});
+				}
+			
+			}
 		 });
 
 

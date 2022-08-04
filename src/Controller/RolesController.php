@@ -579,8 +579,8 @@ class RolesController extends AppController{
 		$get_user_details = $this->DmiUsers->find('all',array('conditions'=>array('id IS'=>$user_id)))->first();
 		$posted_office = $get_user_details['posted_ro_office'];
 
-		//find another user with this posted office
-		$get_other_user = $this->DmiUsers->find('all',array('conditions'=>array('posted_ro_office IS'=>$posted_office, 'id !='=>$user_id)))->toArray();
+		//find another user with this posted office //added status condition on 28-07-2022 by Amol
+		$get_other_user = $this->DmiUsers->find('all',array('conditions'=>array('posted_ro_office IS'=>$posted_office, 'id IS NOT'=>$user_id, 'status'=>'active')))->toArray();
 
 		$user_flag = null;
 		foreach ($get_other_user as $each) {
@@ -623,6 +623,28 @@ class RolesController extends AppController{
 		$this->loadModel('DmiUsers');
 		$this->loadModel('DmiUserRoles');
 		$this->loadModel('DmiRoOffices');
+		
+		//default variables used in view file to manage script
+		//cut from view file and added on 28-07-2022 by Amol
+		$dyama_set_role_detail = "";
+		$jtama_set_role_detail = "";
+		$ama_set_role_detail = "";
+		$ro_office_details = "";
+		$user_id = "";
+		$ro_office = "";
+		$so_office_details = "";
+		$so_office = "";
+		$mo_allocated_running_application_list = "";
+		$mo_renewal_allocated_running_application_list = "";
+		$io_allocated_running_application_list = "";
+		$io_renewal_allocated_running_application_list = "";
+		$ho_mo_allocated_running_application_list = "";
+		$user_division_type = "";
+		$pao_pending_works = "";
+		$this->set(compact('dyama_set_role_detail','jtama_set_role_detail','ama_set_role_detail','ro_office_details','user_id','ro_office',
+							'so_office_details','so_office','mo_allocated_running_application_list','mo_renewal_allocated_running_application_list',
+							'io_allocated_running_application_list','io_renewal_allocated_running_application_list','ho_mo_allocated_running_application_list',
+							'user_division_type','pao_pending_works'));
 
 		// find login user division type to make condition as per division and find user list as per user division type
 		$login_user = $this->DmiUsers->find('all',array('conditions'=>array('email IS'=>$this->Session->read('username'))))->first();

@@ -302,18 +302,21 @@ class RandomfunctionsComponent extends Component {
 
 						if (empty($check_application_status)) {
 
-							$allocated_to_under_ro_id[$i] = $allocation_details['level_3'];
-							$allocation_ro_office = explode('/',$allocated_customer_id);
-							$allocation_ro_office_code = $allocation_ro_office[2];
+							if(!empty($allocated_customer_id)){
+								$allocated_to_under_ro_id[$i] = $allocation_details['level_3'];
+								$allocation_ro_office = explode('/',$allocated_customer_id);
+								$allocation_ro_office_code = $allocation_ro_office[2];
 
-							//updated and added code to get Office table details from appl mapping Model
-							$DmiApplWithRoMappings = TableRegistry::getTableLocator()->get('DmiApplWithRoMappings');
-							$allocation_ro_office_name = $DmiApplWithRoMappings->getOfficeDetails($allocated_customer_id);
+								//updated and added code to get Office table details from appl mapping Model
+								$DmiApplWithRoMappings = TableRegistry::getTableLocator()->get('DmiApplWithRoMappings');
+								$allocation_ro_office_name = $DmiApplWithRoMappings->getOfficeDetails($allocated_customer_id);
 
-							$allocation_ro_office_name_list[$i] = $allocation_ro_office_name['ro_office'];
-							$allocated_running_application_list[$i] = $allocated_customer_id;
-							//get appl type
-							$appl_type[$i] =  $this->Controller->Mastertablecontent->applicationTypeById($each_flow['application_type']);
+								$allocation_ro_office_name_list[$i] = $allocation_ro_office_name['ro_office'];
+								$allocated_running_application_list[$i] = $allocated_customer_id;
+								//get appl type
+								$appl_type[$i] =  $this->Controller->Mastertablecontent->applicationTypeById($each_flow['application_type']);
+							}
+							
 						}
 					}
 

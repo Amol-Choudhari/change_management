@@ -545,38 +545,23 @@
 							</div>
 						</section>
 				</div>
-
-			<?php
-
-				$dyama_set_role_detail = "";
-				$jtama_set_role_detail = "";
-				$ama_set_role_detail = "";
-				$ro_office_details = "";
-				$user_id = "";
-				$ro_office = "";
-				$so_office_details = "";
-				$mo_allocated_running_application_list = "";
-				$mo_renewal_allocated_running_application_list = "";
-				$io_allocated_running_application_list = "";
-				$io_renewal_allocated_running_application_list = "";
-				$ho_mo_allocated_running_application_list = "";
-				$user_division_type = "";
-				$pao_pending_works = "";
-
-			 ?>
-
+			
+			<!-- On 28-07-2022 by Amol -->
+			<!-- removed default variables from here and added in controller function-->
+			<!-- Below json_encode function applied to convert array into string value to echo -->
 			<input type="hidden" id="dyama_set_role_detail" value="<?php echo $dyama_set_role_detail; ?>">
 			<input type="hidden" id="jtama_set_role_detail" value="<?php echo $jtama_set_role_detail; ?>">
 			<input type="hidden" id="ama_set_role_detail" value="<?php echo $ama_set_role_detail; ?>">
-			<input type="hidden" id="ro_office_details" value="<?php echo $ro_office_details; ?>">
+			<input type="hidden" id="ro_office_details" value="<?php echo json_encode($ro_office_details); ?>">
 			<input type="hidden" id="user_id" value="<?php echo $user_id; ?>">
 			<input type="hidden" id="ro_office" value="<?php echo $ro_office; ?>">
-			<input type="hidden" id="so_office_details" value="<?php echo $so_office_details; ?>">
-			<input type="hidden" id="mo_allocated_running_application_list" value="<?php echo $mo_allocated_running_application_list; ?>">
-			<input type="hidden" id="mo_renewal_allocated_running_application_list" value="<?php echo $mo_renewal_allocated_running_application_list; ?>">
-			<input type="hidden" id="io_allocated_running_application_list" value="<?php echo $io_allocated_running_application_list; ?>">
-			<input type="hidden" id="io_renewal_allocated_running_application_list" value="<?php echo $io_renewal_allocated_running_application_list; ?>">
-			<input type="hidden" id="ho_mo_allocated_running_application_list" value="<?php echo $ho_mo_allocated_running_application_list; ?>">
+			<input type="hidden" id="so_office_details" value="<?php echo json_encode($so_office_details); ?>">
+			<input type="hidden" id="so_office" value="<?php echo $so_office; ?>">
+			<input type="hidden" id="mo_allocated_running_application_list" value="<?php echo json_encode($mo_allocated_running_application_list); ?>">
+			<input type="hidden" id="mo_renewal_allocated_running_application_list" value="<?php echo json_encode($mo_renewal_allocated_running_application_list); ?>">
+			<input type="hidden" id="io_allocated_running_application_list" value="<?php echo json_encode($io_allocated_running_application_list); ?>">
+			<input type="hidden" id="io_renewal_allocated_running_application_list" value="<?php echo json_encode($io_renewal_allocated_running_application_list); ?>">
+			<input type="hidden" id="ho_mo_allocated_running_application_list" value="<?php echo json_encode($ho_mo_allocated_running_application_list); ?>">
 			<input type="hidden" id="user_division_type" value="<?php echo $user_division_type; ?>">
 			<input type="hidden" id="pao_pending_works" value="<?php echo $pao_pending_works; ?>">
 
