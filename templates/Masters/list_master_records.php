@@ -14,6 +14,7 @@
             </div>
         </div>
     </div>
+
     <section class="content form-middle">
         <div class="container-fluid">
             <div class="row">
@@ -21,88 +22,91 @@
                     <?php echo $this->Html->link('Add New', array('controller' => 'masters', 'action' => 'add_master_record'), array('class' => 'add_btn btn btn-success')); ?>
                     <?php echo $this->Html->link('Back', array('controller' => 'masters', 'action' => 'masters_home'), array('class' => 'add_btn btn btn-secondary float-right')); ?>
                 </div>
+
                 <div class="col-md-12">
                     <?php echo $this->Form->create(); ?>
-                    <div class="card card-Lightblue">
-                        <div class="card-header"><h4 class="card-title-new"><?php echo $masterListTitle; ?></h4></div>
-                        <div class="panel panel-primary filterable">
-                            <table id="list_master_table" class="table m-0 table-stripped table-hover table-bordered">
-                                <?php
+                        <div class="card card-Lightblue">
+                            <div class="card-header"><h4 class="card-title-new"><?php echo $masterListTitle; ?></h4></div>
+                            <div class="panel panel-primary filterable">
+                                <table id="list_master_table" class="table m-0 table-stripped table-hover table-bordered">
+                                    <?php
+                                        if ($masterId == '1') {
 
-                                if ($masterId == '1') {
+                                            echo $this->element('masters_management_elements/list_master_elements/all_states');
 
-                                    echo $this->element('masters_management_elements/all_states');
+                                        } elseif ($masterId == '2') {
 
-                                } elseif ($masterId == '2') {
+                                            echo $this->element('masters_management_elements/list_master_elements/all_districts');
 
-                                    echo $this->element('masters_management_elements/all_districts');
+                                        } elseif ($masterId == '3') {
 
-                                } elseif ($masterId == '3') {
+                                            echo $this->element('masters_management_elements/list_master_elements/all_business_types');
 
-                                    echo $this->element('masters_management_elements/all_business_types');
+                                        } elseif ($masterId == '4') {
 
-                                } elseif ($masterId == '4') {
+                                            echo $this->element('masters_management_elements/list_master_elements/all_packing_types');
 
-                                    echo $this->element('masters_management_elements/all_packing_types');
+                                        } elseif ($masterId == '5') {
 
-                                } elseif ($masterId == '5') {
+                                            echo $this->element('masters_management_elements/list_master_elements/all_laboratory_types');
 
-                                    echo $this->element('masters_management_elements/all_laboratory_types');
+                                        } elseif ($masterId == '6') {
 
-                                } elseif ($masterId == '6') {
+                                            echo $this->element('masters_management_elements/list_master_elements/all_machine_types');
 
-                                    echo $this->element('masters_management_elements/all_machine_types');
+                                        } elseif ($masterId == '7') {
 
-                                } elseif ($masterId == '7') {
+                                            echo $this->element('masters_management_elements/list_master_elements/all_tank_shapes');
 
-                                    echo $this->element('masters_management_elements/all_tank_shapes');
+                                        } elseif ($masterId == '8') {
 
-                                } elseif ($masterId == '8') {
+                                            echo $this->element('masters_management_elements/list_master_elements/all_charges');
 
-                                    echo $this->element('masters_management_elements/all_charges');
+                                        } elseif ($masterId == '9') {
 
-                                } elseif ($masterId == '9') {
+                                            echo $this->element('masters_management_elements/list_master_elements/all_business_years');
 
-                                    echo $this->element('masters_management_elements/all_business_years');
+                                        } elseif ($masterId == '10') {
 
-                                } elseif ($masterId == '10') {
+                                            echo $this->element('masters_management_elements/list_master_elements/all_offices');
 
-                                    echo $this->element('masters_management_elements/all_offices');
+                                        } elseif ($masterId == '11') {
 
-                                } elseif ($masterId == '11') {
+                                            echo $this->element('masters_management_elements/list_master_elements/all_msg_templates');
 
-                                    echo $this->element('masters_management_elements/all_msg_templates');
+                                        } elseif ($masterId == '12') {
 
-                                } elseif ($masterId == '12') {
+                                            echo $this->element('masters_management_elements/list_master_elements/all_pao');
 
-                                    echo $this->element('masters_management_elements/all_pao');
+                                        } elseif ($masterId == '15') {
 
-                                } elseif ($masterId == '15') {
+                                            echo $this->element('masters_management_elements/list_master_elements/all_feedback_types');
 
-                                    echo $this->element('masters_management_elements/all_feedback_types');
+                                        } elseif ($masterId == '100') {
 
-                                } elseif ($masterId == '100') {
+                                            echo $this->element('masters_management_elements/list_master_elements/all_test');
 
-                                    echo $this->element('masters_management_elements/all_test');
+                                        } elseif ($masterId == '16') {
 
-                                } elseif ($masterId == '16') {
+                                            echo $this->element('masters_management_elements/list_master_elements/all_replica_charges');
 
-                                    echo $this->element('masters_management_elements/all_replica_charges');
+                                        } elseif ($masterId == '17') {
 
-                                } elseif ($masterId == '17') {
+                                            echo $this->element('masters_management_elements/list_master_elements/all_education_type');
 
-                                    echo $this->element('masters_management_elements/all_education_type');
+                                        } elseif ($masterId == '18') {
 
-                                } elseif ($masterId == '18') {
+                                            echo $this->element('masters_management_elements/list_master_elements/all_division_type');
 
-                                    echo $this->element('masters_management_elements/all_division_type');
+                                        } elseif ($masterId == '19') {
 
-                                }
+                                            echo $this->element('masters_management_elements/list_master_elements/all_documents_list');
 
-                                ?>
-                            </table>
+                                        }
+                                    ?>
+                                </table>
+                            </div>
                         </div>
-                    </div>
                     <?php echo $this->Form->end(); ?>
                 </div>
             </div>

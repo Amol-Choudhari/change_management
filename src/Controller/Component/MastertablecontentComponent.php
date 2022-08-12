@@ -262,6 +262,14 @@ class MastertablecontentComponent extends Component {
 		return $all_division_types;
 	}
 
+	//For Dmi Document Lists # Added on the 09-08-2022 by Akash
+	public function allDocumentsList(){
+
+		$DmiDocumentLists = TableRegistry::getTableLocator()->get('DmiDocumentLists');
+		$all_documents_list = $DmiDocumentLists->find('list', array('valueField' => 'document_name', 'conditions' => array()))->toArray();
+		return $all_documents_list;
+	}
+
 	//--------------------------------------------//
 
 	//Get User Pao ID
@@ -1414,6 +1422,39 @@ class MastertablecontentComponent extends Component {
 		$DmiDivisionGradesEntity = $DmiDivisionGrades->newEntity($data_array);
 
 		if ($DmiDivisionGrades->save($DmiDivisionGradesEntity)) {
+
+			return true;
+		}
+
+	}
+
+
+	//For Adding and Editing the Documents Type Master # Added on the 09-08-2022 By Akash
+	public function addEditDocumentsMaster($postData,$record_id=null){
+
+		$username = $this->Session->read('username');
+		$DmiDocumentLists = TableRegistry::getTableLocator()->get('DmiDocumentLists');
+		//html encoding
+		$htmlencoded_value = htmlentities($postData['document_name'], ENT_QUOTES);
+
+		//edit array
+		if ($record_id == null) {
+
+			$data_array = array('document_name'=>$htmlencoded_value,
+								'created'=>date('Y-m-d H:i:s'),
+								'modified'=>date('Y-m-d H:i:s'),
+								'by_user'=>$username);
+		} else {
+
+			$data_array = array('id'=>$record_id,
+								'document_name'=>$htmlencoded_value,
+								'modified'=>date('Y-m-d H:i:s'),
+								'by_user'=>$username);
+		}
+
+		$entity = $DmiDocumentLists->newEntity($data_array);
+
+		if ($DmiDocumentLists->save($entity)) {
 
 			return true;
 		}

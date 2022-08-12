@@ -126,12 +126,17 @@ $(document).ready(function(){
 
 						selectContainer += "</select></div>";
 						mainSelectContainer += "</select></div>";
-						
+
+						var webroot_url = $('#webroot_url').val();
+					
+						var previewFile = (inputValue != '') ? '<div><a href="'+inputValue+'" target="_blank">Preview Doc</a></div>' : '';
+
 						tableContainer += 	(this.name == null) ? '<span class="serial_no">'+rowsC+'</span>' : 
 											(inputType == 'textarea') ? '<div><textarea name="' + inputName + '" id="'+inputId+'" class="form-control input-field '+inputClass+'">'+inputValue+'</textarea></div>' :
 											(inputType == 'hidden') ? '<input name="' + inputName + '" type="'+inputType+'" id="'+inputId+'" value="'+inputValue+'" class="form-control input-field">' :
 											(inputType == 'icon') ? '<i id="'+inputId+'" class="'+inputClass+'" title="'+inputTitle+'"></i>' :
-											(inputType == 'select') ? selectContainer : 
+											(inputType == 'select') ? selectContainer :
+											(inputType == 'file') ? '<input name="' + inputName +'" type="'+inputType+'" id="'+inputId+'" class="form-control input-field '+inputClass+'" value="'+inputValue+'"><input name="hidden'+inputName+'" type="hidden" value="'+inputValue+'" class="hidden_doc">'+previewFile : 
 											'<div><input name="' + inputName + '" type="'+inputType+'" id="'+inputId+'" value="'+inputValue+'" class="form-control input-field '+inputClass+'" maxlength="'+inputMaxLenVal+'" max="'+inputMax+'" cvfloat="'+inputcvfloat+'" ></div>';
 						tableContainer += '<div class="err_cv"></div>'+inputAutocomplete;
 

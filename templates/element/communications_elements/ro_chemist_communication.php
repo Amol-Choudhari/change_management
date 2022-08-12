@@ -102,7 +102,7 @@
 <?php } ?>
 
 <?php $controller = $this->request->getParam('controller'); ?>									
-	<div class="col-md-12 card-footer">
+	<div class="col-md-12">
 		<?php if ($_SESSION['application_dashboard'] == 'ro') { ?>
 
 			<?php   if (!empty($previousbtnid)) { ?>

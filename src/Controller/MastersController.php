@@ -229,6 +229,16 @@
 				$this->masterAddTitle = 'Add Division Grade';
 				$this->masterEditTitle = 'Edit Division Grade';
 				$this->fieldNameForCheck = 'division_grade';
+			
+			//19 For the Documents List Master
+			} elseif ($masterId=='19') {
+				//for division, added on 09-08-2022 by Akash
+				$this->masterTable = 'DmiDocumentLists';
+				$this->masterListTitle = 'List of All Documents';
+				$this->masterListHeader = 'Documents List';
+				$this->masterAddTitle = 'Add Documents Type';
+				$this->masterEditTitle = 'Edit Documents Type';
+				$this->fieldNameForCheck = 'document_type';
 			}
 		
 		}
@@ -251,7 +261,7 @@
 
 				$this->loadModel($masterTable);
 				$all_records = $this->$masterTable->find('all',array('order' => array('id' => 'asc'),'conditions'=>array('OR'=>array('delete_status IS NULL','delete_status ='=>'no'))))->toArray();
-
+				
 			} else {
 
 				$all_records=array();
@@ -1247,6 +1257,17 @@
 					///Added this call to save the user action log on 21-02-2022 by Akash
 					$this->Customfunctions->userActionPerformLog('Division Master '."($forActionLog)", 'Success');
 					$this->message = 'You have '.$action_var.' Division Grade Successfully.';
+					$this->message_theme = 'success';
+				}
+
+			// For Documents Type  # Added on the 09-08-2022 by Akash
+			} elseif ($masterId=='19') {
+
+				if ($this->Mastertablecontent->addEditDocumentsMaster($postData,$record_id)) {
+
+					///Added this call to save the user action log on 21-02-2022 by Akash
+					$this->Customfunctions->userActionPerformLog('Documents Master '."($forActionLog)", 'Success');
+					$this->message = 'You have '.$action_var.' Documents Type Successfully.';
 					$this->message_theme = 'success';
 				}
 			}

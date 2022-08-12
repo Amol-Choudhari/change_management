@@ -116,10 +116,14 @@
 						<div class="err_cv"></div>
 					</div>
 					<div class="col-md-2">
-						<label for="field3"><span>Pan No. <span class="cRed">*</span></span>	</label>
+						<label for="field3"><span>ID (Select any one). <span class="cRed">*</span></span></label>
 					</div>
-					<div class="col-md-4">
-						<?php echo $this->Form->control('pan_no', array('type'=>'text', 'id'=>'pan_no', 'escape'=>false, 'placeholder'=>'Enter PAN Number', 'maxlength'=>10, 'minlength'=>10,'value'=>$section_form_details[0]['pan_no'], 'class'=>'cvOn cvReq cvAlphaNum form-control', 'label'=>false)); ?>
+					<div class="col-md-2">
+						<?php echo $this->Form->control('document', array('type'=>'select', 'id'=>'document', 'options'=>$document_lists, 'value'=>$section_form_details[0]['document'],'empty'=>'Select Document Type', 'label'=>false, 'class'=>'form-control')); ?>
+						<div class="err_cv"></div>
+					</div>
+					<div class="col-md-2">
+						<?php echo $this->Form->control('document_id_no', array('type'=>'text', 'id'=>'document_id_no', 'escape'=>false, 'placeholder'=>'Enter ID Number','value'=>$section_form_details[0]['document_id_no'], 'class'=>'cvOn cvReq cvAlphaNum form-control', 'label'=>false)); ?>
 						<div class="err_cv"></div>
 					</div>
 				</div>

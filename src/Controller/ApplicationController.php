@@ -24,6 +24,8 @@
 			$this->loadComponent('Romoioapplicantcommunicationactions');
 			$this->loadComponent('Flowbuttons');
 			$this->loadComponent('Randomfunctions');
+			$this->loadModel('DmiSmsEmailTemplates');
+		
 
 			$this->viewBuilder()->setHelpers(['Form','Html','Time']);
 
@@ -271,6 +273,8 @@
 			$this->set('allPackingType',$allPackingType);
 			$firm_details = $this->DmiFirms->firmDetails($customer_id);
             $this->set('firm_details',$firm_details);
+			$document_lists = $this->Mastertablecontent->allDocumentsList();
+            $this->set('document_lists',$document_lists);
 
 			//get commodity details, for option to update commodities
 			//applied on 02-07-2021 by Amol
@@ -444,16 +448,27 @@
 						}
 
 						$message = $firm_type_text.' - '.ucwords(str_replace('_',' ',$section_details['section_name'])).' section, '.$process_query.' successfully';
-						//Added this call to save the user action log on 04-03-2022
-						$this->Authentication->userActionPerformLog('Firm '."($process_query)", 'Success');
+
+						//Added this call to save the user action log on 04-03-2022 by Akash
+						if ($application_type == 4) {
+							$this->Authentication->userActionPerformLog('Application '."($process_query)", 'Success');
+						} else {
+							$this->Authentication->userActionPerformLog('Firm '."($process_query)", 'Success');
+						}
+						
 						$message_theme = 'success';
 						$this->render('/element/message_boxes');
 
 					} else {
 						
 						$this->set('save_result',$result);
-						//Added this call to save the user action log on 04-03-2022
-						$this->Authentication->userActionPerformLog('Firm '."($process_query)", 'Failed');
+
+						//Added this call to save the user action log on 04-03-2022 by Akash
+						if ($application_type == 4) {
+							$this->Authentication->userActionPerformLog('Application '."($process_query)", 'Failed');
+						} else {
+							$this->Authentication->userActionPerformLog('Firm '."($process_query)", 'Failed');
+						}
 						$message = "Please check and fill all required fields before proceeding.";
 						$message_theme = 'failed';
 						$this->render('/element/message_boxes');
@@ -475,6 +490,21 @@
 
 						$message = $firm_type_text.' - Final submitted successfully ';
 
+						//Added this call to save the user action log on 04-03-2022 by Akash
+						if ($application_type == 4) {
+
+							$this->Authentication->userActionPerformLog('Application Final Submitted', 'Success');
+							// SMS - APPLICATION SUBMITTED 
+							#$this->DmiSmsEmailTemplates->sendMessage(69,$customer_id); # CHEMIST
+							#$this->DmiSmsEmailTemplates->sendMessage(70,$customer_id); # RO
+
+						} else {
+
+							// SMS - APPLICATION SUBMITTED 
+							#$this->DmiSmsEmailTemplates->sendMessage(6,$customer_id); # APPLICANT , RO , DDO
+							$this->Authentication->userActionPerformLog('Firm Final Submitted', 'Success');
+						}
+
 						//For Chemist i.e Apllication Type 4 then redirect to Chemist Home after Final Submit -> Akash [29-09-2021].
 						if ($application_type == 4) {
 							$redirect_to = '../chemist/home';
@@ -486,8 +516,13 @@
 
 					} else {
 						
-						//Added this call to save the user action log on 04-03-2022
-						$this->Authentication->userActionPerformLog('Firm '."($process_query)", 'Failed');
+						//Added this call to save the user action log on 04-03-2022 by Akash
+						if ($application_type == 4) {
+							$this->Authentication->userActionPerformLog('Application Final Submitted', 'Failed');
+						} else {
+							$this->Authentication->userActionPerformLog('Firm Final Submitted', 'Failed');
+						}
+
 						$message = $firm_type_text.' - All Sections not filled, Please fill all Section and then Final Submit ';
 						$message_theme = 'failed';
 						$redirect_to = '../application/application-for-certificate';
@@ -795,6 +830,12 @@
 
 								$this->DmiRenewalSubmissionLogs->save($renewalSubmissionLogEntity);
 							}
+							
+							//Added this call to save the user action log on 04-03-2022 by Akash
+							$this->Authentication->userActionPerformLog('Firm Final Submitted', 'Success');
+	
+							//SMS for Application Submitted on 12-08-2022 By Akash
+							$this->DmiSmsEmailTemplates->sendMessage(6,$customer_id); #To Applicant , RO , DDO
 
 							$message_theme = 'success';
 							$message = $firm_type_text.' - Final submitted successfully ';
@@ -803,7 +844,9 @@
 							$this->viewBuilder()->setVar('redirect_to', $redirect_to);
 
 						} else {
-							
+
+							//Added this call to save the user action log on 04-03-2022 by Akash
+							$this->Authentication->userActionPerformLog('Firm Final Submitted', 'Failed');
 							$message_theme = 'failed';
 							$message = $firm_type_text.' - All Sections not filled, Please fill all Section and then Final Submit ';
 							$redirect_to = '../application/application-for-certificate';

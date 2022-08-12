@@ -289,7 +289,7 @@ class CustomersController extends AppController {
         $districts = $this->DmiDistricts->find('list', array('valueField' => 'district_name', 'conditions' => array('state_id' => 1, 'OR' => array('delete_status IS NULL', 'delete_status =' => 'no'))))->toArray();
         $this->set('districts', $districts);
 
-        $document_lists = $this->DmiDocumentLists->find('list', array('valueField' => 'document_name', 'conditions' => array()))->toArray();
+        $document_lists = $this->DmiDocumentLists->find('list', array('valueField' => 'document_name', 'conditions' => array('delete_status IS NULL')))->toArray(); // Changed the query on the 09-08-2022 by Akash
         $this->set('document_lists', $document_lists);
 
         // set variables to show popup messages from view file
@@ -934,7 +934,7 @@ class CustomersController extends AppController {
         $districts = $this->DmiDistricts->find('list', array('valueField' => 'district_name', 'conditions' => array('state_id IS' => $customer_data['state'])))->toArray();
         $this->set('districts', $districts);
 
-        $document_lists = $this->DmiDocumentLists->find('list', array('valueField' => 'document_name'))->toArray();
+        $document_lists = $this->DmiDocumentLists->find('list', array('valueField' => 'document_name', 'conditions' => array('delete_status IS NULL')))->toArray(); // Changed the query on the 09-08-2022 by Akash
         $this->set('document_lists', $document_lists);
 
 

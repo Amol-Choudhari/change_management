@@ -373,16 +373,18 @@
 
 				//replacing dynamic values in the email message
 				$sms_message = $this->replaceDynamicValuesFromMessage($customer_id,$sms_message);
+				
+				//replacing dynamic values in the email message
+				$email_message = $this->replaceDynamicValuesFromMessage($customer_id,$email_message);
+
 				print_r($sms_message); 
 				print_r('</br>'); 
 				print_r($destination_mob_nos_values); 
 				print_r('</br>'); 
 				print_r($destination_email_ids_values); 
-				//exit;
-				
-				//replacing dynamic values in the email message
-				$email_message = $this->replaceDynamicValuesFromMessage($customer_id,$email_message);
-
+				print_r($email_message); 
+				print_r('</br>'); 
+			
 
 				//To send SMS on list of mobile nos.
 				if (!empty($find_message_record['sms_message'])) {

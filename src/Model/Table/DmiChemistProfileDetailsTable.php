@@ -25,7 +25,8 @@ class DmiChemistProfileDetailsTable extends Table{
 		 $get_registered_details = $DmiChemistRegistrations->find('all',array('conditions'=>array('chemist_id IS'=>$chemist_id)))->first();
 		 $registered_details = $get_registered_details;
 
-
+		
+ 
 
 		 if(empty($result)){
 				$result = array();
@@ -40,7 +41,7 @@ class DmiChemistProfileDetailsTable extends Table{
 				$result[0]['mobile_no'] = $registered_details['mobile'];
 				$result[0]['dob'] = $registered_details['dob'];
 				$result[0]['gender'] = '';
-				$result[0]['pan_no'] = '';
+				#$result[0]['pan_no'] = '';
 				$result[0]['address'] = '';
 				$result[0]['address_1'] = '';
 				$result[0]['profile_photo'] = '';
@@ -58,6 +59,8 @@ class DmiChemistProfileDetailsTable extends Table{
 				$result[0]['mo_comment_ul'] = '';
 				$result[0]['rr_comment_ul'] = '';
 				$result[0]['cr_comment_ul'] = '';
+				$result[0]['document'] = '';
+				$result[0]['document_id_no'] = '';
 		}else{
 
 			$section_id = $_SESSION['section_id'];
@@ -121,9 +124,11 @@ class DmiChemistProfileDetailsTable extends Table{
 				return false;
 			}
 
-			$pan_no = htmlentities($forms_data['pan_no'], ENT_QUOTES);
+			#$pan_no = htmlentities($forms_data['pan_no'], ENT_QUOTES);
 			$address = htmlentities($forms_data['address'], ENT_QUOTES);
 			$address_1 = htmlentities($forms_data['address_1'], ENT_QUOTES);
+			$document = htmlentities($forms_data['document'], ENT_QUOTES); #This is added by Akash on the 09-08-2022 
+			$document_id_no = htmlentities($forms_data['document_id_no'], ENT_QUOTES); #This is added by Akash on the 09-08-2022
 
 			if (!empty($forms_data['profile_photo']->getClientFilename())) {
 
@@ -203,7 +208,7 @@ class DmiChemistProfileDetailsTable extends Table{
 				'mobile_no'=>$registered_details['mobile'],
 				'dob'=>$registered_details['dob'],
 				'gender'=>$gender,
-				'pan_no'=>$pan_no,
+				#'pan_no'=>$pan_no,
 				'address'=>$address,
 				'address_1'=>$address_1,
 				'profile_photo'=>$profile_photo,
@@ -211,16 +216,14 @@ class DmiChemistProfileDetailsTable extends Table{
 				'form_status'=>$status,
 				'created'=>$created,
 				'modified'=>date('Y-m-d H:i:s'),
-				'is_latest'=>1
-
+				'is_latest'=>1,
+				'document'=>$document, #This is added by Akash on the 09-08-2022 
+				'document_id_no'=>$document_id_no #This is added by Akash on the 09-08-2022 
 			));
 
 			if($this->save($DmiChemistProfileDetailsEntity)) {
-
 				return true;
-
 			}
-
 
 		} else {
 			return false;
@@ -304,7 +307,7 @@ class DmiChemistProfileDetailsTable extends Table{
 			'address_1'=>$forms_data['address_1'],
 			'dob'=>$forms_data['dob'],
 			'gender'=>$forms_data['gender'],
-			'pan_no'=>$forms_data['pan_no'],
+			#'pan_no'=>$forms_data['pan_no'],
 			'address'=>$forms_data['address'],
 			'profile_photo'=>$forms_data['profile_photo'],
 			'signature_photo'=>$forms_data['signature_photo'],
@@ -324,7 +327,9 @@ class DmiChemistProfileDetailsTable extends Table{
 			'mo_comment_ul'=>$mo_comment_ul,
 			'ro_reply_comment'=>$ro_reply_comment,
 			'ro_reply_comment_date'=>$ro_reply_comment_date,
-			'rr_comment_ul'=>$rr_comment_ul
+			'rr_comment_ul'=>$rr_comment_ul,
+			'document'=>$document, #This is added by Akash on the 09-08-2022 
+			'document_id_no'=>$document_id_no #This is added by Akash on the 09-08-2022 
 
 		));
 

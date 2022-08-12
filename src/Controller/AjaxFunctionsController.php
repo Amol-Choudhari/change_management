@@ -1826,8 +1826,29 @@
 			exit;
 		}
 
+
+		// CHECK MOBILE NUMBER EXIST IN CHEMIST TABLE
+		// DESCRIPTION : FOR CHECKING THE MOBILE NO. ALREADY EXIST OR NOT IN THE DATABASE FOR CHEMIST.
+		// @AUTHOR : AKASH THAKRE
+		// DATE : 04-12-2021
 		
+		public function checkEmailNumberExistInChemistTable() {
+
+			$this->autoRender = false;
+			$this->loadModel('DmiChemistRegistrations');
+			$mobile = base64_encode($_POST['email']); //for email encoding
 		
+			$check_if_exist = $this->DmiChemistRegistrations->find()->select(['email'])->where(['email IS' => $mobile])->first();
+
+			if (!empty($check_if_exist)) {
+				echo 'yes';
+			} else {
+				echo 'no';
+			}
+			exit;
+		}
+		
+
 		// CHECK EMAIL ID EXIST IN CUSTOMERS TABLE
 		// DESCRIPTION : FOR CHECKING THE EMAIL ID. IS ALREADY EXIST OR NOT IN DATABASE FOR CUSTOMERS
 		// @AUTHOR : AKASH THAKRE

@@ -42,6 +42,7 @@ class DmiChemistExperienceDetailsTable extends Table{
 				$result[0]['ro_reply_comment'] = '';
 				$result[0]['delete_mo_comment'] = '';
 				$result[0]['customer_reply_date'] = '';
+				$result[0]['exp_document'] = '';
 
 		}else{
 
@@ -87,11 +88,16 @@ class DmiChemistExperienceDetailsTable extends Table{
 				),
 				'4' => array(
 					'col' 		=> 'Duration Of Job',
-					'colspan' 	=> '2',
+					'colspan' 	=> '3',
 					'rowspan' 	=> '1'
 				),
 				'5' => array(
 					'col' 		=> 'Monthly Remuneration',
+					'colspan' 	=> '1',
+					'rowspan' 	=> '2'
+				),
+				'6' => array(
+					'col' 		=> 'Experience Certificate',
 					'colspan' 	=> '1',
 					'rowspan' 	=> '2'
 				)
@@ -104,6 +110,11 @@ class DmiChemistExperienceDetailsTable extends Table{
 				),
 				'1' => array(
 					'col' 		=> 'To',
+					'colspan' 	=> '1',
+					'rowspan' 	=> '1'
+				),
+				'2' => array(
+					'col' 		=> 'Total',
 					'colspan' 	=> '1',
 					'rowspan' 	=> '1'
 				)
@@ -168,6 +179,14 @@ class DmiChemistExperienceDetailsTable extends Table{
 					'id'		=> 'to_dt'
 				),
 				'6' => array(
+					'name'		=> 'to_dt',
+					'type'		=> 'text',
+					'valid'		=> 'text',
+					'value'		=> chop($row['to_dt'],"00:00:00"), // added to trim the "H:i:s" from the date on 08-06-2022 By Akash
+					'class'		=> 'cvOn cvNotReq cvDate cvMaxLen',
+					'id'		=> 'to_dt'
+				),
+				'7' => array(
 					'name'		=> 'monthly_remuneration',
 					'type'		=> 'text',
 					'valid'		=> 'text',
@@ -175,6 +194,14 @@ class DmiChemistExperienceDetailsTable extends Table{
 					'value'		=> $row['monthly_remuneration'],
 					'class'		=> 'cvOn cvNotReq cvAlphaNum cvMaxLen',
 					'id'		=> 'monthly_remuneration'
+				),
+				'8' => array(
+					'name'		=> 'exp_document',
+					'type'		=> 'file',
+					'valid'		=> 'file',
+					'value'		=> $row['exp_document'],
+					'class'		=> 'cvOn cvReq cvFile',
+					'id'		=> 'exp_document'
 				)
 			);
 			$loopC++;
@@ -245,6 +272,20 @@ class DmiChemistExperienceDetailsTable extends Table{
 				$to_dt = $CustomersController->Customfunctions->changeDateFormat($forms_data['to_dt'][$i]);
 				$monthly_remuneration = htmlentities($forms_data['monthly_remuneration'][$i], ENT_QUOTES);
 
+				if($forms_data['exp_document'][$i]->getClientFilename() != null) {
+		
+					$file_name = $forms_data['exp_document'][$i]->getClientFilename();
+					$file_size = $forms_data['exp_document'][$i]->getSize();
+					$file_type = $forms_data['exp_document'][$i]->getClientMediaType();
+					$file_local_path = $forms_data['exp_document'][$i]->getStream()->getMetadata('uri');
+					
+					$uploadedfile = $CustomersController->Customfunctions->fileUploadLib($file_name,$file_size,$file_type,$file_local_path); // calling file uploading function
+				}
+				else {
+					
+					$uploadedfile = $section_form_details[$i]['exp_document'];
+				}
+
 
 				//Save the Data
 				$DmiChemistExperienceDetailsEntity = $this->newEntity(array(
@@ -259,7 +300,8 @@ class DmiChemistExperienceDetailsTable extends Table{
 					'form_status'=>$status,					
 					'created'=>$created,
 					'modified'=>date('Y-m-d H:i:s'),
-					'is_latest'=>1
+					'is_latest'=>1,
+					'exp_document'=>$uploadedfile
 
 				));
 
@@ -370,7 +412,8 @@ class DmiChemistExperienceDetailsTable extends Table{
 			'mo_comment_ul'=>$mo_comment_ul,
 			'ro_reply_comment'=>$ro_reply_comment,
 			'ro_reply_comment_date'=>$ro_reply_comment_date,
-			'rr_comment_ul'=>$rr_comment_ul
+			'rr_comment_ul'=>$rr_comment_ul,
+			'exp_document'=>$forms_data['exp_document']
 
 		));
 

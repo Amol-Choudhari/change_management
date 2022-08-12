@@ -35,7 +35,7 @@ $current_action = $this->request->getParam('action');
 			<tr>
 				<td data-search="<?php echo $each['appl_type']; ?>" data-order="<?php echo $each['appl_type']; ?>"><?php echo $this->Form->control('appl_type',array('type'=>'text', 'id'=>'appl_type'.$i, 'value'=>$each['appl_type'], 'label'=>false, 'readonly'=>true)); ?></td>
 				<td data-search="<?php echo $each['customer_id']; ?>" data-order="<?php echo $each['customer_id']; ?>"><?php echo $this->Form->control('customer_id',array('type'=>'text', 'id'=>'customer_id'.$i, 'value'=>$each['customer_id'], 'label'=>false, 'readonly'=>true)); ?></td>
-				<td><?php echo $each['firm_name'];?></td>
+				<td><?php echo "<span class='badge'>".$each['firm_name']."</span>";?></td>
 				
 				<?php if($_SESSION['current_level']=='level_2' && $current_action == 'pendingApplications'){ //for IO user only for Reports ?>
 					

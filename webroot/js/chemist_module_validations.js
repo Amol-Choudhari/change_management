@@ -285,6 +285,43 @@ $( document ).ready(function() {
 		});
 	});
 
+	//FOR CHECKING THE EMAIL ALREADY EXITS AJAX AND VALIDATION IS ADDED BY AKASH ON 16-12-2021
+	$('#email').focusout(function(){
+
+		var email = $("#email").val();
+
+		$.ajax({
+			type : 'POST',
+			url : '../AjaxFunctions/checkEmailNumberExistInChemistTable',
+			async : true,
+			data : {email:email},
+			beforeSend: function (xhr) {
+				xhr.setRequestHeader('X-CSRF-Token', $('[name="_csrfToken"]').val());
+			},
+			success : function(response){
+
+				if($.trim(response)=='yes'){
+
+					$.alert({
+						title: "Alert!",
+						content: 'Enetered email  is already exist !!',
+						type: 'red',
+						typeAnimated: true,
+						buttons: {
+							Ok: {
+								text: 'Ok',
+								btnClass: 'btn-red',
+								action: function(){
+									$("#email").val('');
+								}
+							},
+						}
+					});
+				}
+			}
+		});
+	});
+
 
 
 
@@ -331,3 +368,55 @@ function renderToast(theme, msgTxt) {
 	$('#toast-msg-box-'+theme).delay(3000).fadeOut('slow');
 
 }
+
+
+
+$(document).ready(function(){
+
+	$('#education').on('change', '.cvFile', function(){
+
+		var selected_file = $(this).val();
+		var field_id = $(this).attr('id');
+		var ext_type_array = ["pdf"];
+		var get_file_size = $('#'.concat(field_id))[0].files[0].size;
+		var get_file_ext = selected_file.split(".");
+		var validExt = get_file_ext.length-1;
+		var value_return = 'true';
+	
+		get_file_ext = get_file_ext[get_file_ext.length-1].toLowerCase();
+	
+		if(get_file_size > 5097152){
+	
+		  $("#".concat(field_id)).parent().append('<span class="err">Please select file below 5mb </span>').css('color','red');
+		  $("#".concat(field_id)).addClass("is-invalid");
+		  $("#".concat(field_id)).click(function(){ $("#".concat(field_id)).parent().find('.err').remove(); $("#".concat(field_id)).removeClass("is-invalid");});
+		  $('#'.concat(field_id)).val('');
+		  value_return = 'false';
+		}
+	
+		if(ext_type_array.lastIndexOf(get_file_ext) == -1){
+	
+		  $("#".concat(field_id)).parent().append('<span class="err">Please select file type pdf only</span>').css('color','red');
+		  $("#".concat(field_id)).addClass("is-invalid");
+		  $("#".concat(field_id)).click(function(){ $("#".concat(field_id)).parent().find('.err').remove();  $("#".concat(field_id)).removeClass("is-invalid");});
+		  $('#'.concat(field_id)).val('');
+		  value_return = 'false';
+		}
+	
+		if (validExt != 1){
+	
+		  $("#".concat(field_id)).parent().append('<span class="err">Invalid file uploaded</span>').css('color','red');
+		  
+		  $("#".concat(field_id)).addClass("is-invalid");
+		  $("#".concat(field_id)).click(function(){ $("#".concat(field_id)).parent().find('.err').remove(); $("#".concat(field_id)).removeClass("is-invalid");});
+		  $('#'.concat(field_id)).val('');
+		  value_return = 'false';
+		}
+	
+		if(value_return == 'false'){
+		  return false;
+		}else{
+		  exit();
+		}
+	});
+});

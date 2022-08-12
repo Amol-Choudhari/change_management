@@ -46,6 +46,7 @@ class DmiChemistEducationDetailsTable extends Table{
 			$result[0]['ro_reply_comment'] = '';
 			$result[0]['delete_mo_comment'] = '';
 			$result[0]['customer_reply_date'] = '';
+			$result[0]['edu_document'] = '';
 
 		}else{
 
@@ -74,7 +75,7 @@ class DmiChemistEducationDetailsTable extends Table{
 
 		$edu_type = array();
         $division = array();
-
+		
         foreach ($edu_type_list as $key => $value) {
 
 			$edu_type[] = array(
@@ -138,6 +139,11 @@ class DmiChemistEducationDetailsTable extends Table{
 					'col' 		=> '% Marks',
 					'colspan' 	=> '1',
 					'rowspan' 	=> '1'
+				),
+				'7' => array(
+					'col' 		=> 'Marksheet/Certificate',
+					'colspan' 	=> '1',
+					'rowspan' 	=> '1'
 				)
 			)
 		);
@@ -173,7 +179,7 @@ class DmiChemistEducationDetailsTable extends Table{
 					'maxlength'	=> '100',
 					'value'		=> $row['stream'],
 					'class'		=> 'cvOn cvReq cvAlphaNum cvMaxLen',
-					'id'		=> 'stream'
+					'id'		=> 'stream',
 				),
 				'3' => array(
 					'name'		=> 'university',
@@ -211,6 +217,14 @@ class DmiChemistEducationDetailsTable extends Table{
 					'value'		=> $row['marks'],
 					'class'		=> 'cvOn cvReq cvFloat cvMaxLen',
 					'id'		=> 'marks'
+				),
+				'7' => array(
+					'name'		=> 'edu_document',
+					'type'		=> 'file',
+					'valid'		=> 'file',
+					'value'		=> $row['edu_document'],
+					'class'		=> 'cvOn cvReq cvFile',
+					'id'		=> 'edu_document'
 				)
 			);
 			$loopC++;
@@ -234,8 +248,6 @@ class DmiChemistEducationDetailsTable extends Table{
 		if($dataValidatation == 1 ){
 
 			$section_form_details = $this->sectionFormDetails($chemist_id);
-
-			//$id = $section_form_details[0]['id'];
 			$status = 'saved';
 			$created = date('Y-m-d H:i:s');
 			$CustomersController = new CustomersController;
@@ -287,6 +299,20 @@ class DmiChemistEducationDetailsTable extends Table{
 				$year = htmlentities($forms_data['year'][$i], ENT_QUOTES);
 				$marks = htmlentities($forms_data['marks'][$i], ENT_QUOTES);
 
+				if($forms_data['edu_document'][$i]->getClientFilename() != null) {
+		
+					$file_name = $forms_data['edu_document'][$i]->getClientFilename();
+					$file_size = $forms_data['edu_document'][$i]->getSize();
+					$file_type = $forms_data['edu_document'][$i]->getClientMediaType();
+					$file_local_path = $forms_data['edu_document'][$i]->getStream()->getMetadata('uri');
+					
+					$uploadedfile = $CustomersController->Customfunctions->fileUploadLib($file_name,$file_size,$file_type,$file_local_path); // calling file uploading function
+				}
+				else {
+					
+					$uploadedfile = $section_form_details[$i]['edu_document'];
+				}
+
 				$DmiChemistEducationDetailsEntity =	$this->newEntity(array(
 
 					'customer_id'=>$chemist_id,
@@ -296,10 +322,11 @@ class DmiChemistEducationDetailsTable extends Table{
 					'year'=>$year,
 					'division'=>$division,
 					'marks'=>$marks,
-					'form_status'=>$status,					
+					'form_status'=>$status,
 					'created'=>$created,
 					'modified'=>date('Y-m-d H:i:s'),
-					'is_latest'=>1
+					'is_latest'=>1,
+					'edu_document'=>$uploadedfile
 				));
 
 				if($this->save($DmiChemistEducationDetailsEntity)){
@@ -325,7 +352,7 @@ class DmiChemistEducationDetailsTable extends Table{
 
 	// To save 	RO/SO referred back  and MO reply comment
 	public function saveReferredBackComment ($customer_id,$forms_data,$comment,$comment_upload,$reffered_back_to) {
-//print_r($forms_data); exit;
+
 		// Import another model in this model
 
 		$logged_in_user = $_SESSION['username'];
@@ -410,7 +437,8 @@ class DmiChemistEducationDetailsTable extends Table{
 			'mo_comment_ul'=>$mo_comment_ul,
 			'ro_reply_comment'=>$ro_reply_comment,
 			'ro_reply_comment_date'=>$ro_reply_comment_date,
-			'rr_comment_ul'=>$rr_comment_ul
+			'rr_comment_ul'=>$rr_comment_ul,
+			'edu_document'=>$forms_data['edu_document']
 
 		));
 
