@@ -472,7 +472,7 @@
 				$ro_reply_comment_date = null;
 				$rr_comment_ul = null;
 				
-			}elseif($reffered_back_to == 'Level3ToLevel'){
+			}elseif($reffered_back_to == 'Level3ToLevel1'){ // this '1' is added to 'level' as it was not there for RO - MO communication on AKASH [19-08-2022]
 				
 				$form_status = $forms_data['form_status'];
 				$reffered_back_comment = $forms_data['reffered_back_comment'];

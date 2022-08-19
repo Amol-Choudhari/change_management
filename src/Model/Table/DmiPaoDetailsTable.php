@@ -68,15 +68,20 @@ class DmiPaoDetailsTable extends Table{
 		
 			$posted_ro_office = $DmiUsers->find('all')->select(['posted_ro_office'])->where(['email' => $username,'status'=>'active'])->first();
 			$office_type = $DmiRoOffices->find()->select(['office_type'])->where(['id IS' => $posted_ro_office['posted_ro_office']])->first();
-		
+			
 			if ($office_type['office_type'] == 'SO') {
 				$getPaoIds = $DmiDistricts->find('all')->select(['pao_id','pao_id'])->where(['so_id IS' => $posted_ro_office['posted_ro_office']])->group('pao_id')->combine('pao_id','pao_id')->toArray();
 			} else {
 				$getPaoIds = $DmiDistricts->find('all')->select(['pao_id','pao_id'])->where(['ro_id IS' => $posted_ro_office['posted_ro_office']])->group('pao_id')->combine('pao_id','pao_id')->toArray();
 			}
 			
-			$getPaoDetails = $this->find('all')->select(['pao_user_id','pao_user_id'])->where(['id IN' => $getPaoIds])->combine('pao_user_id','pao_user_id')->toArray();
-			$paoNameDetails = $DmiUsers->find('all')->where(['id IN' => $getPaoDetails,'status'=>'active'])->toArray();
+			if (empty($getPaoIds)) {
+				$paoNameDetails = null;
+			} else {
+				$getPaoDetails = $this->find('all')->select(['pao_user_id','pao_user_id'])->where(['id IN' => $getPaoIds])->combine('pao_user_id','pao_user_id')->toArray();
+				$paoNameDetails = $DmiUsers->find('all')->where(['id IN' => $getPaoDetails,'status'=>'active'])->toArray();
+			}
+			
 		}
 		
 		return $paoNameDetails;

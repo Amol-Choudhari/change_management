@@ -7,7 +7,7 @@
 		chemist_registration_validations();
 	});
 
-	alert();
+
 
 
 	$("#profile_photo").change(function(){
