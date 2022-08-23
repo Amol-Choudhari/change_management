@@ -101,4 +101,8 @@
 		</tr>
 	</table>
 
+    <!-- QR Code added by shankhpal shende on 16/08/2022 -->
+	<div style="text-align: left;"> <img width="100" height="100" src="<?php echo $result_for_qr['qr_code_path']; ?>"></div>
+	
+	
         

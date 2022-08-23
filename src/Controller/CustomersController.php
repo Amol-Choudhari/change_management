@@ -403,8 +403,8 @@ class CustomersController extends AppController {
                         'district' => $district,
                         'postal_code' => $htmlencodedpostalcode,
                         'email' => $htmlencodedemail,
-                        'password' => '91c8559eb34ab5e1ab86f9e80d9753c59b7da0d0e025ec8e7785f19e7852ca428587cdb4f02b5c67d1220ca5bb440b5592cd76b1c13878d7f10a1e568014f4dc', //Agmark123@
-						//'password'=>'3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2',//123
+                        //'password' => '91c8559eb34ab5e1ab86f9e80d9753c59b7da0d0e025ec8e7785f19e7852ca428587cdb4f02b5c67d1220ca5bb440b5592cd76b1c13878d7f10a1e568014f4dc', //Agmark123@
+						'password'=>'3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2',//123
                         'mobile' => base64_encode($htmlencodedmobile), //This is added on 27-04-2021 for base64encoding by AKASH
                         'landline' => base64_encode($htmlencodedlandline),//This is added on 27-04-2021 for base64encoding by AKASH
                         //'once_card_no'=>$encrypted_aadhar, //commented on 22-03-2018
@@ -790,17 +790,17 @@ class CustomersController extends AppController {
 
                 $countspecialchar = substr_count($username, "/");
 
-				if ($countspecialchar == 1) {
-					$table = 'DmiCustomers';
-				} elseif ($countspecialchar == 3) {
-					$table = 'DmiFirms';
-				} elseif ($countspecialchar == 2) {
-					$table = 'DmiChemistRegistrations';
-				} else {
-					$message = 'Sorry...User Id entered is not valid';
-					$message_theme = 'failed';
-					$redirect_to = 'forgot_password';																																									   
-				}
+                    if ($countspecialchar == 1) {
+                        $table = 'DmiCustomers';
+                    } elseif ($countspecialchar == 3) {
+                        $table = 'DmiFirms';
+                    } elseif ($countspecialchar == 2) {
+                        $table = 'DmiChemistRegistrations';
+                    } else {
+                        $message = 'Sorry...User Id entered is not valid';
+                        $message_theme = 'failed';
+                        $redirect_to = 'forgot_password';
+                    }
 
                     $this->loadModel($table);
 
@@ -809,13 +809,16 @@ class CustomersController extends AppController {
                     // For chemist module, Done by Pravin Bhakare 4/08/2021
                     //check if Customer ID & Email Match in record.
                     if($countspecialchar == 2){
+
                         $check_valid_record = $this->$table->find('all', array('conditions' => array('email IS' => base64_encode($emailforrecovery), 'chemist_id IS' => $username)))->first();
+				   
                     } else {
+						 
                         $check_valid_record = $this->$table->find('all', array('conditions' => array('email IS' => base64_encode($emailforrecovery), 'customer_id IS' => $username)))->first();
                     }
 
                     if (empty($check_valid_record)) {
-	
+
                         $message = 'Sorry... Provided Applicant ID & Email Id does not Matched.';
                         $message_theme = 'failed';
                         $redirect_to = 'forgot_password';
@@ -1555,7 +1558,7 @@ class CustomersController extends AppController {
     }
 
     //function to encode email id columns for flow wise tables and speficied tables
-   /* public function updateEmailWithId(){			
+/*    public function updateEmailWithId(){			
 			
         $this->autoRender=false;
 
@@ -1667,6 +1670,8 @@ class CustomersController extends AppController {
                     $record_id = $eachRecord['id'];
                     $user_email_id = $eachRecord['user_email_id'];
                     
+																				 
+
                     if($this->is_base64_encoded($user_email_id)==false && $this->is_email_valid($user_email_id)==true && !empty($user_email_id)){
                         $user_email_id = base64_encode($user_email_id);
 						$UpdateValueArray = array('user_email_id'=>"$user_email_id");
@@ -2146,6 +2151,7 @@ class CustomersController extends AppController {
                     $record_id = $eachRecord['id'];
                     $email_id = $eachRecord['email_id'];
                     
+																	   
                     
 
                     if($this->is_base64_encoded($email_id)==false && $this->is_email_valid($email_id)==true && !empty($email_id)){
@@ -2235,9 +2241,8 @@ class CustomersController extends AppController {
 			}	
 		}
 	}*/
-
     //function to encode the email id for some standard tables
-    /*public function encodeAllEmailIds(){			
+ /*   public function encodeAllEmailIds(){			
 			
         $this->autoRender=false;
 
@@ -2304,6 +2309,654 @@ class CustomersController extends AppController {
         }
     }*/
 
+    
+/*    public function updateEmailWithEncoded(){			
+			
+        $this->autoRender=false;
+
+        $this->loadModel('DmiUsers');
+        $this->loadModel('DmiFirms');
+
+        //get users table ids list
+        $userIds = $this->DmiUsers->find('list',array('keyField'=>'id','valueField'=>'email','order'=>'id ASC'))->toArray();
+
+        //get users table ids list
+        $firmIds = $this->DmiFirms->find('list',array('keyField'=>'id','valueField'=>'email','order'=>'id ASC'))->toArray();
+
+        //for flow wise common tables
+        $this->loadModel('DmiFlowWiseTablesLists');
+        $flowWisetables = $this->DmiFlowWiseTablesLists->find('all',array('conditions'=>array('id IN'=>$this->Session->read('applTypeArray')),'order'=>'id ASC'))->toArray();
+        
+        foreach($flowWisetables as $eachFlow){
+
+            $hoAllocationTable = $eachFlow['ho_level_allocation'];
+            $amaApprovedTable = $eachFlow['ama_approved_application'];
+            $hoCommentsTable = $eachFlow['ho_comment_reply'];
+            $allocationTable = $eachFlow['allocation'];
+            $moCommentsTable = $eachFlow['commenting_with_mo'];
+            $currentPositionTable = $eachFlow['appl_current_pos'];
+            $rosocommentTable = $eachFlow['ro_so_comments'];
+            $grantTable = $eachFlow['grant_pdf'];
+            $level4ROApproved = $eachFlow['level_4_ro_approved'];
+
+            //for allocation table
+            $this->loadModel($allocationTable);
+            $getRecords = $this->$allocationTable->find('all',array('order'=>'id ASC'))->toArray();
+            foreach($getRecords as $eachRecord){
+                
+                    $record_id = $eachRecord['id'];
+                    $level_1 = base64_decode($eachRecord['level_1']);
+                    $level_2 = base64_decode($eachRecord['level_2']);
+                    $level_3 = base64_decode($eachRecord['level_3']);
+                    $current_level = base64_decode($eachRecord['current_level']);
+                    $level_4_ro = base64_decode($eachRecord['level_4_ro']);
+                    $level_4_mo = base64_decode($eachRecord['level_4_mo']);
+                       
+                 //   $UpdateValueArray = array('level_1'=>"$level_1",'level_2'=>"$level_2",'level_3'=>"$level_3",'current_level'=>"$current_level",'level_4_ro'=>"$level_4_ro",'level_4_mo'=>"$level_4_mo");
+                    
+                    if(!empty($level_1)){
+                        $this->$allocationTable->updateAll(array('level_1'=>"$level_1"),array('id'=>$record_id));
+                    }if(!empty($level_2)){
+                        $this->$allocationTable->updateAll(array('level_2'=>"$level_2"),array('id'=>$record_id));
+                    }if(!empty($level_3)){
+                        $this->$allocationTable->updateAll(array('level_3'=>"$level_3"),array('id'=>$record_id));
+                    }if(!empty($current_level)){
+                        $this->$allocationTable->updateAll(array('current_level'=>"$current_level"),array('id'=>$record_id));
+                    }if(!empty($level_4_ro)){
+                        $this->$allocationTable->updateAll(array('level_4_ro'=>"$level_4_ro"),array('id'=>$record_id));
+                    }if(!empty($level_4_mo)){
+                        $this->$allocationTable->updateAll(array('level_4_mo'=>"$level_4_mo"),array('id'=>$record_id));
+                    }
+                    
+            }
+
+            //for current position table
+            $this->loadModel($currentPositionTable);
+            $getRecords = $this->$currentPositionTable->find('all',array('order'=>'id ASC'))->toArray();
+            foreach($getRecords as $eachRecord){
+                
+                    $record_id = $eachRecord['id'];
+                    $current_user_email_id = base64_decode($eachRecord['current_user_email_id']);
+                    
+                    $UpdateValueArray = array('current_user_email_id'=>"$current_user_email_id");
+
+                    if(!empty($current_user_email_id)){
+                        $this->$currentPositionTable->updateAll($UpdateValueArray,array('id'=>$record_id));
+                    }
+            }
+
+            //for AMA approved table
+            $this->loadModel($amaApprovedTable);
+            $getRecords = $this->$amaApprovedTable->find('all',array('order'=>'id ASC'))->toArray();
+            foreach($getRecords as $eachRecord){
+                
+                    $record_id = $eachRecord['id'];
+                    $user_email_id = base64_decode($eachRecord['user_email_id']);
+                    
+                    $UpdateValueArray = array('user_email_id'=>"$user_email_id");
+
+                    if(!empty($user_email_id)){
+                        $this->$amaApprovedTable->updateAll($UpdateValueArray,array('id'=>$record_id));
+                    }
+            }
+
+            //for grant table
+            $this->loadModel($grantTable);
+            $getRecords = $this->$grantTable->find('all',array('order'=>'id ASC'))->toArray();
+            foreach($getRecords as $eachRecord){
+                
+                $record_id = $eachRecord['id'];
+                if(base64_decode($eachRecord['user_email_id'],true)==true){
+                    $user_email_id = base64_decode($eachRecord['user_email_id']);
+                    
+                    $UpdateValueArray = array('user_email_id'=>"$user_email_id");
+
+                    if(!empty($user_email_id)){
+                        $this->$grantTable->updateAll($UpdateValueArray,array('id'=>$record_id));
+                    }
+                }
+            }
+
+            //for HO allocation table
+            $this->loadModel($hoAllocationTable);
+            $getRecords = $this->$hoAllocationTable->find('all',array('order'=>'id ASC'))->toArray();
+            foreach($getRecords as $eachRecord){
+                
+                    $record_id = $eachRecord['id'];
+                    $dy_ama = base64_decode($eachRecord['dy_ama']);
+                    $ho_mo_smo = base64_decode($eachRecord['ho_mo_smo']);
+                    $jt_ama = base64_decode($eachRecord['jt_ama']);
+                    $ama = base64_decode($eachRecord['ama']);
+                    $current_level = base64_decode($eachRecord['current_level']);
+                    
+                //    $UpdateValueArray = array('dy_ama'=>"$dy_ama",'ho_mo_smo'=>"$ho_mo_smo",'jt_ama'=>"$jt_ama",'ama'=>"$ama",'current_level'=>"$current_level");
+                    
+                    if(!empty($dy_ama)){
+                        $this->$hoAllocationTable->updateAll(array('dy_ama'=>"$dy_ama"),array('id'=>$record_id));
+                    }if(!empty($ho_mo_smo)){
+                        $this->$hoAllocationTable->updateAll(array('ho_mo_smo'=>"$ho_mo_smo"),array('id'=>$record_id));
+                    }if(!empty($jt_ama)){
+                        $this->$hoAllocationTable->updateAll(array('jt_ama'=>"$jt_ama"),array('id'=>$record_id));
+                    }if(!empty($ama)){
+                        $this->$hoAllocationTable->updateAll(array('ama'=>"$ama"),array('id'=>$record_id));
+                    }if(!empty($current_level)){
+                        $this->$hoAllocationTable->updateAll(array('current_level'=>"$current_level"),array('id'=>$record_id));
+                    }
+            }
+
+            //for HO comments table
+            $this->loadModel($hoCommentsTable);
+            $getRecords = $this->$hoCommentsTable->find('all',array('order'=>'id ASC'))->toArray();
+            foreach($getRecords as $eachRecord){
+                
+                    $record_id = $eachRecord['id'];
+                    $comment_by=null;
+                    $comment_to=null;
+                    if(base64_decode($eachRecord['comment_by'],true)==true){
+                        $comment_by = base64_decode($eachRecord['comment_by']);
+                    }
+                    if(base64_decode($eachRecord['comment_to'],true)==true){
+                        $comment_to = base64_decode($eachRecord['comment_to']);
+                    }
+                    
+                //    $UpdateValueArray = array('comment_by'=>"$comment_by",'comment_to'=>"$comment_to");
+
+                    if(!empty($comment_by)){
+                        $this->$hoCommentsTable->updateAll(array('comment_by'=>"$comment_by"),array('id'=>$record_id));
+                    }if(!empty($comment_to)){
+                        $this->$hoCommentsTable->updateAll(array('comment_to'=>"$comment_to"),array('id'=>$record_id));
+                    }
+            }
+
+            //for level 4 RO approved table
+            $this->loadModel($level4ROApproved);
+            $getRecords = $this->$level4ROApproved->find('all',array('order'=>'id ASC'))->toArray();
+            foreach($getRecords as $eachRecord){
+                
+                    $record_id = $eachRecord['id'];
+                    $user_email_id = base64_decode($eachRecord['user_email_id']);
+                    
+                    $UpdateValueArray = array('user_email_id'=>"$user_email_id");
+
+                    if(!empty($user_email_id)){
+                        $this->$level4ROApproved->updateAll($UpdateValueArray,array('id'=>$record_id));
+                    }
+            }
+
+            //for mo ro comments table
+            $this->loadModel($moCommentsTable);
+            $getRecords = $this->$moCommentsTable->find('all',array('order'=>'id ASC'))->toArray();
+            foreach($getRecords as $eachRecord){
+                
+                    $record_id = $eachRecord['id'];
+                    $comment_by=null;
+                    $comment_to=null;
+                    if(base64_decode($eachRecord['comment_by'],true)==true){
+                        $comment_by = base64_decode($eachRecord['comment_by']);
+                    }
+                    if(base64_decode($eachRecord['comment_to'],true)==true){
+                        $comment_to = base64_decode($eachRecord['comment_to']);
+                    }
+                    
+                //    $UpdateValueArray = array('comment_by'=>"$comment_by",'comment_to'=>"$comment_to");
+                    if(!empty($comment_by)){
+                        $this->$moCommentsTable->updateAll(array('comment_by'=>"$comment_by"),array('id'=>$record_id));
+                    }if(!empty($comment_to)){
+                        $this->$moCommentsTable->updateAll(array('comment_to'=>"$comment_to"),array('id'=>$record_id));
+                    }
+            }
+
+            //for ro so comments table
+            $this->loadModel($rosocommentTable);
+            $getRecords = $this->$rosocommentTable->find('all',array('order'=>'id ASC'))->toArray();
+            foreach($getRecords as $eachRecord){
+                
+                    $record_id = $eachRecord['id'];
+                    $comment_by=null;
+                    $comment_to=null;
+                    if(base64_decode($eachRecord['comment_by'],true)==true){
+                        $comment_by = base64_decode($eachRecord['comment_by']);
+                    }
+                    if(base64_decode($eachRecord['comment_to'],true)==true){
+                        $comment_to = base64_decode($eachRecord['comment_to']);
+                    }
+                    
+                //    $UpdateValueArray = array('comment_by'=>"$comment_by",'comment_to'=>"$comment_to");
+                    if(!empty($comment_by)){
+                        $this->$rosocommentTable->updateAll(array('comment_by'=>"$comment_by"),array('id'=>$record_id));
+                    }if(!empty($comment_to)){
+                        $this->$rosocommentTable->updateAll(array('comment_to'=>"$comment_to"),array('id'=>$record_id));
+                    }
+            }
+
+        }
+
+
+        //for other random tables having user email id
+        $modelArray = array('Dmi15DigitSiteinspectionReports','Dmi15DigitApplDetails','DmiAllConstituentOilsDetails','DmiAllDirectorsDetails',
+                            'DmiAllTanksDetails','DmiApplicationCharges','DmiApplTransferLogs','DmiAuthFirmRegistrations',
+                            'DmiAuthPrimaryRegistrations','DmiBusinessTypes','DmiCaBusinessYears','DmiCaDomesticRenewalDetails',
+                        'DmiCaExportSiteinspectionReports','DmiChangeDirectorsDetails','DmiChangeFirms','DmiChangeLabChemistsDetails','DmiChangeLabFirmDetails',
+                        'DmiChangeLabInspectionReports','DmiChangeLabOtherDetails','DmiChemistComments','DmiChemistEducationDetails','DmiChemistExperienceDetails',
+                        'DmiChemistFinalReports','DmiChemistOtherDetails','DmiChemistProfileDetails','DmiChemistTrainingDetails','DmiCrushingRefiningPeriods','DmiCustomerFirmProfiles',
+                        'DmiCustomerLaboratoryDetails','DmiCustomerMachineryProfiles','DmiCustomerPackingDetails','DmiCustomerPremisesProfiles','DmiCustomerTblDetails',
+                        'DmiDatesExtensionsLogs','DmiDistricts','DmiDivisionGrades','DmiEducationTypes','DmiEsignRequestResponseLogs','DmiECodeApplDetails','DmiECodeSiteinspectionReports',
+                        'DmiGrantProvCertificateLogs','DmiIoAllocationLogs','DmiLaboratoryChemistsDetails','DmiLaboratoryFirmDetails','DmiLaboratoryOtherDetails',
+                        'DmiLaboratoryRenewalOtherDetails','DmiLaboratorySiteinspectionReports','DmiLaboratoryTypes','DmiLoginStatuses','DmiMachineTypes','DmiMenus','DmiMoAllocationLogs',
+                        'DmiOldCertDateUpdateLogs','DmiPackingTypes','DmiPages','DmiPaoDetails','DmiPrintingBusinessYears','DmiPrintingFirmProfiles','DmiPrintingPremisesProfiles',
+                        'DmiPrintingRenewalDetails','DmiPrintingSiteinspectionReports','DmiPrintingUnitDetails','DmiRejectedApplLogs','DmiRenewalSiteinspectionReports','DmiReplicaChargesDetails',
+                        'DmiReplicaChargesDetailsLogs','DmiReEsignGrantLogs','DmiRoAllocationLogs','DmiRoOffices','DmiSentEmailLogs','DmiSiteinspectionLaboratoryDetails',
+                        'DmiSiteinspectionOtherDetails','DmiSiteinspectionPremisesDetails','DmiSiteinspectionPremisesProfiles','DmiSmsEmailTemplates','DmiStates','DmiTankShapes',
+                        'DmiTempEsignStatuses','DmiUsers','DmiUsersResetpassKeys','DmiUserActionLogs','DmiUserFileUploads','DmiUserHistoryLogs','DmiUserLogs','DmiUserRoles',
+    'DmiUserRolesManagmentLogs','DmiWorkTransferHoPermissions','DmiWorkTransferLogs','LimsSampleCharges');
+                            
+        foreach($modelArray as $eachModel){
+            
+            $this->loadModel($eachModel);
+            $getRecords = $this->$eachModel->find('all',array('order'=>'id ASC'))->toArray();
+            
+            if($eachModel=='Dmi15DigitApplDetails' || $eachModel=='DmiAllConstituentOilsDetails' || $eachModel=='DmiAllDirectorsDetails' || $eachModel=='DmiAllTanksDetails'
+                || $eachModel=='DmiApplicationCharges' || $eachModel=='DmiAuthFirmRegistrations' || $eachModel=='DmiAuthPrimaryRegistrations' || $eachModel=='DmiBusinessTypes'
+                || $eachModel=='DmiCaBusinessYears' || $eachModel=='DmiCaDomesticRenewalDetails' || $eachModel=='DmiChangeDirectorsDetails' || $eachModel=='DmiChangeLabChemistsDetails'
+                || $eachModel=='DmiChangeLabFirmDetails' || $eachModel=='DmiChangeLabOtherDetails' || $eachModel=='DmiChemistEducationDetails' || $eachModel=='DmiChemistExperienceDetails'
+                || $eachModel=='DmiChemistOtherDetails' || $eachModel=='DmiChemistTrainingDetails' || $eachModel=='DmiCrushingRefiningPeriods' || $eachModel=='DmiCustomerLaboratoryDetails'
+                || $eachModel=='DmiCustomerMachineryProfiles' || $eachModel=='DmiCustomerPackingDetails' || $eachModel=='DmiCustomerPremisesProfiles' || $eachModel=='DmiCustomerTblDetails'
+                || $eachModel=='DmiDistricts' || $eachModel=='DmiECodeApplDetails' || $eachModel=='DmiGrantProvCertificateLogs' || $eachModel=='DmiLaboratoryChemistsDetails'
+                || $eachModel=='DmiLaboratoryFirmDetails' || $eachModel=='DmiLaboratoryOtherDetails' || $eachModel=='DmiLaboratoryRenewalOtherDetails' || $eachModel=='DmiLaboratoryTypes'
+                || $eachModel=='DmiMachineTypes' || $eachModel=='DmiMenus' || $eachModel=='DmiPackingTypes' || $eachModel=='DmiPages' || $eachModel=='DmiPaoDetails' || $eachModel=='DmiPrintingBusinessYears'
+                || $eachModel=='DmiPrintingPremisesProfiles' || $eachModel=='DmiPrintingRenewalDetails' || $eachModel=='DmiPrintingUnitDetails' || $eachModel=='DmiSmsEmailTemplates'
+                || $eachModel=='DmiStates' || $eachModel=='DmiTankShapes' || $eachModel=='DmiUserFileUploads' || $eachModel=='DmiUserRoles' || $eachModel=='LimsSampleCharges'){
+                                    
+                    foreach($getRecords as $eachRecord){
+                    
+                        $record_id = $eachRecord['id'];
+                        if(base64_decode($eachRecord['user_email_id'],true)==true){
+                            $user_email_id = base64_decode($eachRecord['user_email_id']);
+                            
+                            $UpdateValueArray = array('user_email_id'=>"$user_email_id");
+
+                            if(!empty($user_email_id)){
+                                $this->$eachModel->updateAll($UpdateValueArray,array('id'=>$record_id));
+                            }
+                        }
+                    }
+
+            }elseif($eachModel=='Dmi15DigitSiteinspectionReports' || $eachModel=='DmiCaExportSiteinspectionReports' || $eachModel=='DmiChangeLabInspectionReports' || $eachModel=='DmiChemistFinalReports'
+                || $eachModel=='DmiECodeSiteinspectionReports' || $eachModel=='DmiLaboratorySiteinspectionReports' || $eachModel=='DmiPrintingSiteinspectionReports' || $eachModel=='DmiRenewalSiteinspectionReports'
+                || $eachModel=='DmiSiteinspectionLaboratoryDetails' || $eachModel=='DmiSiteinspectionOtherDetails' || $eachModel=='DmiSiteinspectionPremisesDetails' || $eachModel=='DmiSiteinspectionPremisesProfiles'){
+
+                    foreach($getRecords as $eachRecord){
+                
+                        $record_id = $eachRecord['id'];
+                        if(base64_decode($eachRecord['user_email_id'],true)==true){
+                            $user_email_id = base64_decode($eachRecord['user_email_id']);
+                            if(!empty($user_email_id)){
+                                $this->$eachModel->updateAll(array('user_email_id'=>"$user_email_id"),array('id'=>$record_id));
+                            }
+                        }
+
+                        if(base64_decode($eachRecord['referred_back_by_email'],true)==true){
+                            $referred_back_by_email = base64_decode($eachRecord['referred_back_by_email']);
+                            if(!empty($referred_back_by_email)){
+                                $this->$eachModel->updateAll(array('referred_back_by_email'=>"$referred_back_by_email"),array('id'=>$record_id));
+                            }
+                        }
+                            
+                    }
+            
+            }elseif($eachModel=='DmiApplTransferLogs' || $eachModel=='DmiWorkTransferLogs'){
+
+                foreach($getRecords as $eachRecord){
+            
+                    $record_id = $eachRecord['id'];
+                    if(base64_decode($eachRecord['by_user'],true)==true){
+                        $by_user = base64_decode($eachRecord['by_user']);
+                        if(!empty($by_user)){
+                            $this->$eachModel->updateAll(array('by_user'=>"$by_user"),array('id'=>$record_id));
+                        }
+                    }
+                    if(base64_decode($eachRecord['from_user'],true)==true){
+                        $from_user = base64_decode($eachRecord['from_user']);
+                        if(!empty($from_user)){
+                            $this->$eachModel->updateAll(array('from_user'=>"$from_user"),array('id'=>$record_id));
+                        }
+                    }
+                    if(base64_decode($eachRecord['to_user'],true)==true){
+                        $to_user = base64_decode($eachRecord['to_user']);
+                        if(!empty($to_user)){
+                            $this->$eachModel->updateAll(array('to_user'=>"$to_user"),array('id'=>$record_id));
+                        }
+                    }
+
+                }
+
+            }elseif($eachModel=='DmiChangeFirms' || $eachModel=='DmiChemistProfileDetails'){
+
+                foreach($getRecords as $eachRecord){
+            
+                    $record_id = $eachRecord['id'];
+
+                    if(base64_decode($eachRecord['email'],true)==true){
+                        $email = base64_decode($eachRecord['email']);
+                        if(!empty($email)){
+                            $this->$eachModel->updateAll(array('email'=>"$email"),array('id'=>$record_id));
+                        }
+                    }
+   
+                }
+            
+            }elseif($eachModel=='DmiCustomerFirmProfiles' || $eachModel=='DmiPrintingFirmProfiles'){
+
+                foreach($getRecords as $eachRecord){
+            
+                    $record_id = $eachRecord['id'];
+
+                    if(base64_decode($eachRecord['user_email_id'],true)==true){
+                        $user_email_id = base64_decode($eachRecord['user_email_id']);
+                        if(!empty($user_email_id)){
+                            $this->$eachModel->updateAll(array('user_email_id'=>"$user_email_id"),array('id'=>$record_id));
+                        }
+                    }
+                    if(base64_decode($eachRecord['firm_email_id'],true)==true){
+                        $firm_email_id = base64_decode($eachRecord['firm_email_id']);
+                        if(!empty($firm_email_id)){
+                            $this->$eachModel->updateAll(array('firm_email_id'=>"$firm_email_id"),array('id'=>$record_id));
+                        }
+                    }
+
+                }
+            
+            }elseif($eachModel=='DmiDatesExtensionsLogs' || $eachModel=='DmiDivisionGrades' || $eachModel=='DmiEducationTypes' || $eachModel=='DmiRejectedApplLogs'){
+
+                foreach($getRecords as $eachRecord){
+            
+                    $record_id = $eachRecord['id'];
+
+                    if(base64_decode($eachRecord['by_user'],true)==true){
+                        $by_user = base64_decode($eachRecord['by_user']);
+                        if(!empty($by_user)){
+                            $this->$eachModel->updateAll(array('by_user'=>"$by_user"),array('id'=>$record_id));
+                        }
+                    }
+
+                }
+            
+            }elseif($eachModel=='DmiLoginStatuses' || $eachModel=='DmiUsersResetpassKeys' || $eachModel=='DmiUserActionLogs'){
+
+                foreach($getRecords as $eachRecord){
+            
+                    $record_id = $eachRecord['id'];
+                    if(base64_decode($eachRecord['user_id'],true)==true){
+                        $user_id = base64_decode($eachRecord['user_id']);
+                        if(!empty($user_id)){
+                            $this->$eachModel->updateAll(array('user_id'=>"$user_id"),array('id'=>$record_id));
+                        }
+                    }
+
+                }
+            
+            }elseif($eachModel=='DmiReplicaChargesDetails' || $eachModel=='DmiReplicaChargesDetailsLogs'){
+
+                foreach($getRecords as $eachRecord){
+            
+                    $record_id = $eachRecord['id'];
+                    if(base64_decode($eachRecord['user'],true)==true){
+                        $user = base64_decode($eachRecord['user']);
+                        if(!empty($user)){
+                            $this->$eachModel->updateAll(array('user'=>"$user"),array('id'=>$record_id));
+                        }
+                    }
+                }
+            
+            }elseif($eachModel=='DmiUsers' || $eachModel=='DmiUserHistoryLogs'){
+
+                foreach($getRecords as $eachRecord){
+            
+                    $record_id = $eachRecord['id'];
+
+                    if(base64_decode($eachRecord['created_by_user'],true)==true){
+                        $created_by_user = base64_decode($eachRecord['created_by_user']);
+                        if(!empty($created_by_user)){
+                            $this->$eachModel->updateAll(array('created_by_user'=>"$created_by_user"),array('id'=>$record_id));
+                        }
+                    }
+
+                }
+            
+            }elseif($eachModel=='DmiChemistComments'){
+
+                foreach($getRecords as $eachRecord){
+            
+                    $record_id = $eachRecord['id'];
+
+                    if(base64_decode($eachRecord['comment_by'],true)==true){
+                        $comment_by = base64_decode($eachRecord['comment_by']);
+                        if(!empty($comment_by)){
+                            $this->$eachModel->updateAll(array('comment_by'=>"$comment_by"),array('id'=>$record_id));
+                        }
+                    }
+                    if(base64_decode($eachRecord['comment_to'],true)==true){
+                        $comment_to = base64_decode($eachRecord['comment_to']);
+                        if(!empty($comment_to)){
+                            $this->$eachModel->updateAll(array('comment_to'=>"$comment_to"),array('id'=>$record_id));
+                        }
+                    }
+                    if(base64_decode($eachRecord['reply_by'],true)==true){
+                        $reply_by = base64_decode($eachRecord['reply_by']);
+                        if(!empty($reply_by)){
+                            $this->$eachModel->updateAll(array('reply_by'=>"$reply_by"),array('id'=>$record_id));
+                        }
+                    }
+                    if(base64_decode($eachRecord['reply_to'],true)==true){
+                        $reply_to = base64_decode($eachRecord['reply_to']);
+                        if(!empty($reply_to)){
+                            $this->$eachModel->updateAll(array('reply_to'=>"$reply_to"),array('id'=>$record_id));
+                        }
+                    }
+
+                }
+            }elseif($eachModel=='DmiEsignRequestResponseLogs'){
+
+                foreach($getRecords as $eachRecord){
+            
+                    $record_id = $eachRecord['id'];
+
+                    if(base64_decode($eachRecord['request_by_user_id'],true)==true){
+                        $request_by_user_id = base64_decode($eachRecord['request_by_user_id']);
+                        if(!empty($request_by_user_id)){
+                            $this->$eachModel->updateAll(array('request_by_user_id'=>"$request_by_user_id"),array('id'=>$record_id));
+                        }
+                    }
+
+                }
+            }elseif($eachModel=='DmiIoAllocationLogs'){
+
+                foreach($getRecords as $eachRecord){
+            
+                    $record_id = $eachRecord['id'];
+
+                    if(base64_decode($eachRecord['io_email_id'],true)==true){
+                        $io_email_id = base64_decode($eachRecord['io_email_id']);
+                        if(!empty($io_email_id)){
+                            $this->$eachModel->updateAll(array('io_email_id'=>"$io_email_id"),array('id'=>$record_id));
+                        }
+                    }
+
+                }
+            }elseif($eachModel=='DmiMoAllocationLogs'){
+
+                foreach($getRecords as $eachRecord){
+            
+                    $record_id = $eachRecord['id'];
+
+                    if(base64_decode($eachRecord['mo_email_id'],true)==true){
+                        $mo_email_id = base64_decode($eachRecord['mo_email_id']);
+                        if(!empty($mo_email_id)){
+                            $this->$eachModel->updateAll(array('mo_email_id'=>"$mo_email_id"),array('id'=>$record_id));
+                        }
+                    }
+                }
+            }elseif($eachModel=='DmiOldCertDateUpdateLogs'){
+
+                foreach($getRecords as $eachRecord){
+            
+                    $record_id = $eachRecord['id'];
+
+                    if(base64_decode($eachRecord['updated_by'],true)==true){
+                        $updated_by = base64_decode($eachRecord['updated_by']);
+                        if(!empty($updated_by)){
+                            $this->$eachModel->updateAll(array('updated_by'=>"$updated_by"),array('id'=>$record_id));
+                        }
+                    }
+
+                }
+            }elseif($eachModel=='DmiReEsignGrantLogs'){
+
+                foreach($getRecords as $eachRecord){
+            
+                    $record_id = $eachRecord['id'];
+
+                    if(base64_decode($eachRecord['re_esigned_by'],true)==true){
+                        $re_esigned_by = base64_decode($eachRecord['re_esigned_by']);
+                        if(!empty($re_esigned_by)){
+                            $this->$eachModel->updateAll(array('re_esigned_by'=>"$re_esigned_by"),array('id'=>$record_id));
+                        }
+                    }
+
+                }
+            }elseif($eachModel=='DmiRoAllocationLogs'){
+
+                foreach($getRecords as $eachRecord){
+            
+                    $record_id = $eachRecord['id'];
+
+                    if(base64_decode($eachRecord['ro_incharge_id'],true)==true){
+                        $ro_incharge_id = base64_decode($eachRecord['ro_incharge_id']);
+                        if(!empty($ro_incharge_id)){
+                            $this->$eachModel->updateAll(array('ro_incharge_id'=>"$ro_incharge_id"),array('id'=>$record_id));
+                        }
+                    }
+
+                }
+            }elseif($eachModel=='DmiRoOffices'){
+
+                foreach($getRecords as $eachRecord){
+            
+                    $record_id = $eachRecord['id'];
+
+                    if(base64_decode($eachRecord['ro_email_id'],true)==true){
+                        $ro_email_id = base64_decode($eachRecord['ro_email_id']);
+                        if(!empty($ro_email_id)){
+                            $this->$eachModel->updateAll(array('ro_email_id'=>"$ro_email_id"),array('id'=>$record_id));
+                        }
+                    }
+
+                    if(base64_decode($eachRecord['user_email_id'],true)==true){
+                        $user_email_id = base64_decode($eachRecord['user_email_id']);
+                        if(!empty($user_email_id)){
+                            $this->$eachModel->updateAll(array('user_email_id'=>"$user_email_id"),array('id'=>$record_id));
+                        }
+                    }
+
+                }
+            }elseif($eachModel=='DmiSentEmailLogs'){
+
+                foreach($getRecords as $eachRecord){
+            
+                    $record_id = $eachRecord['id'];
+                    $splitEmails = explode(',',$eachRecord['destination_list']);
+                    
+                    $destination_list = '';
+                    foreach($splitEmails as $eachEmail){
+
+                        if(base64_decode($eachEmail,true)==true){
+                            $idVar = base64_decode($eachEmail);
+                            $destination_list .= $idVar.',';
+                        }
+
+                    }
+
+                    $UpdateValueArray = array('destination_list'=>"$destination_list");
+
+                    if(!empty($destination_list)){
+                        $this->$eachModel->updateAll($UpdateValueArray,array('id'=>$record_id));
+                    }
+                    
+                }
+            }elseif($eachModel=='DmiTempEsignStatuses'){
+
+                foreach($getRecords as $eachRecord){
+            
+                    $record_id = $eachRecord['id'];
+
+                    if(base64_decode($eachRecord['esigning_user'],true)==true){
+                        $esigning_user = base64_decode($eachRecord['esigning_user']);
+                        if(!empty($esigning_user)){
+                            $this->$eachModel->updateAll(array('esigning_user'=>"$esigning_user"),array('id'=>$record_id));
+                        }
+                    }
+
+                }
+            }elseif($eachModel=='DmiUserLogs'){
+
+                foreach($getRecords as $eachRecord){
+            
+                    $record_id = $eachRecord['id'];
+
+                    if(base64_decode($eachRecord['email_id'],true)==true){
+                        $email_id = base64_decode($eachRecord['email_id']);
+                        if(!empty($email_id)){
+                            $this->$eachModel->updateAll(array('email_id'=>"$email_id"),array('id'=>$record_id));
+                        }
+                    }
+
+                }
+            }elseif($eachModel=='DmiUserRolesManagmentLogs'){
+
+                foreach($getRecords as $eachRecord){
+            
+                    $record_id = $eachRecord['id'];
+
+                    if(base64_decode($eachRecord['by_user'],true)==true){
+                        $by_user = base64_decode($eachRecord['by_user']);
+                        if(!empty($by_user)){
+                            $this->$eachModel->updateAll(array('by_user'=>"$by_user"),array('id'=>$record_id));
+                        }
+                    }
+
+                    if(base64_decode($eachRecord['to_user'],true)==true){
+                        $to_user = base64_decode($eachRecord['to_user']);
+                        if(!empty($to_user)){
+                            $this->$eachModel->updateAll(array('to_user'=>"$to_user"),array('id'=>$record_id));
+                        }
+                    }
+
+                }
+            }elseif($eachModel=='DmiWorkTransferHoPermissions'){
+
+                foreach($getRecords as $eachRecord){
+            
+                    $record_id = $eachRecord['id'];
+
+                    if(base64_decode($eachRecord['req_by_user'],true)==true){
+                        $req_by_user = base64_decode($eachRecord['req_by_user']);
+                        if(!empty($req_by_user)){
+                            $this->$eachModel->updateAll(array('req_by_user'=>"$req_by_user"),array('id'=>$record_id));
+                        }
+                    }
+
+                    if(base64_decode($eachRecord['req_for_user'],true)==true){
+                        $req_for_user = base64_decode($eachRecord['req_for_user']);
+                        if(!empty($req_for_user)){
+                            $this->$eachModel->updateAll(array('req_for_user'=>"$req_for_user"),array('id'=>$record_id));
+                        }
+                    }
+
+                }
+            }
+        }
+
+    }*/
 	
 	//for temp to update lg code of states and districts
 	/*public function updateLgCode(){
@@ -2918,6 +3571,49 @@ class CustomersController extends AppController {
 	}*/
 
 
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>    
+    // created by shankhpal shende for list of documents list on 09/08/2022
+    public function documentCheckList()
+    {
+        $this->viewBuilder()->setLayout('document_check_list_layout');
+        $this->loadModel('DmiDocCheckLists');
+        
+        $form_type = ['CA Non Bevo','CA Bevo','Printing Press','Laboratory','15 Digit Code','E code'];
+        $this->set('form_type', $form_type);
+        $comm_array = [];
+        $i = 0;
+        foreach($form_type as $eachformtype){ 
+            $get_doc =  $this->DmiDocCheckLists->find('all')->select(['releted_document'])->where(['form_type'=>$eachformtype])->order('id ASC')->toArray();
+            $doc_array[$i] = $get_doc;
+            $i++;
+        }
+        $this->set('doc_array', $doc_array);
+       
+    }
+
+    public function showCommodities()
+    {
+        $this->viewBuilder()->setLayout('document_check_list_layout');
+        $this->loadModel('MCommodityCategory');
+        $this->loadModel('MCommodity');
+        $conn = ConnectionManager::get('default');
+        
+         
+        
+        $commodity_cat =  $this->MCommodityCategory->find('all')->select(['category_code','category_name'])->where(['display' => 'Y'])->order('category_code ASC')->toArray();
+        $this->set('commodity_cat', $commodity_cat);
+        
+        $comm_array = [];
+        $i = 0;
+        foreach($commodity_cat as $eachcat){
+             $get_comm =  $this->MCommodity->find('all')->select(['commodity_name'])->where(['category_code'=>$eachcat['category_code'],'display' => 'Y'])->order('category_code ASC')->toArray();
+             $comm_array[$i] = $get_comm;
+             $i++;
+        }
+        
+        $this->set('comm_array', $comm_array);
+		
+	}
 }
 
 ?>

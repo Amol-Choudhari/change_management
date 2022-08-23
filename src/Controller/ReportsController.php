@@ -2321,6 +2321,12 @@
 			$this->redirect('/reports/approved_applications_report');
 		}
 
+		// This function is added to show all the approved application on 16-06-2022
+		public function approvedAllApplicationType()
+		{
+			$this->Session->write('approved_application_type','all_reports');
+			$this->redirect('/reports/approved_applications_report');
+		}
 
 
 
@@ -2343,6 +2349,16 @@
 				
 				$table = 'DmiRenewalFinalSubmits';
 				$report_heading = 'Approved Renewal Applications Report';
+
+			}elseif ($approved_application_type == 'all_reports') {
+				
+				$table = 'DmiGrantCertificatesPdfs';
+				$report_heading = 'All Approved Report';
+				
+				// this below code is added to show the deafult office by Akash on 16-06-2022
+				$posted_ro_office = $this->DmiUsers->find('all',array('fields'=>'posted_ro_office', 'conditions'=>array('email IS'=>$_SESSION['username'])))->first();
+				$default_ro_office = $this->DmiRoOffices->find('all',array('conditions'=>array('id IS'=>$posted_ro_office['posted_ro_office'])))->first();
+				$this->set('default_ro_office',$default_ro_office['ro_office']);
 			}
 
 			$this->set('table', $table);	// set table value ( Done by pravin 16-07-2018)
@@ -2439,9 +2455,9 @@
 				$this->approvedApplicationReportResults($approved_application_list, $approved_application_type);
 			
 			} else {
-
+				
 				$approved_application_lists = $this->approvedApplicationSearchConditions($search_application_type_id, $application_approved_office, $search_from_date, $search_to_date, $table, $search_flag);
-
+				
 				$approved_application_list = $approved_application_lists[0];
 
 				$i=0;
@@ -2472,6 +2488,8 @@
 
 				if ($table == 'DmiFinalSubmits') {
 					$approved_application_customer_id = $this->DmiGrantCertificatesPdfs->find()->select(['customer_id'])->group(['customer_id HAVING COUNT(customer_id) < 2'])->toArray();
+				} elseif ($table == 'DmiGrantCertificatesPdfs') {
+					$approved_application_customer_id = $this->DmiGrantCertificatesPdfs->find('all',array('fields'=>'customer_id','group'=>'customer_id having count(customer_id) >= 1','having'=>array('count(customer_id) >= 1')))->toArray();
 				} else {
 					$approved_application_customer_id = $this->DmiGrantCertificatesPdfs->find('all',array('fields'=>'customer_id','group'=>'customer_id having count(customer_id) > 1','having'=>array('count(customer_id) > 1')))->toArray();
 				}
@@ -2703,21 +2721,48 @@
 					$approved_application_customer_id = $this->$table->find('all')->select(['customer_id'])->where(['status' => 'approved', 'current_level' => 'level_3'])
 					->order(['created'=>'DESC'])->extract('customer_id')->toArray(0); 
 				} else {
-					$approved_application_customer_id = $this->$table->find('all')->select(['customer_id'])->where(['status' => 'approved', 'current_level' => 'level_3'])
-					->order(['created'=>'DESC'])->limit(['100'])->extract('customer_id')->toArray(0); 
+
+					// THIS BELOW CONDITION IS ADDED FOR THE ALL REPORTS BY AKASH ON 16-06-2022
+					if ($table == 'DmiGrantCertificatesPdfs') {
+
+						$posted_ro_office = $this->DmiUsers->find('all',array('fields'=>'posted_ro_office', 'conditions'=>array('email IS'=>$_SESSION['username'])))->first();
+						$get_short_code = $this->DmiRoOffices->find('all',array('fields'=>'short_code', 'conditions'=>array('id IS'=>$posted_ro_office['posted_ro_office'])))->first();
+						$short_code = $get_short_code['short_code'];
+
+						if ($_SESSION['role'] == 'Head Office') {
+							//$approved_application_customer_id = $this->DmiGrantCertificatesPdfs->find('all',array('fields'=>array('customer_id'),'group'=>array('customer_id having count(customer_id) >= 1'),'having'=>array('count(customer_id) >= 1')))->toArray();
+							$approved_application_customer_id = $this->DmiGrantCertificatesPdfs->find('all')->select(['customer_id'])->group(['customer_id HAVING COUNT(customer_id) >= 1'])->limit(['2'])->extract('customer_id')->toArray(0);
+						} else {
+							$approved_application_customer_id = $this->DmiGrantCertificatesPdfs->find('all',array('fields'=>'customer_id','conditions'=>array('customer_id like'=>'%/'.$short_code.'/%'),'group'=>'customer_id having count(customer_id) >= 1','having'=>array('count(customer_id) >= 1')))->toArray();
+						}
+
+					} else {
+						$approved_application_customer_id = $this->$table->find('all')->select(['customer_id'])->where(['status' => 'approved', 'current_level' => 'level_3'])
+						->order(['created'=>'DESC'])->limit(['100'])->extract('customer_id')->toArray(0); 
+					}
+
+					
 				}
 
 				$approved_application_list = $approved_application_customer_id;
 
 				// below if-else code added by Ankur Jangid
 				if (!empty($approved_application_list)) {
-					$conditions = ['customer_id IN' => $approved_application_list, 'status' => 'approved', 'current_level' => 'level_3'];
+
+					// THIS BELOW CONDITION IS ADDED FOR THE ALL REPORTS BY AKASH ON 16-06-2022
+					if ($table == 'DmiGrantCertificatesPdfs') {
+						$conditions = array('customer_id IN'=>$approved_application_list); 
+					} else {
+						$conditions = ['customer_id IN' => $approved_application_list, 'status' => 'approved', 'current_level' => 'level_3'];
+					}
+
 				} else {
 					$conditions = ['customer_id IS' => '', 'status' => 'approved', 'current_level' => 'level_3'];
 				}
 
+
 				$approved_application_list = $this->$table->find('all')->select(['customer_id'])->where($conditions)->order(['id' => 'DESC'])->toArray(); 
-				
+		
 				$download_approved_application_list = $this->$table->find('all')->select(['customer_id'])->where($conditions)->order(['id' => 'DESC'])->toArray(); 
 			}
 
@@ -2758,7 +2803,10 @@
 
 					$approved_application_details = array(); //this line added on 18-07-2019
 
-					if ($approved_application_type == 'new' || $approved_application_type =='') {
+					// THIS BELOW CONDITION IS ADDED FOR THE ALL REPORTS BY AKASH ON 16-06-2022
+					if ($approved_application_type == 'all_reports') {
+						$approved_application_details = $this->DmiGrantCertificatesPdfs->find('all',array('conditions'=>array('customer_id IS'=>$approved_application),'order' => array('id' => 'desc')))->first();
+					} elseif ($approved_application_type == 'new' || $approved_application_type =='') {
 						$approved_application_details = $this->DmiGrantCertificatesPdfs->find('all')->where(['customer_id' => $approved_application])->first(); 
 					} elseif ($approved_application_type == 'renewal') {
 						$approved_application_detail = $this->DmiGrantCertificatesPdfs->find('all')->select(['id'])->where(['customer_id IS'=>$approved_application])->combine('id','id')->toArray(); 
@@ -2774,16 +2822,31 @@
 						$approved_application_result = $approved_application_details;
 
 						//to check if the application is old or not to print on the excel and for viewing part dont by Akash 07-04-2022
-						if ($approved_application_type == 'renewal') {
 
-							$approved_application_type_text[$i] = "Renewal";
-
-						} elseif ($approved_application_result['user_email_id'] == 'old_application') {
-							$approved_application_type_text[$i] = "Old";
+						// THIS BELOW CONDITION IS ADDED FOR THE ALL REPORTS BY AKASH ON 16-06-2022
+						if ($approved_application_type == 'all_reports') {
+				
+							if ($approved_application_result['pdf_version'] > '1') {
+								$approved_application_type_text[$i] = "<b>RENEWAL</b>";
+							} elseif ($approved_application_result['user_email_id'] == 'old_application') {
+								$approved_application_type_text[$i] = "<i>OLD</i>";
+							} else {
+								$approved_application_type_text[$i] = "NEW";
+							}
+	
 						} else {
-							$approved_application_type_text[$i] = "New";
-						} 
 
+							if ($approved_application_type == 'renewal') {
+								$approved_application_type_text[$i] = "<b>RENEWAL</b>";
+							} elseif ($approved_application_result['user_email_id'] == 'old_application') {
+								$approved_application_type_text[$i] = "<i>OLD</i>";
+							} else {
+								$approved_application_type_text[$i] = "NEW";
+							} 
+	
+						}
+
+					
 						if ($approved_application_result['user_email_id'] == 'old_application') {
 								$old_app_approved_by = $this->Customfunctions->old_app_approved_by($approved_application_result['customer_id']);
 								$approved_application_result['user_email_id'] = $old_app_approved_by;
@@ -2802,10 +2865,10 @@
 							if (!empty($user_office_details)) {
 								$user_office[$i] = $user_office_details['ro_office'];
 							} else {
-								$user_office[$i] = '--';
+								$user_office[$i] = 'N/A';
 							}
 						} else {
-							$user_office[$i] = '--';
+							$user_office[$i] = 'N/A';
 						}
 
 						$application_form_type = $this->Customfunctions->checkApplicantFormType($approved_application_result['customer_id']);
@@ -2833,6 +2896,7 @@
 						$name_of_the_firm[$i] = $firmDetails['firm_name'];
 						$address_of_the_firm[$i] = $firmDetails['street_address'];
 						$contact_details_of_the_firm[$i] = base64_decode($firmDetails['email']);
+						$phoneno[$i] = $firmDetails['mobile_no'];
 
 						//tbl details
 						$tbl_details = $this->DmiAllTblsDetails->find('all',array('conditions'=>array('customer_id IS'=>$approved_application_result['customer_id'],'OR' => array('delete_status IS NULL', 'delete_status' => 'no'))))->toArray();
@@ -2847,8 +2911,8 @@
 							}
 
 						} else {
-							$approved_TBL_details_tbl_name[$i][0] = '--';
-							$approved_TBL_details_tbl_registered_no[$i][0] = '--';
+							$approved_TBL_details_tbl_name[$i][0] = 'N/A';
+							$approved_TBL_details_tbl_registered_no[$i][0] = 'N/A';
 						}
 
 
@@ -2859,8 +2923,8 @@
 							$laboratory_details_name[$i] = $lab_details[0]['laboratory_name'];
 							$laboratory_details_address[$i] = $lab_details[0]['street_address'];
 						} else {
-							$laboratory_details_name[$i] = '--';
-							$laboratory_details_address[$i] = '--';
+							$laboratory_details_name[$i] = 'N/A';
+							$laboratory_details_address[$i] = 'N/A';
 						}
 
 						$commodity_value = $this->DmiFirms->find('all')->select(['sub_commodity'])->where(['customer_id'=>$approved_application_result['customer_id']])->first(); 
@@ -2877,6 +2941,16 @@
 							$application_user_email_id[$i] = $approved_application_result['user_email_id'];
 						}
 						
+						//check the expiry dateand print to the reports  added by Akash on 24-05-2022 
+						$grant_date = chop($approved_application_details['date'],"00:00:00");
+						$valid_upto[$i] = $this->Customfunctions->getCertificateValidUptoDate($approved_application_result['customer_id'],$grant_date);
+	
+						//check the state name added by akash on 14-06-2022
+						$state_name[$i] = $this->getStateName($approved_application_result['customer_id']);
+						
+						//Certificate Issued on
+						$issued_on[$i] = chop($approved_application_result['date'],"00:00:00");
+
 						$i=$i+1;
 					}
 				}
@@ -2900,6 +2974,10 @@
 			$this->set('approved_TBL_details_tbl_registered_no',$approved_TBL_details_tbl_registered_no);
 			$this->set('laboratory_details_name',$laboratory_details_name);
 			$this->set('laboratory_details_address',$laboratory_details_address);
+			$this->set('valid_upto',$valid_upto);
+			$this->set('state_name',$state_name);
+			$this->set('phoneno',$phoneno);
+			$this->set('issued_on',$issued_on);
 		
 		
 		}
@@ -4432,6 +4510,13 @@
 		}
 
 
+
+		public function getStateName($customer_id) {
+
+			$state_id = $this->DmiFirms->find('all',array('fields'=>'state','conditions'=>array('customer_id IS'=>$customer_id)))->first();
+			$state_name = $this->DmiStates->find('all',array('fields'=>'state_name','conditions'=>array('id IS'=>$state_id['state'])))->first();
+			return $state_name['state_name'];
+		}	
 
 
 	}

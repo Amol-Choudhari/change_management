@@ -76,7 +76,53 @@ $(document).ready(function(){
 
 			}
 		});
+		
+		
+	  //***************************************************************************************** */
+      // This ajax used for gre grade for selected commodity 
+	  // Added by shankhpal shende on 22/08/2022
+		$.ajax({
+			type: "POST",
+			url: "../replica/get_commodity_wise_grade",
+			data: {commodity_id:commodity_id},
+			beforeSend: function (xhr) { // Add this line
+					xhr.setRequestHeader('X-CSRF-Token', $('[name="_csrfToken"]').val());
+			},
+			success: function(response){
+                
+				var response = response.match(/~([^']+)~/)[1];//getting data bitween ~..~ from response
+                
+				if(response == 'No Grade'){
+					
+					$.alert("No Grade available for selected Commodity");
+					var grade_option = "<option value=''>--Select--</option>";
+					$("#ta-grade-"+id_No).val('');
+					$("#ta-grade-"+id_No).html(grade_option);
+					
+					
+					return false;
 
+				}else{
+
+					response = JSON.parse(response);//response is JSOn encoded to parse JSON
+                   
+					var grade_list = response['Grade'];
+                   
+					var grade_option = "<option value=''>--Select--</option>";
+					
+					$.each(grade_list, function(index, value){
+						
+						grade_option += "<option value='"+index+"'>"+value+"</option>";
+						
+					});
+
+					$("#ta-grade-"+id_No).html(grade_option);
+				
+				}
+
+			}
+		});
+		
 		//if commodity changed, reset the packet size, no of packets and total label charge fields
 		$("#ta-packet_size-"+id_No).val('');
 		$("#ta-no_of_packets-"+id_No).val('');

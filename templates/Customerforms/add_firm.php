@@ -4,13 +4,13 @@
 		<div class="container-fluid">
 			<div class="row mb-2">
 				<div class="col-sm-6">
-					<label class="badge badge-info">Add Firm</label>                    
+					<label class="badge badge-info">Add Firm</label>
 				</div>
 				<div class="col-sm-6">
 					<ol class="breadcrumb float-sm-right">
 						<li class="breadcrumb-item"><?php echo $this->Html->link('Dashboard', array('controller' => 'customers', 'action'=>'primary_home'));?></li>
 						<li class="breadcrumb-item active">Add Firm</li>
-					</ol>                    
+					</ol>
 				</div>
 			</div>
 		</div>
@@ -29,9 +29,10 @@
 								4. This link will be active only for 24 hours. If expired, then try to set your password from Reset Password option. Thankyou.
 							</div>
 					<?php } else { ?>
-							<?php echo $this->Form->create(null, array('id'=>'add_firm_form','type'=>'file', 'enctype'=>'multipart/form-data')); ?>
+
+						<?php echo $this->Form->create(null, array('id'=>'add_firm_form','type'=>'file', 'enctype'=>'multipart/form-data')); ?>
 							<div class="card card-success">
-								<div class="card-header"><h3 class="card-title">Type of Certification</h3></div>
+								<div class="card-header"><h3 class="card-title"><i class="fas fa-certificate"></i> Type of Certification</h3></div>
 								<div class="form-horizontal">
 									<div class="card-body">
 										<div class="row">
@@ -267,9 +268,9 @@
 													</div>
 												</div>
 												<div class="col-sm-6">
-													<div class="form-group">
-													<label for="field3"><span>Profile Picture </span></label>
-														<div class="custom-file">
+													<div class="form-group row">
+														<label for="inputEmail3" class="col-sm-4 col-form-label">Profile Picture</label>
+														<div class="custom-file col-sm-8">
 															<input type="file" class="custom-file-input" id="profile_pic" name="profile_pic" multiple='multiple'>
 															<label class="custom-file-label" for="customFile">Choose file</label>
 															<span id="error_profile_pic" class="error invalid-feedback"></span>
@@ -363,11 +364,11 @@
 								</div>
 							</div>
 						<?php echo $this->Form->end(); ?>
-                    <?php } ?>
-                </div>
-            </div>
-        </div>
-    </section>
+					<?php } ?>
+				</div>
+			</div>
+		</div>
+	</section>
 </div>
 
 <?php  echo $this->element('old_applications_elements/inforamtion_input_previous_renewals_dates'); ?>
@@ -378,39 +379,26 @@
 ?>
 
 
-<!-- export unit modal -->
-<div class="modal fade" id="export_unit_modal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-body">
-                <i class="fa fa-info-circle"></i> Note: If you are applying for export unit, then select 'Yes' option, else select 'No' option.
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Ok</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
 <input type="hidden" value="<?php echo $return_error_msg; ?>" id="return_error_msg"/>
 
 <?php //below code updated on 05-10-2021 by Amol, call external js files ?>
 
 <!-- Don't change the "Is Certificate Already Granted" radio button value on the return false of duplication certification no error. Done by pravin 14-07-2018-->
-<?php if(!empty($duplicate_certification_no_msg)){ ?>
-<input type="hidden" value="<?php echo $duplicate_certification_no_msg; ?>" id="duplicate_certification_no_msg"/>
-<?php echo $this->Html->script('forms/duplicate_certification_no_msg');
-}else{ 
-	echo $this->Html->script('forms/duplicate_certification_no_msg_else');
-} ?>
+<?php if (!empty($duplicate_certification_no_msg)) { ?>
+		<input type="hidden" value="<?php echo $duplicate_certification_no_msg; ?>" id="duplicate_certification_no_msg"/>
+		<?php echo $this->Html->script('forms/duplicate_certification_no_msg');
+	}else{ 
+		echo $this->Html->script('forms/duplicate_certification_no_msg_else');
+	} 
+?>
 
 
 <?php if(isset($toastTheme)) { ?>
-<input type="hidden" value="<?php echo $toastTheme; ?>" id="toastTheme"/>
-<?php	echo $this->Html->script('forms/toastTheme');
-}else{ 
-	echo $this->Html->script('forms/toastTheme_else');
-} ?>
+		<input type="hidden" value="<?php echo $toastTheme; ?>" id="toastTheme"/>
+		<?php	echo $this->Html->script('forms/toastTheme');
+	}else{ 
+		echo $this->Html->script('forms/toastTheme_else');
+	} 
+?>
 
 <?php echo $this->Html->script('forms/bsCustomFileInput'); ?>

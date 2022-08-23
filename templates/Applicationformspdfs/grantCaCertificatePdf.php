@@ -483,6 +483,8 @@
 					<td style="padding:10px; vertical-align:top;">Endorsement of the competent authority about suspension or cancellation of the Certificate of Authorization:</td>
 					<td style="padding:10px; vertical-align:top;">E-signed By: <?php echo 'NA'; ?><br>Date: <?php echo 'NA'; ?></td>
 				</tr>
-		
+				
 		</table>
+       <!-- QR Code added by shankhpal shende on 16/08/2022 -->
+		<div style="text-align: left;"> <img width="100" height="100" src="<?php echo $result_for_qr['qr_code_path']; ?>"></div>
 	

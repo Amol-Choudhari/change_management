@@ -126,7 +126,7 @@
 									</tr>
                                     <tr>
                                         <td><span class="badge subtitle">16</span></td>
-                                        <td><a class="badge title text-info" href="all_approved_reports">All Approved Reports</a></td>
+                                        <td><a class="badge title text-info" href="approved_all_application_type">All Approved Reports</a></td>
                                         <td><span class="subtitle">Report includes list of all application Approved detail records.</span></td>
                                     </tr>
 								</tbody>
