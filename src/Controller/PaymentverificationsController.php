@@ -1,5 +1,5 @@
 <?php
-//session_start();
+
 namespace App\Controller;
 
 use Cake\Event\Event;
@@ -60,9 +60,8 @@ class PaymentverificationsController extends AppController{
 
 		$this->viewBuilder()->setLayout('admin_dashboard');
 	}
-
-
-
+	
+	
 	public function inspectPaymentFetchId($id,$appl_type){
 
 		$this->Session->write('application_type',$appl_type);
@@ -318,94 +317,94 @@ class PaymentverificationsController extends AppController{
 
 
 
-			//advancec payment confirm method
-			public function advancePaymentConfirm(){
+	//advancec payment confirm method
+	public function advancePaymentConfirm(){
 
-				$customer_id = $this->Session->read('customer_id');
+		$customer_id = $this->Session->read('customer_id');
 
-				$this->loadModel('DmiAdvPaymentTransactions');
-				$this->loadModel('DmiAdvPaymentDetails');
+		$this->loadModel('DmiAdvPaymentTransactions');
+		$this->loadModel('DmiAdvPaymentDetails');
 
-				$currBalance = $this->DmiAdvPaymentTransactions->find('all',array('conditions'=>array('customer_id IS'=>$customer_id),'order'=>array('id desc')))->first();
-				$lastTransId = $this->DmiAdvPaymentTransactions->find('all',array('order'=>array('id desc')))->first();
+		$currBalance = $this->DmiAdvPaymentTransactions->find('all',array('conditions'=>array('customer_id IS'=>$customer_id),'order'=>array('id desc')))->first();
+		$lastTransId = $this->DmiAdvPaymentTransactions->find('all',array('order'=>array('id desc')))->first();
 
-				$currBalanceAmt = 0;
-				$transcationid = 'ADP/'.date('m').'/1000';
+		$currBalanceAmt = 0;
+		$transcationid = 'ADP/'.date('m').'/1000';
 
-				if(!empty($currBalance)){
+		if(!empty($currBalance)){
 
-					$currBalanceAmt = $currBalance['balance_amount'];
+			$currBalanceAmt = $currBalance['balance_amount'];
 
-					$explodeVal = explode('/',$lastTransId['trans_id']);
-					$trans_id = $explodeVal[2]+1;
-					$transcationid = 'ADP/'.date('m').'/'.$trans_id;
-				}
-
-
-				$addBalance = $this->DmiAdvPaymentDetails->find('all', array('fields'=>array('amount_paid'),'conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->first();
-
-				$addBalanceAmt = $addBalance['amount_paid'];
-
-				$finalBalAmt = $addBalanceAmt + $currBalanceAmt;
-
-				$DmiAdvPaymentTransactionsEntity = $this->DmiAdvPaymentTransactions->newEntity(array(
-
-					'customer_id'=>$customer_id,
-					'payment_for'=>1,
-					'trans_type'=>'credited',
-					'trans_amount'=>$addBalanceAmt,
-					'balance_amount'=>$finalBalAmt,
-					'trans_id'=>$transcationid,
-					'created'=>date('Y-m-d H:i:s')
-				));
-
-				if($this->DmiAdvPaymentTransactions->save($DmiAdvPaymentTransactionsEntity));
-
-			}
-
-
-
-
-		public function checkUniqueTransIdForPao($trans_id){
-
-			//initialize model in component
-			$this->loadModel('DmiGrantCertificatesPdfs');
-			$this->loadModel('DmiFlowWiseTablesLists');
-			$this->loadModel('DmiFirms');
-
-			$new_customer_id = $this->Session->read('customer_id');//currently applying applicant
-			$allow_id = 'yes';
-
-			//temp static array, will be replaced by query result in phase 2
-			//$payment_tables_array = array('Dmi_applicant_payment_detail','Dmi_renewal_applicant_payment_detail');
-
-			$existed_appl_details = null;
-			$payment_tables_array = $this->DmiFlowWiseTablesLists->find('all',array('fields'=>'payment','conditions'=>array('application_type IN'=>array('1','2','3'),'payment IS NOT'=>null)))->toArray();
-
-			foreach($payment_tables_array as $each_table){
-
-				$each_table = $each_table['payment'];
-				$this->loadModel($each_table);
-
-				//check new app if trans id already exist
-				$check_trans_id = $this->$each_table->find('all',array('conditions'=>array('transaction_id IS'=>$trans_id,'customer_id !='=>$new_customer_id),'order'=>'id desc'))->first();
-
-
-				//for new
-				if(!empty($check_trans_id)){
-
-					$existed_customer_id = $check_trans_id['customer_id'];//applicant which already used this trans id.
-
-					//old existed application details
-					$existed_appl_details = $this->DmiFirms->find('all',array('conditions'=>array('customer_id IS'=>$existed_customer_id)))->first();
-					break;
-				}
-
-			}
-
-
-			return $existed_appl_details;
+			$explodeVal = explode('/',$lastTransId['trans_id']);
+			$trans_id = $explodeVal[2]+1;
+			$transcationid = 'ADP/'.date('m').'/'.$trans_id;
 		}
+
+
+		$addBalance = $this->DmiAdvPaymentDetails->find('all', array('fields'=>array('amount_paid'),'conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->first();
+
+		$addBalanceAmt = $addBalance['amount_paid'];
+
+		$finalBalAmt = $addBalanceAmt + $currBalanceAmt;
+
+		$DmiAdvPaymentTransactionsEntity = $this->DmiAdvPaymentTransactions->newEntity(array(
+
+			'customer_id'=>$customer_id,
+			'payment_for'=>1,
+			'trans_type'=>'credited',
+			'trans_amount'=>$addBalanceAmt,
+			'balance_amount'=>$finalBalAmt,
+			'trans_id'=>$transcationid,
+			'created'=>date('Y-m-d H:i:s')
+		));
+
+		if($this->DmiAdvPaymentTransactions->save($DmiAdvPaymentTransactionsEntity));
+
+	}
+
+
+
+
+	public function checkUniqueTransIdForPao($trans_id){
+
+		//initialize model in component
+		$this->loadModel('DmiGrantCertificatesPdfs');
+		$this->loadModel('DmiFlowWiseTablesLists');
+		$this->loadModel('DmiFirms');
+
+		$new_customer_id = $this->Session->read('customer_id');//currently applying applicant
+		$allow_id = 'yes';
+
+		//temp static array, will be replaced by query result in phase 2
+		//$payment_tables_array = array('Dmi_applicant_payment_detail','Dmi_renewal_applicant_payment_detail');
+
+		$existed_appl_details = null;
+		$payment_tables_array = $this->DmiFlowWiseTablesLists->find('all',array('fields'=>'payment','conditions'=>array('application_type IN'=>array('1','2','3'),'payment IS NOT'=>null)))->toArray();
+
+		foreach($payment_tables_array as $each_table){
+
+			$each_table = $each_table['payment'];
+			$this->loadModel($each_table);
+
+			//check new app if trans id already exist
+			$check_trans_id = $this->$each_table->find('all',array('conditions'=>array('transaction_id IS'=>$trans_id,'customer_id !='=>$new_customer_id),'order'=>'id desc'))->first();
+
+
+			//for new
+			if(!empty($check_trans_id)){
+
+				$existed_customer_id = $check_trans_id['customer_id'];//applicant which already used this trans id.
+
+				//old existed application details
+				$existed_appl_details = $this->DmiFirms->find('all',array('conditions'=>array('customer_id IS'=>$existed_customer_id)))->first();
+				break;
+			}
+
+		}
+
+
+		return $existed_appl_details;
+	}
 
 
 		

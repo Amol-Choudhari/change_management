@@ -99,8 +99,8 @@ class ReplicaController extends AppController {
 				$this->set('lab_list',$lab_list);
 			
 				//get packer wise commodity list
-				$commodity_ids = explode(',',$firm_details['sub_commodity']);	
-				//pr($commodity_ids);die;	
+				$commodity_ids = explode(',',$firm_details['sub_commodity']);
+
 				$commodity_list = $this->MCommodity->find('list',array('keyField'=>'commodity_code','valueField'=>'commodity_name','conditions'=>array('commodity_code IN'=>$commodity_ids)))->toArray();
 	//****************************************************************************************************/			
 			    // Added by shankhpal Shende on 22/08/2022 for [On loading Set Grade for selected commodity]
@@ -863,7 +863,7 @@ class ReplicaController extends AppController {
 	}
 	
 	
-//below functions are for chemist dashboard for approval of applications
+	//below functions are for chemist dashboard for approval of applications
 
 	public function replicaApplList() {
 		
@@ -919,12 +919,12 @@ class ReplicaController extends AppController {
 		$this->set('lab_list',$lab_list);
 	
 		//get packer wise commodity list
-	//	$commodity_ids = explode(',',$firm_details['sub_commodity']);		
-	//	$commodity_list = $this->M_commodity->find('list',array('keyField'=>'commodity_code','valueField'=>'commodity_name','conditions'=>array('commodity_code IN'=>$commodity_ids)))->toArray();
-	//	$grade_list = $this->MGradeDesc->find('list',array('keyField'=>'grade_code','valueField'=>'grade_desc','conditions'=>array('display'=>'Y'),'order'=>'grade_code asc'))->toArray();
-	//	$tbl_list = $this->Dmi_all_tbls_detail->find('list',array('keyField'=>'id','valueField'=>'tbl_name','conditions'=>array('customer_id IS'=>$customer_id,'delete_status IS Null'),'order'=>'id asc'))->toArray();
-	//	$packaging_material_list = $this->Dmi_packing_type->find('list',array('keyField'=>'id','valueField'=>'packing_type','conditions'=>array('delete_status IS Null'),'order'=>'id asc'))->toArray();
-	//	$printers_list = $this->DmiFirms->find('list',array('keyField'=>'id','valueField'=>'firm_name','conditions'=>array('customer_id like'=>'%'.'/2/'.'%','delete_status IS Null'),'order'=>'firm_name asc'))->toArray();
+		//	$commodity_ids = explode(',',$firm_details['sub_commodity']);		
+		//	$commodity_list = $this->M_commodity->find('list',array('keyField'=>'commodity_code','valueField'=>'commodity_name','conditions'=>array('commodity_code IN'=>$commodity_ids)))->toArray();
+		//	$grade_list = $this->MGradeDesc->find('list',array('keyField'=>'grade_code','valueField'=>'grade_desc','conditions'=>array('display'=>'Y'),'order'=>'grade_code asc'))->toArray();
+		//	$tbl_list = $this->Dmi_all_tbls_detail->find('list',array('keyField'=>'id','valueField'=>'tbl_name','conditions'=>array('customer_id IS'=>$customer_id,'delete_status IS Null'),'order'=>'id asc'))->toArray();
+		//	$packaging_material_list = $this->Dmi_packing_type->find('list',array('keyField'=>'id','valueField'=>'packing_type','conditions'=>array('delete_status IS Null'),'order'=>'id asc'))->toArray();
+		//	$printers_list = $this->DmiFirms->find('list',array('keyField'=>'id','valueField'=>'firm_name','conditions'=>array('customer_id like'=>'%'.'/2/'.'%','delete_status IS Null'),'order'=>'firm_name asc'))->toArray();
 		
 		
 		$this->set('ca_unique_no',$ca_unique_no);
@@ -932,7 +932,7 @@ class ReplicaController extends AppController {
 		$this->Session->write('replica_for','replica');//to get controller name in esign consent & sey url in response function
 		
 		
-	//fetch last reocrds from table, if empty set default value
+		//fetch last reocrds from table, if empty set default value
 		$dataArray = $this->DmiReplicaAllotmentDetails->getSectionData($customer_id);
 		
 		$tableRowData = array();
