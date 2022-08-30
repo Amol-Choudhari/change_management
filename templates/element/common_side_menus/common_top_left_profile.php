@@ -15,7 +15,7 @@
 		<?php } ?>
 	
 	<div class="info">
-	<a href="customer-profile" class="d-block"><?php echo $_SESSION["f_name"];?> <?php echo $_SESSION["l_name"];?></a>
+	<a class="d-block"><?php echo $_SESSION["f_name"];?> <?php echo $_SESSION["l_name"];?></a>
 	
 	<?php if (filter_var(base64_decode($_SESSION["username"]), FILTER_VALIDATE_EMAIL)) { //for email encoding ?>
 		<span class="right badge badge-light"><?php echo base64_decode($_SESSION["username"]);?></span>

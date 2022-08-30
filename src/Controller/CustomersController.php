@@ -3571,7 +3571,7 @@ class CustomersController extends AppController {
 	}*/
 
 
-//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>    
+    //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>    
     // created by shankhpal shende for list of documents list on 09/08/2022
     public function documentCheckList()
     {
@@ -3614,6 +3614,167 @@ class CustomersController extends AppController {
         $this->set('comm_array', $comm_array);
 		
 	}
+
+
+
+    // This function added by Shankhpal shende 
+    // on date 24/08/2022
+    // for Attach PP/LAB
+
+    public function attachePpLab() {
+
+       //load modal 
+        $this->loadModel('DmiFirms');
+        $this->loadModel('DmiReplicaAllotmentDetails');
+        $this->loadModel('DmiCaPpLabMapings');
+        $this->loadModel('DmiGrantCertificatesPdfs');
+        //Set the blank variables for the Displaying messages
+        $message = '';
+        $message_theme = '';
+        $redirect_to = '';
+
+        $this->viewBuilder()->setLayout('secondary_customer');
+        $customer_id = $this->Session->read('username');
+    
+        //list of authorized laboratory commented by shankhpal shende on 29/08/2022
+		//$lab_list = $this->DmiFirms->find('list',array('keyField'=>'id','valueField'=>'firm_name','conditions'=>array('customer_id like'=>'%'.'/3/'.'%','delete_status IS Null'),'order'=>'firm_name asc'))->toArray();
+
+       //list of authorized laboratory
+        $lab_list = $this->DmiFirms->find('list',array('keyField'=>'id','valueField'=>'firm_name','joins'=>array(array('table' => 'dmi_grant_certificates_pdfs','alias' => 'dmigcp','type' => 'INNER','conditions' => array('dmigcp.customer_id = DmiFirms.customer_id'))),
+		'conditions'=>array('Dmifirms.customer_id like'=>'%'.'/3/'.'%','delete_status IS Null'),'order'=>array('Dmifirms.id desc')))->toArray();
+
+        $this->set('lab_list',$lab_list);
+        
+        //list of authorized printers commented by shankhpal shende on 29/08/2022
+        //$printers_list = $this->DmiFirms->find('list',array('keyField'=>'id','valueField'=>'firm_name','conditions'=>array('customer_id like'=>'%'.'/2/'.'%','delete_status IS Null'),'order'=>'firm_name asc'))->toArray();
+       
+        
+        $printers_list = $this->DmiFirms->find('list',array('keyField'=>'id','valueField'=>'firm_name','joins'=>array(array('table' => 'dmi_grant_certificates_pdfs','alias' => 'dmigcp','type' => 'INNER','conditions' => array('dmigcp.customer_id = DmiFirms.customer_id'))),
+		'conditions'=>array('Dmifirms.customer_id like'=>'%'.'/2/'.'%','delete_status IS Null'),'order'=>array('Dmifirms.id desc')))->toArray();
+        $this->set('printers_list',$printers_list);
+
+        $attached_list =  $this->DmiCaPpLabMapings->find('all')->select(['customer_id','pp_id','lab_id','map_type'])->where(array('customer_id IS' => $customer_id))->toArray();
+        //pr($attached_list);die;
+        $this->set('attached_list',$attached_list);
+
+      
+        $resultArr =  $this->DmiCaPpLabMapings->find('list')->where(array('customer_id IS' => $customer_id))->toList();
+        $this->set('resultArr',$resultArr);
+       
+        //this array is used for display printing press and laboratory on view
+        $result = [];
+        $i = 0;
+        foreach($attached_list as $eachlist){
+        
+            $result[$i]['type'] = $eachlist['map_type'];
+            if(!empty($eachlist['pp_id'])){
+                $result[$i]['p_name'] = $printers_list[$eachlist['pp_id']];
+            }
+            if(!empty($eachlist['lab_id'])){
+                $result[$i]['l_name'] = $lab_list[$eachlist['lab_id']];
+            }
+            
+            $i++;
+        }
+               
+        $this->set('result',$result);
+
+        //fetch last reocrds from table, if empty set default value
+        $dataArray = $this->DmiReplicaAllotmentDetails->getSectionData($customer_id);
+			
+        //to show selected lab in list
+        if (!empty($dataArray)) {
+            
+            $selected_lab = $dataArray[0]['grading_lab'];
+            $selected_PP = $dataArray[0]['authorized_printer'];
+            
+        } else {
+            $selected_lab = '';
+        }
+
+        $this->set('selected_lab',$selected_lab);
+        $this->set('selected_PP',$selected_PP);
+        $this->set('dataArray',$dataArray);
+        
+        //to save post data
+        if (null!==($this->request->getData('save'))) {
+            
+            $postData = $this->request->getData();
+            
+            $customer_id = $this->Session->read('username');
+        
+            $pp_id = $this->request->getData('pp_id');
+            $lab_id = $this->request->getData('lab_id');
+            $maptype = $this->request->getData('maptype');
+        
+            $get_record_pp =  $this->DmiCaPpLabMapings->find('all')->where(array('customer_id IS' => $customer_id,'pp_id IS' => $pp_id))->first();
+        
+            $get_record_lab =  $this->DmiCaPpLabMapings->find('all')->where(array('customer_id IS' => $customer_id,'map_type IN' => $maptype))->first();
+                
+            // for validation to insert data if maptype is pp or lab
+            if(!empty($maptype)) {
+                    
+                // to check insert data with selected pp_id if pp_id is exists then record not add
+                if(isset($get_record_pp['pp_id'])){
+                    
+                    $message = 'Printing Press alredy Attached with you';
+                    $message_theme = 'failed';
+                    $redirect_to = 'attache_pp_lab';
+                
+                } elseif(!empty($get_record_lab && $get_record_pp )) { //if lab is already exists then this condition stop adding new lab
+               
+                    $message = 'Packer can attach only one laboratory.';
+                    $message_theme = 'failed';
+                    $redirect_to = 'attache_pp_lab';
+
+                } else {
+                
+                    $DmiCaPpLabMapings = $this->DmiCaPpLabMapings->newEntity(array(
+
+                        'customer_id'=>$customer_id,
+                        'pp_id'=>$pp_id,
+                        'lab_id'=>$lab_id,
+                        'map_type'=> $maptype,
+                        'created'=>date('Y-m-d H:i:s'),
+                        'modified'=>date('Y-m-d H:i:s'),
+                    ));
+                        
+                    if ($this->DmiCaPpLabMapings->save($DmiCaPpLabMapings) && $maptype == 'pp' ) {
+                        
+                        $message = 'Printing Press Attached successfully';
+                        $message_theme = 'success';
+                        $redirect_to = 'attache_pp_lab';
+                    }
+
+                    if ($this->DmiCaPpLabMapings->save($DmiCaPpLabMapings) && $maptype == 'lab' ) {
+                        
+                        $message = 'Laboratory Attached successfully';
+                        $message_theme = 'success';
+                        $redirect_to = 'attache_pp_lab';
+                    }
+                }
+        
+            } else{
+
+                $message = 'Please Select Atleast one Laboratory/Printing Press!';
+                $message_theme = 'failed';
+                $redirect_to = 'attache_pp_lab';
+            }
+        }
+
+        // set variables to show popup messages from view file
+        $this->set('message',$message);
+        $this->set('message_theme',$message_theme);
+        $this->set('redirect_to',$redirect_to);
+
+        if ($message != null) {
+            $this->render('/element/message_boxes');
+        }
+    }
+
+
+
+
 }
 
 ?>

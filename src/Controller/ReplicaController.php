@@ -6,595 +6,622 @@ use Cake\Event\Event;
 use App\Network\Request\Request;
 use App\Network\Response\Response;
 use Cake\Datasource\ConnectionManager;
+use phpDocumentor\Reflection\Types\This;
+use Cake\Collection\Collection;
+use Cake\Database\Expression\QueryExpression;
+use Cake\Core\Configure;					
 
 class ReplicaController extends AppController {
 
-		var $name = 'Replica';
+	var $name = 'Replica';
 
-		public function initialize(): void
-		{
-			parent::initialize();
+	public function initialize(): void
+	{
+		parent::initialize();
 
-			$this->loadComponent('RequestHandler');
-			$this->viewBuilder()->setHelpers(['Form','Html','Time']);
-			$this->viewBuilder()->setLayout('secondary_customer');
+		$this->loadComponent('RequestHandler');
+		$this->viewBuilder()->setHelpers(['Form','Html','Time']);
+		$this->viewBuilder()->setLayout('secondary_customer');
 
+	}
+
+	public function beforeFilter($event) {
+
+		parent::beforeFilter($event);	
+
+		$customer_last_login = $this->Customfunctions->customerLastLogin();
+		$this->set('customer_last_login', $customer_last_login);
+
+		// Checked final submit status, on 10-08-2021 by Amol
+		//to show "Confirm Replica" and "Replica alloted list" conditional menu from chemist home layout
+		$chemist_id = $this->Session->read('username');
+		$this->loadModel('DmiChemistFinalSubmits');
+		$final_submit_record = $this->DmiChemistFinalSubmits->find('all',array('conditions'=>array('customer_id IS'=>$chemist_id),'order'=>'id desc'))->first();
+		
+		$final_status = '';
+		if (!empty($final_submit_record)) {
+			$final_status = $final_submit_record['status'];
 		}
+		$this->set('final_submit_status',$final_status);
 
-		public function beforeFilter($event) {
+	}
 
-			parent::beforeFilter($event);	
+	public function replicaApplication() {
+		
+		$this->viewBuilder()->setLayout('replica_appl_layout');
+		$customer_id = $this->Session->read('username');
+		
+		//check if applicant is approved for 15 digit or E-code and redirect to specific controller
+		$this->loadModel('Dmi15DigitGrantCertificatePdfs');
+		$this->loadModel('DmiECodeGrantCertificatePdfs');
+		$checkECodeApproval = $this->DmiECodeGrantCertificatePdfs->find('all',array('fields'=>'id','conditions'=>array('customer_id IS'=>$customer_id)))->first();
 
-			$customer_last_login = $this->Customfunctions->customerLastLogin();
-        	$this->set('customer_last_login', $customer_last_login);
-
-			// Checked final submit status, on 10-08-2021 by Amol
-			//to show "Confirm Replica" and "Replica alloted list" conditional menu from chemist home layout
-			$chemist_id = $this->Session->read('username');
-			$this->loadModel('DmiChemistFinalSubmits');
-			$final_submit_record = $this->DmiChemistFinalSubmits->find('all',array('conditions'=>array('customer_id IS'=>$chemist_id),'order'=>'id desc'))->first();
-			
-			$final_status = '';
-			if (!empty($final_submit_record)) {
-				$final_status = $final_submit_record['status'];
+		if (!empty($checkECodeApproval)) {
+			$this->redirect('/ecode/replicaApplication');
+		} else {
+			$check15digitApproval = $this->Dmi15DigitGrantCertificatePdfs->find('all',array('fields'=>'id','conditions'=>array('customer_id IS'=>$customer_id)))->first();
+			if (!empty($check15digitApproval)) {
+				$this->redirect('/code15digit/replicaApplication');
 			}
-			$this->set('final_submit_status',$final_status);
-
 		}
+		
+		$this->loadModel('DmiFirms');
+		$this->loadModel('MCommodity');
+		$this->loadModel('DmiReplicaAllotmentDetails');
+		$this->loadModel('MGradeDesc');
+		$this->loadModel('DmiAllTblsDetails');
+		$this->loadModel('DmiPackingTypes');
+		$this->loadModel('DmiReplicaUnitDetails');
+		$this->loadModel('DmiCaPpLabMapings'); // added by shankhpal shende on 26/08/2022
+																				   
 
-		public function replicaApplication() {
+		$message = '';
+		$message_theme = '';
+		$redirect_to = '';
+
+		// added by shankhpal shende on 26/08/2022 for to maping with Printing prss and LAboratory
+		$attached_lab = $this->DmiCaPpLabMapings->find('list',array('keyField'=>'id','valueField'=>'lab_id','conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id asc'))->toList();
+		
+		$attached_pp = $this->DmiCaPpLabMapings->find('list',array('keyField'=>'id','valueField'=>'pp_id','conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id asc'))->toList();
+  
+		//first check if this packer have any chemist incharge or not, elae show alert
+		$this->loadModel('DmiChemistAllotments');
+		$this->loadModel('CommGrade');
+
+		$check_che_incharge = $this->DmiChemistAllotments->find('all',array('fields'=>'chemist_id','conditions'=>array('customer_id IS'=>$customer_id,'status'=>1,'incharge'=>'yes')))->first();
+		
+		//updated by shankhpal shende on 26/08/2022
+		if (empty($check_che_incharge && $attached_pp && $attached_lab)) {
 			
-			$this->viewBuilder()->setLayout('replica_appl_layout');
-			$customer_id = $this->Session->read('username');
-			
-			//check if applicant is approved for 15 digit or E-code and redirect to specific controller
-			$this->loadModel('Dmi15DigitGrantCertificatePdfs');
-			$this->loadModel('DmiECodeGrantCertificatePdfs');
-			$checkECodeApproval = $this->DmiECodeGrantCertificatePdfs->find('all',array('fields'=>'id','conditions'=>array('customer_id IS'=>$customer_id)))->first();		
-			if (!empty($checkECodeApproval)) {		
-				$this->redirect('/ecode/replicaApplication');
-			} else {
-				$check15digitApproval = $this->Dmi15DigitGrantCertificatePdfs->find('all',array('fields'=>'id','conditions'=>array('customer_id IS'=>$customer_id)))->first();
-				if (!empty($check15digitApproval)) {
-					$this->redirect('/code15digit/replicaApplication');
-				}
+			if(empty($check_che_incharge)){
+				$message_var = 'Sorry.. You do not have any registered chemist In-charge, Please register your chemist and set as in-charge';
+			} elseif (empty($attached_pp)) {
+				$message_var = 'You do not have Printing Press attatched to you. Please Attched Printing Press.';
+			} elseif (empty($attached_lab)){
+				$message_var = 'Sorry.. You do not have Laboratory attatched to you. Please Attched Laboratory.';
 			}
 			
-			$this->loadModel('DmiFirms');
-			$this->loadModel('MCommodity');
-			$this->loadModel('DmiReplicaAllotmentDetails');
-			$this->loadModel('MGradeDesc');
-			$this->loadModel('DmiAllTblsDetails');
-			$this->loadModel('DmiPackingTypes');
-			$this->loadModel('DmiReplicaUnitDetails');
+			$message = $message_var;
+			$message_theme = 'failed';
+			$redirect_to = '../customers/secondary_home';
 
-			$message = '';
-			$message_theme = '';
-			$redirect_to = '';
+		} else {
 
+			//get packer details
+			$firm_details = $this->DmiFirms->find('all',array('conditions'=>array('customer_id IS'=>$customer_id)))->first();
+
+			//generate packer unique id from table id
+			$firm_details['ca_unique_no'] = $this->getCaUniqueid($firm_details['id']);
 			
+			$this->set('firm_details',$firm_details);
 			
-			//first check if this packer have any chemist incharge or not, elae show alert
-			$this->loadModel('DmiChemistAllotments');
-			$this->loadModel('CommGrade');
-			$check_che_incharge = $this->DmiChemistAllotments->find('all',array('fields'=>'chemist_id','conditions'=>array('customer_id IS'=>$customer_id,'status'=>1,'incharge'=>'yes')))->first();
-			if (empty($check_che_incharge)) {
+			//list of authorized laboratory
+			$lab_list = $this->DmiFirms->find('list',array('keyField'=>'id','valueField'=>'firm_name','conditions'=>array('customer_id like'=>'%'.'/3/'.'%','delete_status IS NULL','id IN'=>$attached_lab),'order'=>'firm_name asc'))->toArray();
+			$this->set('lab_list',$lab_list);
+		
+			//get packer wise commodity list
+			$commodity_ids = explode(',',$firm_details['sub_commodity']);	
+
+			$commodity_list = $this->MCommodity->find('list',array('keyField'=>'commodity_code','valueField'=>'commodity_name','conditions'=>array('commodity_code IN'=>$commodity_ids)))->toArray();
+			
+			//****************************************************************************************************/			
+			// Added by shankhpal Shende on 22/08/2022 for [On loading Set Grade for selected commodity]
+			// $grade_list = $this->MGradeDesc->find('list',array('keyField'=>'grade_code','valueField'=>'grade_desc','conditions'=>array('display'=>'Y'),'order'=>'grade_code asc'))->toArray();
+			
+			$get_grade = $this->CommGrade->find('all',array('fields'=>'grade_code','conditions'=>array('commodity_code IN'=>$commodity_ids),'group'=>'grade_code'))->toArray();
+			
+			foreach($get_grade as $val)
+			{
+				$get_grade_desc = $this->MGradeDesc->find('all',array('fields'=>array('grade_code','grade_desc'),'conditions'=>array('grade_code IN'=>$val['grade_code']),'group'=>'grade_code'))->first();
+				$grade_list[$get_grade_desc['grade_code']] = $get_grade_desc['grade_desc'];
+			}
+			//**************************************************************************************************/
+			
+			$tbl_list = $this->DmiAllTblsDetails->find('list',array('keyField'=>'id','valueField'=>'tbl_name','conditions'=>array('customer_id IS'=>$customer_id,'delete_status IS Null'),'order'=>'id asc'))->toArray();
+			$packaging_material_list = $this->DmiPackingTypes->find('list',array('keyField'=>'id','valueField'=>'packing_type','conditions'=>array('delete_status IS Null'),'order'=>'id asc'))->toArray();
+			$printers_list = $this->DmiFirms->find('list',array('keyField'=>'id','valueField'=>'firm_name','conditions'=>array('customer_id like'=>'%'.'/2/'.'%','delete_status IS Null'),'order'=>'firm_name asc'))->toArray();
+			
+			//fetch last reocrds from table, if empty set default value
+			$dataArray = $this->DmiReplicaAllotmentDetails->getSectionData($customer_id);
+			
+			//to show selected lab in list
+			if (!empty($dataArray)) {
 				
-				$message = 'Sorry.. You do not have any registered chemist In-charge, Please register your chemist and set as in-charge';
-				$message_theme = 'failed';
-				$redirect_to = '../customers/secondary_home';
-				
+				$selected_lab = $dataArray[0]['grading_lab'];
 			} else {
+				$selected_lab = '';
+			}
+			$this->set('selected_lab',$selected_lab);
+			$this->set('dataArray',$dataArray);
 
-				//get packer details
-				$firm_details = $this->DmiFirms->find('all',array('conditions'=>array('customer_id IS'=>$customer_id)))->first();
-
-				//generate packer unique id from table id
-				$firm_details['ca_unique_no'] = $this->getCaUniqueid($firm_details['id']);
-				
-				$this->set('firm_details',$firm_details);
-				
-				//list of authorized laboratory
-				$lab_list = $this->DmiFirms->find('list',array('keyField'=>'id','valueField'=>'firm_name','conditions'=>array('customer_id like'=>'%'.'/3/'.'%','delete_status IS Null'),'order'=>'firm_name asc'))->toArray();
-				$this->set('lab_list',$lab_list);
+			//create array as per the column to display in table
+			$tableD = array();
 			
-				//get packer wise commodity list
-				$commodity_ids = explode(',',$firm_details['sub_commodity']);
+			// common add more Table Header Array
+			$tableD['label'] = array(
+			
+				'0' => array(
+					'0' => array(
+						'col' 		=> 'Sr.no',
+						'colspan' 	=> '1',
+						'rowspan' 	=> '2'
+					),
+					'1' => array(
+						'col' 		=> 'Commodity',
+						'colspan' 	=> '1',
+						'rowspan' 	=> '2'
+					),
+					'2' => array(
+						'col' 		=> 'Grade',
+						'colspan' 	=> '1',
+						'rowspan' 	=> '2'
+					),
+					'3' => array(
+						'col' 		=> 'TBL',
+						'colspan' 	=> '1',
+						'rowspan' 	=> '2'
+					),
+					'4' => array(
+						'col' 		=> 'Packaging Material',
+						'colspan' 	=> '1',
+						'rowspan' 	=> '2'
+					),
+					'5' => array(
+						'col' 		=> 'Authorized Printer',
+						'colspan' 	=> '2',
+						'rowspan' 	=> '2'
+					),
+					'6' => array(
+						'col' 		=> 'Packet Size',
+						'colspan' 	=> '2',
+						'rowspan' 	=> '1'
+					),
+					'7' => array(
+						'col' 		=> 'No. of Packets',
+						'colspan' 	=> '1',
+						'rowspan' 	=> '2'
+					),
+					'8' => array(
+						'col' 		=> 'Total Quantity Gross (Kg/Ltr)',
+						'colspan' 	=> '1',
+						'rowspan' 	=> '2'
+					),
+					'9' => array(
+						'col' 		=> 'Rate of Label Charge(Rs.) ',
+						'colspan' 	=> '1',
+						'rowspan' 	=> '2'
+					),
+					'10' => array(
+						'col' 		=> 'Total Label Charges(Rs.) (Kg/Ltr)',
+						'colspan' 	=> '1',
+						'rowspan' 	=> '2'
+					),
+					'11' => array(
+						'col' 		=> 'Balance Agmark Replica No.',
+						'colspan' 	=> '1',
+						'rowspan' 	=> '2'
+					),
+				),
+				'1' => array(
+					'0' => array(
+						'col' 		=> 'Size',
+						'colspan' 	=> '1',
+						'rowspan' 	=> '1'
+					),
+					'1' => array(
+						'col' 		=> 'Unit',
+						'colspan' 	=> '1',
+						'rowspan' 	=> '1'
+					)
 
-				$commodity_list = $this->MCommodity->find('list',array('keyField'=>'commodity_code','valueField'=>'commodity_name','conditions'=>array('commodity_code IN'=>$commodity_ids)))->toArray();
-	//****************************************************************************************************/			
-			    // Added by shankhpal Shende on 22/08/2022 for [On loading Set Grade for selected commodity]
-	            // $grade_list = $this->MGradeDesc->find('list',array('keyField'=>'grade_code','valueField'=>'grade_desc','conditions'=>array('display'=>'Y'),'order'=>'grade_code asc'))->toArray();
-	            
-				$get_grade = $this->CommGrade->find('all',array('fields'=>'grade_code','conditions'=>array('commodity_code IN'=>$commodity_ids),'group'=>'grade_code'))->toArray();
-	           
-				foreach($get_grade as $val)
-				{
-					$get_grade_desc = $this->MGradeDesc->find('all',array('fields'=>array('grade_code','grade_desc'),'conditions'=>array('grade_code IN'=>$val['grade_code']),'group'=>'grade_code'))->first();
-					$grade_list[$get_grade_desc['grade_code']] = $get_grade_desc['grade_desc'];
-				}			
-      //**************************************************************************************************/
-				$tbl_list = $this->DmiAllTblsDetails->find('list',array('keyField'=>'id','valueField'=>'tbl_name','conditions'=>array('customer_id IS'=>$customer_id,'delete_status IS Null'),'order'=>'id asc'))->toArray();
-				$packaging_material_list = $this->DmiPackingTypes->find('list',array('keyField'=>'id','valueField'=>'packing_type','conditions'=>array('delete_status IS Null'),'order'=>'id asc'))->toArray();
-				$printers_list = $this->DmiFirms->find('list',array('keyField'=>'id','valueField'=>'firm_name','conditions'=>array('customer_id like'=>'%'.'/2/'.'%','delete_status IS Null'),'order'=>'firm_name asc'))->toArray();
-				
+				)
+			);
+			
+			//converting list array in required foramt for common add more table
+			$commodity_list1 = array();
+			$grade_list1 = array();	
+			$tbl_list1 = array();
+			$packaging_material_list1 = array();
+			$printers_list1 = array();
+			
+			//commodity list array
+			foreach ($commodity_list as $key => $value) {
 
-				//fetch last reocrds from table, if empty set default value
-				$dataArray = $this->DmiReplicaAllotmentDetails->getSectionData($customer_id);
-				
-				//to show selected lab in list
-				if (!empty($dataArray)) {
+				$commodity_list1[] = array(
+					'vall' => $key,
+					'label' => $value
+				);
+			}
+			
+			//*************************************************************************** */
+			// Grade list Changes by shankhpal Shende on 22/08/2022	
+			//grade list array
+			foreach ($grade_list as $key => $value) {
+
+				$grade_list1[] = array(
+					'vall' => $key,
+					'label' => $value
+				);
+			}
+
+			//*************************************************************************** */
+			//TBL list array
+			foreach ($tbl_list as $key => $value) {
+
+				$tbl_list1[] = array(
+					'vall' => $key,
+					'label' => $value
+				);
+			}
+			
+			//Packaging material list array
+			foreach ($packaging_material_list as $key => $value) {
+
+				$packaging_material_list1[] = array(
+					'vall' => $key,
+					'label' => $value
+				);
+			}
+			
+			//Printers list array
+			foreach ($printers_list as $key => $value) {
+
+				$printers_list1[] = array(
+					'vall' => $key,
+					'label' => $value
+				);
+			}
+
+
+			// common add more Table Input Array
+			foreach ($dataArray as $row) {
+
+			
+				$unit_list1 = array();
+				if (!empty($row['packet_size_unit'])) {
 					
-					$selected_lab = $dataArray[0]['grading_lab'];			
-				} else {
-					$selected_lab = '';
-				}
-				$this->set('selected_lab',$selected_lab);
-				$this->set('dataArray',$dataArray);
-
-				//create array as per the column to display in table
-				$tableD = array();
-				
-				// common add more Table Header Array
-					$tableD['label'] = array(
-						'0' => array(
-							'0' => array(
-								'col' 		=> 'Sr.no',
-								'colspan' 	=> '1',
-								'rowspan' 	=> '2'
-							),
-							'1' => array(
-								'col' 		=> 'Commodity',
-								'colspan' 	=> '1',
-								'rowspan' 	=> '2'
-							),
-							'2' => array(
-								'col' 		=> 'Grade',
-								'colspan' 	=> '1',
-								'rowspan' 	=> '2'
-							),
-							'3' => array(
-								'col' 		=> 'TBL',
-								'colspan' 	=> '1',
-								'rowspan' 	=> '2'
-							),
-							'4' => array(
-								'col' 		=> 'Packaging Material',
-								'colspan' 	=> '1',
-								'rowspan' 	=> '2'
-							),
-							'5' => array(
-								'col' 		=> 'Authorized Printer',
-								'colspan' 	=> '2',
-								'rowspan' 	=> '2'
-							),
-							'6' => array(
-								'col' 		=> 'Packet Size',
-								'colspan' 	=> '2',
-								'rowspan' 	=> '1'
-							),
-							'7' => array(
-								'col' 		=> 'No. of Packets',
-								'colspan' 	=> '1',
-								'rowspan' 	=> '2'
-							),
-							'8' => array(
-								'col' 		=> 'Total Quantity Gross (Kg/Ltr)',
-								'colspan' 	=> '1',
-								'rowspan' 	=> '2'
-							),
-							'9' => array(
-								'col' 		=> 'Rate of Label Charge(Rs.) ',
-								'colspan' 	=> '1',
-								'rowspan' 	=> '2'
-							),
-							'10' => array(
-								'col' 		=> 'Total Label Charges(Rs.) (Kg/Ltr)',
-								'colspan' 	=> '1',
-								'rowspan' 	=> '2'
-							),
-							'11' => array(
-								'col' 		=> 'Balance Agmark Replica No.',
-								'colspan' 	=> '1',
-								'rowspan' 	=> '2'
-							),
-						),
-						'1' => array(
-							'0' => array(
-								'col' 		=> 'Size',
-								'colspan' 	=> '1',
-								'rowspan' 	=> '1'
-							),
-							'1' => array(
-								'col' 		=> 'Unit',
-								'colspan' 	=> '1',
-								'rowspan' 	=> '1'
-							)
-
-						)
-					);
+					$get_unit = $this->DmiReplicaUnitDetails->find('all',array('fields'=>array('unit'),'conditions'=>array('id IS'=>$row['packet_size_unit'])))->first();
+					$unit = $get_unit['unit'];
 					
-				//converting list array in required foramt for common add more table
-				$commodity_list1 = array();
-				$grade_list1 = array();	
-				$tbl_list1 = array();
-				$packaging_material_list1 = array();
-				$printers_list1 = array();
+					$unit_list = $this->DmiReplicaUnitDetails->find('list',array('keyField'=>'id','valueField'=>'sub_unit','conditions'=>array('unit IS'=>$unit),'order'=>'id asc'))->toArray();
 				
-				//commodity list array
-				foreach ($commodity_list as $key => $value) {
+					foreach ($unit_list as $key => $value) {
 
-					$commodity_list1[] = array(
-						'vall' => $key,
-						'label' => $value
-					);
-				}
-	//*************************************************************************** */		
-	            // Grade list Changes by shankhpal Shende on 22/08/2022	
-				//grade list array
-				foreach ($grade_list as $key => $value) {
-
-					$grade_list1[] = array(
-						'vall' => $key,
-						'label' => $value
-					);
-				}
-	//*************************************************************************** */				
-				//TBL list array
-				foreach ($tbl_list as $key => $value) {
-
-					$tbl_list1[] = array(
-						'vall' => $key,
-						'label' => $value
-					);
-				}
-				
-				//Packaging material list array
-				foreach ($packaging_material_list as $key => $value) {
-
-					$packaging_material_list1[] = array(
-						'vall' => $key,
-						'label' => $value
-					);
-				}
-				
-				//Printers list array
-				foreach ($printers_list as $key => $value) {
-
-					$printers_list1[] = array(
-						'vall' => $key,
-						'label' => $value
-					);
-				}
-
-
-				// common add more Table Input Array
-				foreach ($dataArray as $row) {
-
-				//	$row = $row['Dmi_replica_allotment_detail'];
-					$unit_list1 = array();
-					if (!empty($row['packet_size_unit'])) {
-						
-						$get_unit = $this->DmiReplicaUnitDetails->find('all',array('fields'=>array('unit'),'conditions'=>array('id IS'=>$row['packet_size_unit'])))->first();
-						$unit = $get_unit['unit'];
-						
-						$unit_list = $this->DmiReplicaUnitDetails->find('list',array('keyField'=>'id','valueField'=>'sub_unit','conditions'=>array('unit IS'=>$unit),'order'=>'id asc'))->toArray();
-					
-						foreach ($unit_list as $key => $value) {
-
-							$unit_list1[] = array(
-								'vall' => $key,
-								'label' => $value
-							);
-						}
-					} else {
-						$unit_list1 = array();
+						$unit_list1[] = array(
+							'vall' => $key,
+							'label' => $value
+						);
 					}
 
-					$tableD['input'][] = array(
+				} else {
+					$unit_list1 = array();
+				}
+
+				$tableD['input'][] = array(
+					
+					'0' => array(
+		
+						'name'		=> null,
+						'type'		=> null,
+						'valid'		=> null,
+						'length'	=> null
+					),
+					'1' => array(
+						'name'		=> 'commodity',
+						'type'		=> 'select',
+						'valid'		=> 'text',
+						'option'	=> $commodity_list1,
+						'selected'	=> $row['commodity'],
+						'class'		=> 'form-control commodity',
+						'id'		=> 'commodity',
 						
-							'0' => array(
-				
-								'name'		=> null,
-								'type'		=> null,
-								'valid'		=> null,
-								'length'	=> null
-							),
-							'1' => array(
-								'name'		=> 'commodity',
-								'type'		=> 'select',
-								'valid'		=> 'text',
-								'option'	=> $commodity_list1,
-								'selected'	=> $row['commodity'],
-								'class'		=> 'form-control commodity',
-								'id'		=> 'commodity',
-								
-							),
-							'2' => array(
-								'name'		=> 'grade',
-								'type'		=> 'select',
-								'valid'		=> 'text',
-								'option'	=> $grade_list1,
-								'selected'	=> $row['grade'],
-								'class'		=> 'form-control grade',
-								'id'		=> 'grade'
-							),
-							'3' => array(
-								'name'		=> 'tbl',
-								'type'		=> 'select',
-								'valid'		=> 'text',
-								'option'	=> $tbl_list1,
-								'selected'	=> $row['tbl'],
-								'class'		=> 'form-control tbl',
-								'id'		=> 'tbl'
-							),
-							'4' => array(
-								'name'		=> 'packaging_material',
-								'type'		=> 'select',
-								'valid'		=> 'text',
-								'option'	=> $packaging_material_list1,
-								'selected'	=> $row['packaging_material'],
-								'class'		=> 'form-control packaging_material',
-								'id'		=> 'packaging_material'
-							),
-							'5' => array(
-								'name'		=> 'authorized_printer',
-								'type'		=> 'select',
-								'valid'		=> 'text',
-								'option'	=> $printers_list1,
-								'selected'	=> $row['authorized_printer'],
-								'class'		=> 'form-control authorized_printer',
-								'id'		=> 'authorized_printer'
-							),
-							'6' => array(
-								'name'		=> 'view_printer',
-								'type'		=> 'icon',
-								'class'		=> 'mt-2 fa fa-eye view_printer',
-								'id'		=> 'view_printer',
-								'title'		=> 'View Selected Printer details'
-							),
-							'7' => array(
-								'name'		=> 'packet_size',
-								'type'		=> 'text',
-								'valid'		=> 'text',
-								'value'		=> $row['packet_size'],
-								'length'	=> '50',
-								'class'		=> 'form-control packet_size',
-								'id'		=> 'packet_size'
+					),
+					'2' => array(
+						'name'		=> 'grade',
+						'type'		=> 'select',
+						'valid'		=> 'text',
+						'option'	=> $grade_list1,
+						'selected'	=> $row['grade'],
+						'class'		=> 'form-control grade',
+						'id'		=> 'grade'
+					),
+					'3' => array(
+						'name'		=> 'tbl',
+						'type'		=> 'select',
+						'valid'		=> 'text',
+						'option'	=> $tbl_list1,
+						'selected'	=> $row['tbl'],
+						'class'		=> 'form-control tbl',
+						'id'		=> 'tbl'
+					),
+					'4' => array(
+						'name'		=> 'packaging_material',
+						'type'		=> 'select',
+						'valid'		=> 'text',
+						'option'	=> $packaging_material_list1,
+						'selected'	=> $row['packaging_material'],
+						'class'		=> 'form-control packaging_material',
+						'id'		=> 'packaging_material'
+					),
+					'5' => array(
+						'name'		=> 'authorized_printer',
+						'type'		=> 'select',
+						'valid'		=> 'text',
+						'option'	=> $printers_list1,
+						'selected'	=> $row['authorized_printer'],
+						'class'		=> 'form-control authorized_printer',
+						'id'		=> 'authorized_printer'
+					),
+					'6' => array(
+						'name'		=> 'view_printer',
+						'type'		=> 'icon',
+						'class'		=> 'mt-2 fa fa-eye view_printer',
+						'id'		=> 'view_printer',
+						'title'		=> 'View Selected Printer details'
+					),
+					'7' => array(
+						'name'		=> 'packet_size',
+						'type'		=> 'text',
+						'valid'		=> 'text',
+						'value'		=> $row['packet_size'],
+						'length'	=> '50',
+						'class'		=> 'form-control packet_size',
+						'id'		=> 'packet_size'
 
-							),
-							'8' => array(
-								'name'		=> 'packet_size_unit',
-								'type'		=> 'select',
-								'valid'		=> 'text',
-								'option'	=> $unit_list1,
-								'selected'	=> $row['packet_size_unit'],
-								'length'	=> '50',
-								'class'		=> 'form-control packet_size_unit',
-								'id'		=> 'packet_size_unit'
+					),
+					'8' => array(
+						'name'		=> 'packet_size_unit',
+						'type'		=> 'select',
+						'valid'		=> 'text',
+						'option'	=> $unit_list1,
+						'selected'	=> $row['packet_size_unit'],
+						'length'	=> '50',
+						'class'		=> 'form-control packet_size_unit',
+						'id'		=> 'packet_size_unit'
 
-							),
-							'9' => array(
-								'name'		=> 'no_of_packets',
-								'type'		=> 'text',
-								'valid'		=> 'text',
-								'value'		=> $row['no_of_packets'],
-								'length'	=> '50',
-								'class'		=> 'form-control no_of_packets',
-								'id'		=> 'no_of_packets'
+					),
+					'9' => array(
+						'name'		=> 'no_of_packets',
+						'type'		=> 'text',
+						'valid'		=> 'text',
+						'value'		=> $row['no_of_packets'],
+						'length'	=> '50',
+						'class'		=> 'form-control no_of_packets',
+						'id'		=> 'no_of_packets'
 
-							),
-							'10' => array(
-								'name'		=> 'total_quantity',
-								'type'		=> 'text',
-								'valid'		=> 'text',
-								'value'		=> $row['total_quantity'],
-								'length'	=> '50',
-								'class'		=> 'form-control readonly total_quantity',
-								'id'		=> 'total_quantity'
+					),
+					'10' => array(
+						'name'		=> 'total_quantity',
+						'type'		=> 'text',
+						'valid'		=> 'text',
+						'value'		=> $row['total_quantity'],
+						'length'	=> '50',
+						'class'		=> 'form-control readonly total_quantity',
+						'id'		=> 'total_quantity'
 
-							),
-							'11' => array(
-								'name'		=> 'label_charge',
-								'type'		=> 'text',
-								'valid'		=> 'text',
-								'value'		=> $row['label_charge'],
-								'length'	=> '50',
-								'class'		=> 'form-control readonly label_charge',
-								'id'		=> 'label_charge'
+					),
+					'11' => array(
+						'name'		=> 'label_charge',
+						'type'		=> 'text',
+						'valid'		=> 'text',
+						'value'		=> $row['label_charge'],
+						'length'	=> '50',
+						'class'		=> 'form-control readonly label_charge',
+						'id'		=> 'label_charge'
 
-							),
-							'12' => array(
-								'name'		=> 'total_label_charges',
-								'type'		=> 'text',
-								'valid'		=> 'text',
-								'value'		=> $row['total_label_charges'],
-								'length'	=> '50',
-								'class'		=> 'form-control readonly total_label_charges',
-								'id'		=> 'total_label_charges'
+					),
+					'12' => array(
+						'name'		=> 'total_label_charges',
+						'type'		=> 'text',
+						'valid'		=> 'text',
+						'value'		=> $row['total_label_charges'],
+						'length'	=> '50',
+						'class'		=> 'form-control readonly total_label_charges',
+						'id'		=> 'total_label_charges'
 
-							),
-							'13' => array(
-								'name'		=> 'bal_agmark_replica',
-								'type'		=> 'text',
-								'valid'		=> 'text',
-								'value'		=> $row['bal_agmark_replica'],
-								'length'	=> '100',
-								'class'		=> 'form-control bal_agmark_replica',
-								'id'		=> 'bal_agmark_replica'
+					),
+					'13' => array(
+						'name'		=> 'bal_agmark_replica',
+						'type'		=> 'text',
+						'valid'		=> 'text',
+						'value'		=> $row['bal_agmark_replica'],
+						'length'	=> '100',
+						'class'		=> 'form-control bal_agmark_replica',
+						'id'		=> 'bal_agmark_replica'
 
-							),
+					),
+				);
+			}
 
-						
-					);
+
+			$tableForm[] = $tableD;
+
+			$jsonTableForm = json_encode($tableForm);
+			$this->set('tableForm',$jsonTableForm);
 			
-				}
+			
+			
+			//get balance amount for the applicant from transaction table
+			$this->loadModel('DmiAdvPaymentTransactions');
+			$bal_amt = 0;
+			$get_bal = $this->DmiAdvPaymentTransactions->find('all',array('fields'=>'balance_amount','conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->first();			
+			
+			if (!empty($get_bal)) {
+				$bal_amt = $get_bal['balance_amount'];
+			}
+			
+			$this->set('bal_amt',$bal_amt);
+			
+			//to save post data
+			if (null!==($this->request->getData('save'))) {
 
+				//set delete flag for last records with allotment status Null, to show only current added/updated records
+				//the alloted records will be status 1, which will not touch, and to be keeped for logs
+				$date = date('Y-m-d H:i:s');
+				$this->DmiReplicaAllotmentDetails->updateAll(array('delete_status'=>"yes",'modified'=>"$date"),array('customer_id IS'=>$customer_id,'allot_status IS Null'));
 
-				$tableForm[] = $tableD;
-
-				$jsonTableForm = json_encode($tableForm);
-				$this->set('tableForm',$jsonTableForm);
+				//logic to generate the replica number as per applied data
 				
+				//alphabetic conversion of year (currently upto 26 years)
+				$year_ar = array('2021'=>'A','2022'=>'B','2023'=>'C','2024'=>'D','2025'=>'E','2026'=>'F','2027'=>'G','2028'=>'H','2029'=>'I','2030'=>'J','2031'=>'K',
+								'2032'=>'L','2033'=>'M','2034'=>'N','2035'=>'O','2036'=>'P','2037'=>'Q','2038'=>'R','2039'=>'S','2040'=>'T','2041'=>'U','2042'=>'V','2043'=>'W',
+								'2044'=>'X','2045'=>'Y','2046'=>'Z');
+								
+				//alphabetic conversion of month (A to L Jan to Dec and again M to X Jan to Dec)
+				$month_ar = array('01'=>'A','02'=>'B','03'=>'C','04'=>'D','05'=>'E','06'=>'F','07'=>'G','08'=>'H','09'=>'I','10'=>'J','11'=>'K','12'=>'L');
 				
+				//if range exceeds (ZZZ999) for same month then start month from M to X (Jan to Dec)
+				$month_ar2 = array('01'=>'M','02'=>'N','03'=>'O','04'=>'P','05'=>'Q','06'=>'R','07'=>'S','08'=>'T','09'=>'U','10'=>'V','11'=>'W','12'=>'X');
 				
-				//get balance amount for the applicant from transaction table
-				$this->loadModel('DmiAdvPaymentTransactions');
-				$bal_amt = 0;
-				$get_bal = $this->DmiAdvPaymentTransactions->find('all',array('fields'=>'balance_amount','conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->first();			
-				if (!empty($get_bal)) {
-					$bal_amt = $get_bal['balance_amount'];
-				}
-				$this->set('bal_amt',$bal_amt);
+				//alphabetic conversion of crore digit (1-26 i.e A to Z)
+				$crore_ar = array('1'=>'A','2'=>'B','3'=>'C','4'=>'D','5'=>'E','6'=>'F','7'=>'G','8'=>'H','9'=>'I','10'=>'J','11'=>'K',
+								'12'=>'L','13'=>'M','14'=>'N','15'=>'O','16'=>'P','17'=>'Q','18'=>'R','19'=>'S','20'=>'T','21'=>'U','22'=>'V','23'=>'W',
+								'24'=>'X','25'=>'Y','26'=>'Z');
+								
+				//alphabetic conversion of Lakh digit (1-26 i.e A to Z)
+				$lakh_ar = array('1'=>'A','2'=>'B','3'=>'C','4'=>'D','5'=>'E','6'=>'F','7'=>'G','8'=>'H','9'=>'I','10'=>'J','11'=>'K',
+								'12'=>'L','13'=>'M','14'=>'N','15'=>'O','16'=>'P','17'=>'Q','18'=>'R','19'=>'S','20'=>'T','21'=>'U','22'=>'V','23'=>'W',
+								'24'=>'X','25'=>'Y','26'=>'Z');
+								
+				//alphabetic conversion of Thousand digit (1-26 i.e A to Z)
+				$thou_ar = array('1'=>'A','2'=>'B','3'=>'C','4'=>'D','5'=>'E','6'=>'F','7'=>'G','8'=>'H','9'=>'I','10'=>'J','11'=>'K',
+								'12'=>'L','13'=>'M','14'=>'N','15'=>'O','16'=>'P','17'=>'Q','18'=>'R','19'=>'S','20'=>'T','21'=>'U','22'=>'V','23'=>'W',
+								'24'=>'X','25'=>'Y','26'=>'Z');
+								
+				$cur_year = $year_ar[date('Y')];
+				$cur_month = $month_ar[date('m')];
+				$ca_unique_no = $this->request->getData('ca_unique_no');
 				
-				//to save post data
-				if (null!==($this->request->getData('save'))) {
+				//initial replica pattern
+				$init_rep = $ca_unique_no.$cur_year.$cur_month;
+				
+				$rep_from = array();
+				$cur_rep_no_from = array();
+				$cur_rep_no_upto = array();
+				$i=0;
+				$crNum = 1;
+				$lkNum = 1;
+				$thNum = 1;
+				$hdNum = 1;
+				
+				//replica range from value, initial stage for first time
+				$cur_rep_no_from[$i] = $init_rep.$crore_ar[1].$lakh_ar[1].$thou_ar[1].'000';
+				$postData = $this->request->getData();
 
-					//set delete flag for last records with allotment status Null, to show only current added/updated records
-					//the alloted records will be status 1, which will not touch, and to be keeped for logs
-					$date = date('Y-m-d H:i:s');
-					$this->DmiReplicaAllotmentDetails->updateAll(array('delete_status'=>"yes",'modified'=>"$date"),array('customer_id IS'=>$customer_id,'allot_status IS Null'));
-
-					//logic to generate the replica number as per applied data
+				foreach ($postData['commodity'] as $key=>$val) {
 					
-					//alphabetic conversion of year (currently upto 26 years)
-					$year_ar = array('2021'=>'A','2022'=>'B','2023'=>'C','2024'=>'D','2025'=>'E','2026'=>'F','2027'=>'G','2028'=>'H','2029'=>'I','2030'=>'J','2031'=>'K',
-									'2032'=>'L','2033'=>'M','2034'=>'N','2035'=>'O','2036'=>'P','2037'=>'Q','2038'=>'R','2039'=>'S','2040'=>'T','2041'=>'U','2042'=>'V','2043'=>'W',
-									'2044'=>'X','2045'=>'Y','2046'=>'Z');
-									
-					//alphabetic conversion of month (A to L Jan to Dec and again M to X Jan to Dec)
-					$month_ar = array('01'=>'A','02'=>'B','03'=>'C','04'=>'D','05'=>'E','06'=>'F','07'=>'G','08'=>'H','09'=>'I','10'=>'J','11'=>'K','12'=>'L');
+					//required no. of packets for each row
+					$req_cnt = $postData['no_of_packets'][$key];
 					
-					//if range exceeds (ZZZ999) for same month then start month from M to X (Jan to Dec)
-					$month_ar2 = array('01'=>'M','02'=>'N','03'=>'O','04'=>'P','05'=>'Q','06'=>'R','07'=>'S','08'=>'T','09'=>'U','10'=>'V','11'=>'W','12'=>'X');
+					//get last alloment, if exists
+					$last_allotment = $this->DmiReplicaAllotmentDetails->find('all',array('fields'=>'alloted_rep_to','conditions'=>array('customer_id IS'=>$customer_id,'allot_status'=>'1','delete_status IS Null'),'order'=>'id desc'))->first();
 					
-					//alphabetic conversion of crore digit (1-26 i.e A to Z)
-					$crore_ar = array('1'=>'A','2'=>'B','3'=>'C','4'=>'D','5'=>'E','6'=>'F','7'=>'G','8'=>'H','9'=>'I','10'=>'J','11'=>'K',
-									'12'=>'L','13'=>'M','14'=>'N','15'=>'O','16'=>'P','17'=>'Q','18'=>'R','19'=>'S','20'=>'T','21'=>'U','22'=>'V','23'=>'W',
-									'24'=>'X','25'=>'Y','26'=>'Z');
-									
-					//alphabetic conversion of Lakh digit (1-26 i.e A to Z)
-					$lakh_ar = array('1'=>'A','2'=>'B','3'=>'C','4'=>'D','5'=>'E','6'=>'F','7'=>'G','8'=>'H','9'=>'I','10'=>'J','11'=>'K',
-									'12'=>'L','13'=>'M','14'=>'N','15'=>'O','16'=>'P','17'=>'Q','18'=>'R','19'=>'S','20'=>'T','21'=>'U','22'=>'V','23'=>'W',
-									'24'=>'X','25'=>'Y','26'=>'Z');
-									
-					//alphabetic conversion of Thousand digit (1-26 i.e A to Z)
-					$thou_ar = array('1'=>'A','2'=>'B','3'=>'C','4'=>'D','5'=>'E','6'=>'F','7'=>'G','8'=>'H','9'=>'I','10'=>'J','11'=>'K',
-									'12'=>'L','13'=>'M','14'=>'N','15'=>'O','16'=>'P','17'=>'Q','18'=>'R','19'=>'S','20'=>'T','21'=>'U','22'=>'V','23'=>'W',
-									'24'=>'X','25'=>'Y','26'=>'Z');
-									
-					$cur_year = $year_ar[date('Y')];
-					$cur_month = $month_ar[date('m')];
-					$ca_unique_no = $this->request->getData('ca_unique_no');
-					
-					//initial replica pattern
-					$init_rep = $ca_unique_no.$cur_year.$cur_month;
-					
-					$rep_from = array();
-					$cur_rep_no_from = array();
-					$cur_rep_no_upto = array();
-					$i=0;
-					$crNum = 1;
-					$lkNum = 1;
-					$thNum = 1;
-					$hdNum = 1;
-					
-					//replica range from value, initial stage for first time
-					$cur_rep_no_from[$i] = $init_rep.$crore_ar[1].$lakh_ar[1].$thou_ar[1].'000';
-					$postData = $this->request->getData();
-					foreach ($postData['commodity'] as $key=>$val) {
+					if (!empty($last_allotment)) {
 						
-						//required no. of packets for each row
-						$req_cnt = $postData['no_of_packets'][$key];
-						
-						//get last alloment, if exists
-						$last_allotment = $this->DmiReplicaAllotmentDetails->find('all',array('fields'=>'alloted_rep_to','conditions'=>array('customer_id IS'=>$customer_id,'allot_status'=>'1','delete_status IS Null'),'order'=>'id desc'))->first();
-						if (!empty($last_allotment)) {
-							
-							$alloted_rep_to = $last_allotment['alloted_rep_to'];
+						$alloted_rep_to = $last_allotment['alloted_rep_to'];
 
-							//get replica range from value, for first row
-							if ($i==0) {
-								
-								//check the month from last allotment, 
-								//if month not matched then reset the series to initial position, for each year or month
-								$last_allt_month = substr($alloted_rep_to,6,1);
-								if ($cur_month != $last_allt_month) {
-									
-									$cur_rep_no_from[$i] = $init_rep.$crore_ar[1].$lakh_ar[1].$thou_ar[1].'000';
-									
-									//required no. of packets for each row, for first time, deducted 1 because started from 000
-									$req_cnt = $postData['no_of_packets'][$key]-1;
-								
-								} else {
-								
-									$crNum = array_search(substr($alloted_rep_to,7,1),$crore_ar);//crore digit
-									$lkNum = array_search(substr($alloted_rep_to,8,1),$lakh_ar);//lakh digit
-									$thNum = array_search(substr($alloted_rep_to,9,1),$thou_ar);//thousand digit
-									$hdNum = substr($alloted_rep_to,10);//hundred's digits
-									$hdNum = $hdNum+1;//start from next value
-														
-									$cur_rep_no_from[$i] = $this->replicaGenerationLogic($init_rep,1,$crNum,$lkNum,$thNum,$hdNum,$crore_ar,$lakh_ar,$thou_ar,$month_ar2,$year_ar);
-								}
-							}
-
-						} else {
+						//get replica range from value, for first row
+						if ($i==0) {
 							
-							if ($i==0) {
+							//check the month from last allotment, 
+							//if month not matched then reset the series to initial position, for each year or month
+							$last_allt_month = substr($alloted_rep_to,6,1);
+							if ($cur_month != $last_allt_month) {
+								
+								$cur_rep_no_from[$i] = $init_rep.$crore_ar[1].$lakh_ar[1].$thou_ar[1].'000';
 								
 								//required no. of packets for each row, for first time, deducted 1 because started from 000
 								$req_cnt = $postData['no_of_packets'][$key]-1;
+							
+							} else {
+							
+								$crNum = array_search(substr($alloted_rep_to,7,1),$crore_ar);//crore digit
+								$lkNum = array_search(substr($alloted_rep_to,8,1),$lakh_ar);//lakh digit
+								$thNum = array_search(substr($alloted_rep_to,9,1),$thou_ar);//thousand digit
+								$hdNum = substr($alloted_rep_to,10);//hundred's digits
+								$hdNum = $hdNum+1;//start from next value
+													
+								$cur_rep_no_from[$i] = $this->replicaGenerationLogic($init_rep,1,$crNum,$lkNum,$thNum,$hdNum,$crore_ar,$lakh_ar,$thou_ar,$month_ar2,$year_ar);
 							}
 						}
-						
-						
-						
-						//calculate and get replica for required no. of packets
-						$cur_rep_no_upto[$i] = $this->replicaGenerationLogic($init_rep,$req_cnt,$crNum,$lkNum,$thNum,$hdNum,$crore_ar,$lakh_ar,$thou_ar,$month_ar2,$year_ar);
-						
-						$last_row_rep_no = $cur_rep_no_upto[$i];
-						
-						$i=$i+1;
-						
-						//rep no "From" value for next row, this a +1 value of last replica number from the row					
-						$crNum = array_search(substr($last_row_rep_no,7,1),$crore_ar);//crore digit
-						$lkNum = array_search(substr($last_row_rep_no,8,1),$lakh_ar);//lakh digit
-						$thNum = array_search(substr($last_row_rep_no,9,1),$thou_ar);//thousand digit
-						$hdNum = substr($last_row_rep_no,10);//hundred's digits
-						$hdNum = $hdNum+1;//start from next value
-						
-						//from $i = 1, and further
-						$cur_rep_no_from[$i] = $this->replicaGenerationLogic($init_rep,1,$crNum,$lkNum,$thNum,$hdNum,$crore_ar,$lakh_ar,$thou_ar,$month_ar2,$year_ar);
-							
-					}
-					$this->Session->delete('init_rep');
 
-					if ($this->DmiReplicaAllotmentDetails->saveFormDetails($postData,$cur_rep_no_from,$cur_rep_no_upto)==true) {
+					} else {
 						
-						//to send sms and email
-						$this->loadModel('DmiSmsEmailTemplates');
-						//$this->DmiSmsEmailTemplates->sendmessage(55,$customer_id); //to send SMS/email to Packer
-						
-						//get chemist in-charge id to send SMS/email
-						$this->loadModel('DmiChemistAllotments');
-						$chemist_incharge = $this->DmiChemistAllotments->find('all',array('fields'=>'chemist_id','conditions'=>array('customer_id IS'=>$customer_id,'status'=>1,'incharge'=>'yes')))->first();
-						$chemist_id = $chemist_incharge['chemist_id'];
-						//$this->DmiSmsEmailTemplates->sendmessage(56,$chemist_id); //to send SMS/email to chemist
-					
-						$message = 'The application for Replica Serial Number is saved successfully. It is now available to Chemist for confirmation';
-						$redirect_to = 'replica_application';					
-						
+						if ($i==0) {
+							
+							//required no. of packets for each row, for first time, deducted 1 because started from 000
+							$req_cnt = $postData['no_of_packets'][$key]-1;
+						}
 					}
+					
+					
+					
+					//calculate and get replica for required no. of packets
+					$cur_rep_no_upto[$i] = $this->replicaGenerationLogic($init_rep,$req_cnt,$crNum,$lkNum,$thNum,$hdNum,$crore_ar,$lakh_ar,$thou_ar,$month_ar2,$year_ar);
+					
+					$last_row_rep_no = $cur_rep_no_upto[$i];
+					
+					$i=$i+1;
+					
+					//rep no "From" value for next row, this a +1 value of last replica number from the row					
+					$crNum = array_search(substr($last_row_rep_no,7,1),$crore_ar);//crore digit
+					$lkNum = array_search(substr($last_row_rep_no,8,1),$lakh_ar);//lakh digit
+					$thNum = array_search(substr($last_row_rep_no,9,1),$thou_ar);//thousand digit
+					$hdNum = substr($last_row_rep_no,10);//hundred's digits
+					$hdNum = $hdNum+1;//start from next value
+					
+					//from $i = 1, and further
+					$cur_rep_no_from[$i] = $this->replicaGenerationLogic($init_rep,1,$crNum,$lkNum,$thNum,$hdNum,$crore_ar,$lakh_ar,$thou_ar,$month_ar2,$year_ar);
+						
+				}
+
+				$this->Session->delete('init_rep');
+
+				if ($this->DmiReplicaAllotmentDetails->saveFormDetails($postData,$cur_rep_no_from,$cur_rep_no_upto)==true) {
+					
+					//to send sms and email
+					$this->loadModel('DmiSmsEmailTemplates');
+					//$this->DmiSmsEmailTemplates->sendmessage(55,$customer_id); //to send SMS/email to Packer
+					
+					//get chemist in-charge id to send SMS/email
+					$this->loadModel('DmiChemistAllotments');
+					$chemist_incharge = $this->DmiChemistAllotments->find('all',array('fields'=>'chemist_id','conditions'=>array('customer_id IS'=>$customer_id,'status'=>1,'incharge'=>'yes')))->first();
+					$chemist_id = $chemist_incharge['chemist_id'];
+					//$this->DmiSmsEmailTemplates->sendmessage(56,$chemist_id); //to send SMS/email to chemist
+				
+					$message = 'The application for Replica Serial Number is saved successfully. It is now available to Chemist for confirmation';
+					$redirect_to = 'replica_application';
+					
 				}
 			}
-			
-			
-			$this->set('message',$message);
-			$this->set('message_theme',$message_theme);
-			$this->set('redirect_to',$redirect_to);
-			if (!empty($message)) {$this->render('/element/message_boxes');}
-					
 		}
+			
+			
+		$this->set('message',$message);
+		$this->set('message_theme',$message_theme);
+		$this->set('redirect_to',$redirect_to);
+		if (!empty($message)) {$this->render('/element/message_boxes');}
+	}
 
 
 	//replica serial number generation logic
@@ -731,7 +758,7 @@ class ReplicaController extends AppController {
 			echo '~No Charge~';
 		}
 		exit;
-					
+		
 	}
 
 
@@ -767,11 +794,11 @@ class ReplicaController extends AppController {
 			echo '~No Grade~';
 		}
 		exit;
-					
+		
 	}
 
 
-	//to get gross quantity and total charges when enter no. of packets		
+	//to get gross quantity and total charges when enter no. of packets
 	public function getGrossQuantityAndTotalCharge() {
 			
 		$this->autoRender = false;
@@ -1158,7 +1185,7 @@ class ReplicaController extends AppController {
 		
 		//added by shankhpal shende on 19/08/2022 for implimenting QR code for replica EsignedChemist
 		$data = [$chemist_name,$firm_details];
-		$result_for_qr = $this->Customfunctions->getQrCodeEsignedChemist($data);
+		$result_for_qr = $this->Customfunctions->getQrCodeEsignedChemist($tableRowData,$chemist_name,$firm_details);
 		
 		$this->set('result_for_qr',$result_for_qr);
 		//end for QR code
@@ -1179,8 +1206,8 @@ class ReplicaController extends AppController {
 		$firm_details = $this->DmiFirms->find('all',array('conditions'=>array('id IS'=>$ca_unique_no)))->first();			
 		$customer_id = $firm_details['customer_id'];	
 		
-	//	$view = new View($this, false);
-	//	$view->layout = null;
+		//	$view = new View($this, false);
+		//	$view->layout = null;
 		$pdf_data = $this->render('/Replica/replica_allotment_pdf_view');	
 
 		//check applicant last record version to increment				
@@ -1388,7 +1415,7 @@ class ReplicaController extends AppController {
 	}
 	
 	
-//function to get details from replica serial no. 
+	//function to get details from replica serial no. 
 	public function getReplicaNumberDetails($rep_serial_no) {
 		
 		$ca_unique_no = substr($rep_serial_no,0,5);
@@ -1529,9 +1556,96 @@ class ReplicaController extends AppController {
 		exit;
 	}
 
+	
+	//below method is used to generate excel sheet for mapping generated replica no with actual number series.
+	//on 25-08-2022 by Amol
+	public function getAllotedReplicaExcel($record_id){
+		
+		$this->viewBuilder()->setLayout('downloadpdf');
+		
+		$this->LoadModel('DmiReplicaAllotmentDetails');
+		$get_rep = $this->DmiReplicaAllotmentDetails->find('all',array('fields'=>array('alloted_rep_from','alloted_rep_to'),'conditions'=>array('id IS'=>$record_id)))->first();
+		
+		$get_first_serial = $this->getReplicaNumberDetails($get_rep['alloted_rep_from']);
+		$first_rep = $get_first_serial['serial_no'];
+		$get_last_serial = $this->getReplicaNumberDetails($get_rep['alloted_rep_to']);
+		$last_rep = $get_last_serial['serial_no'];
+		
+		$resultArr = array();
+		
+		//serial no mapping array for thound, lakh, and crore position place (AAA000)
+		$mapping_arr = array('0'=>'A','1'=>'B','2'=>'C','3'=>'D','4'=>'E','5'=>'F','6'=>'G','7'=>'H','8'=>'I','9'=>'J','10'=>'K',
+							'11'=>'L','12'=>'M','13'=>'N','14'=>'O','15'=>'P','16'=>'Q','17'=>'R','18'=>'S','19'=>'T','20'=>'U','21'=>'V','22'=>'W',
+							'23'=>'X','24'=>'Y','25'=>'Z');
+
+		//to create array with values and send to excel view 
+		$j=0;
+		for ($i=$first_rep; $i<=$last_rep; $i++) {
+			
+			$resultArr[$j]['year'] = $get_first_serial['year'];
+			$resultArr[$j]['month'] = $get_first_serial['month'];
+			
+			$resultArr[$j]['series_no'] = $i;
+			
+			//creating 13 digit code for proper mapping with alphabets
+			//if not then concatinating respective '0's
+			$len = strlen($i);
+			if ($len==1) {
+				$i = '000000000000'.$i;
+			} elseif ($len==2) {
+				$i = '00000000000'.$i;
+			} elseif ($len==3) {
+				$i = '0000000000'.$i;
+			} elseif ($len==4) {
+				$i = '000000000'.$i;
+			} elseif ($len==5) {
+				$i = '00000000'.$i;
+			} elseif ($len==6) {
+				$i = '0000000'.$i;
+			} elseif ($len==7) {
+				$i = '000000'.$i;
+			} elseif ($len==8) {
+				$i = '00000'.$i;
+			} elseif ($len==9) {
+				$i = '0000'.$i;
+			} elseif ($len==10) {
+				$i = '000'.$i;
+			} elseif ($len==11) {
+				$i = '00'.$i;
+			} elseif ($len==12) {
+				$i = '0'.$i;
+			}
+
+			$hund = substr($i, -3)-1;
+			
+			//to manage for hunderdth digits only
+			//as we already concatinating above, but while doing -1 it convert the string to int and 001 to 1.
+			$hundlen = strlen($hund);
+			if ($hundlen==1) {
+				$hund = '00'.$hund;
+			} elseif ($hundlen==2) {
+				$hund = '0'.$hund;
+			}
+			
+			$thNum = $mapping_arr[substr($i,9,1)];//thousand digit
+			$lkNum = $mapping_arr[substr($i,8,1)];//lakh digit
+			$crNum = $mapping_arr[substr($i,7,1)];//crore digit
+			
+			$resultArr[$j]['replica_no'] = $crNum.$lkNum.$thNum.$hund;
+			
+			$j++;
+		}
+		
+		$this->set('resultArr',$resultArr);
+		
+		$this->layout = null;
+		$this->autoLayout = false;
+		Configure::write('debug', '0');
+		$this -> render('/element/download_report_excel_format/to_generate_replica_excel');
+		
+	}
+
 
 }
-
-
 
 ?>

@@ -181,7 +181,7 @@
 				{
 					//html encoding post data before saving 
 					$htmlencoded_fssai_reg_no = htmlentities($forms_data['fssai_reg_no'], ENT_QUOTES);				
-					$business_years = $forms_data['business_years'];
+				//	$business_years = $forms_data['business_years'];//commented on 11-08-2022, suggested by DMI in UAT
 				
 					//checking radio buttons input
 					$post_input_request = $forms_data['have_reg_no'];				
@@ -292,7 +292,7 @@
 					
 					//Set all other values to null, not required in CA BEVO
 					$htmlencoded_fssai_reg_no = null;
-					$business_years = null;
+					//$business_years = null;
 					$have_reg_no = null;
 					//$fssai_reg_docs = null;
 				
@@ -360,7 +360,7 @@
 					'firm_fax_no'=>$firm_fax_no,
 					'business_type'=>$business_type,
 					'business_type_docs'=>$business_type_docs,
-					'business_years'=>$business_years,
+				//	'business_years'=>$business_years,//commented on 11-08-2022, suggested by DMI in UAT
 					'have_reg_no'=>$have_reg_no,
 					'fssai_reg_no'=>$htmlencoded_fssai_reg_no,
 					'fssai_reg_docs'=>$fssai_reg_docs,
@@ -502,7 +502,7 @@
 				'firm_fax_no'=>$forms_data['firm_fax_no'],
 				'business_type'=>$forms_data['business_type'],
 				'business_type_docs'=>$forms_data['business_type_docs'],
-				'business_years'=>$forms_data['business_years'],
+			//	'business_years'=>$forms_data['business_years'],//commented on 11-08-2022, suggested by DMI in UAT
 				'have_reg_no'=>$forms_data['have_reg_no'],
 				'fssai_reg_no'=>$forms_data['fssai_reg_no'],
 				'fssai_reg_docs'=>$forms_data['fssai_reg_docs'],
@@ -594,7 +594,8 @@
 					if(empty($forms_data['fssai_reg_docs']->getClientFilename())){ $returnValue = null ; }
 				}
 				if(empty($forms_data['fssai_reg_no'])){ $returnValue = null ; }				
-				if(!filter_var($forms_data['business_years'], FILTER_VALIDATE_INT)){ $returnValue = null ; }
+				//commented on 11-08-2022, suggested by DMI in UAT										   
+				//if(!filter_var($forms_data['business_years'], FILTER_VALIDATE_INT)){ $returnValue = null ; }
 			}
 			if(empty($section_form_details[0]['id'])){
 				if(empty($forms_data['business_type_docs']->getClientFilename())){ $returnValue = null ; }

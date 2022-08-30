@@ -3062,9 +3062,9 @@
 
 					$condition = array('customer_id like'=>'%/'.$short_code.'/%','allot_status'=>'1','delete_status IS Null');
 
-					//Get Replica Status
-					$get_list[$i] = $DmiReplicaAllotmentDetails->find('all',array('fields'=>array('customer_id','ca_unique_no','commodity','grading_lab','allot_status','modified','version'),'conditions'=>$condition,'order'=>array('id desc')))->toArray();
-
+					//Get Replica Status //added 'id' in query field on 25-08-2022
+					$get_list[$i] = $DmiReplicaAllotmentDetails->find('all',array('fields'=>array('id','customer_id','ca_unique_no','commodity','grading_lab','allot_status','modified','version'),'conditions'=>$condition,'order'=>array('id desc')))->toArray();
+					
 					$replica_stats = array_merge($replica_stats,$get_list[$i]);
 
 					$i=$i+1;
@@ -3103,8 +3103,8 @@
 					$condition = array('grading_lab IS'=>$firm_id,'allot_status'=>'1','delete_status IS Null');
 				}
 
-				//Get Replica Status
-				$replica_stats = $DmiReplicaAllotmentDetails->find('all',array('fields'=>array('customer_id','ca_unique_no','commodity','grading_lab','allot_status','modified','version'),'conditions'=>$condition,'order'=>array('id desc')))->toArray();
+				//Get Replica Status //added 'id' in query field on 25-08-2022
+				$replica_stats = $DmiReplicaAllotmentDetails->find('all',array('fields'=>array('id','customer_id','ca_unique_no','commodity','grading_lab','allot_status','modified','version'),'conditions'=>$condition,'order'=>array('id desc')))->toArray();
 
 			}
 
@@ -3420,7 +3420,7 @@
 			
 			$resultdata = $DmiCertQrCodes->find('all',array('conditions'=>array('customer_id'=>$customer_id)))->toArray();
 	       
-            if(count($resultdata) == 0){
+            //if(count($resultdata) == 0){
 
 				require_once(ROOT . DS .'vendor' . DS . 'phpqrcode' . DS . 'qrlib.php');
 		
@@ -3446,7 +3446,7 @@
 														]);
              
 			    $DmiCertQrCodes->save($DmiCertificateQrAdd);
-			}
+		//	}
 
 			$qrimage = $DmiCertQrCodes->find('all',array('field'=>'qr_code_path','conditions'=>array('customer_id'=>$customer_id)))->first();
             
@@ -3460,17 +3460,31 @@
 		// Description : This will return QR code for Esigned of Chemist
 		// Date : 19/08/2022
 
-		public function getQrCodeEsignedChemist($result){
-
+		public function getQrCodeEsignedChemist($tableRowData,$chemist_name,$firm_details){
+	
+			if(!empty($tableRowData)){
+                
+				$i=0;
+				$data1 = '';
+				$data2 = '';
+				$data3 = '';
+				foreach($tableRowData as $each){ 
+				    $data1 .=  $each['commodity_name'].",";
+					$data2 .= $each['tbl_name'].",";
+					$data3 .= $each['printer_name'].",";
+				} 
+			}
+          
 			$customer_id = $this->Session->read('username');
 			$DmiCertQrCodes = TableRegistry::getTableLocator()->get('DmiCertQrCodes'); //initialize model in component
 			$resultdata = $DmiCertQrCodes->find('all',array('conditions'=>array('customer_id'=>$customer_id)))->toArray();
 			
-			if(count($resultdata) == 0){
+			//if(count($resultdata) == 0){
                 
 				require_once(ROOT . DS .'vendor' . DS . 'phpqrcode' . DS . 'qrlib.php');
 		
-				$data = "MECARD:N:".'Esigned By:'.$result[0].'(Chemist In-charge)'.";EMAIL:".$result[1]['firm_name']." ;";
+				//$data = "MECARD:N:".'Esigned By:'.$result[0].'(Chemist In-charge)'.";EMAIL:".$result[1]['firm_name']." ;";
+				$data = "CA Id :".$firm_details['customer_id']."##"."Chemist Name :".$chemist_name."##"."commodity_name :".$data1."##"."TBL Name: ".$data2."##"."Printer Name: ".$data3;
 				
 				$qrimgname = rand();
 				
@@ -3494,12 +3508,14 @@
              
 			    $DmiCertQrCodes->save($DmiCertificateQrAdd);
 				
-			}
+			//}
 			
-			$qrimage = $DmiCertQrCodes->find('all',array('field'=>'qr_code_path','conditions'=>array('customer_id'=>$customer_id)))->first();
+			$qrimage = $DmiCertQrCodes->find('all',array('field'=>'qr_code_path','conditions'=>array('customer_id'=>$customer_id),'order'=>'id desc'))->first();
             
 			return $qrimage;
 
 		}
+
+
 	}
 ?>

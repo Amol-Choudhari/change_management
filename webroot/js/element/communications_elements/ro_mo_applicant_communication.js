@@ -99,7 +99,7 @@
 
 
     //File validation common function
-	//This function is called on file upload browse button to validate selected file
+	//This function is called on file upload browse button to validate selected file - AKASH [19-08-2022]
 	function file_browse_onclick(field_id){
 
 		var selected_file = $('#'.concat(field_id)).val();
