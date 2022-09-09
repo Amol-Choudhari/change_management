@@ -252,8 +252,8 @@
 									'district'=>$district,
 									'postal_code'=>$htmlencodedpostalcode,
 									'email'=>$htmlencodedemail,
-								//	'password'=>'91c8559eb34ab5e1ab86f9e80d9753c59b7da0d0e025ec8e7785f19e7852ca428587cdb4f02b5c67d1220ca5bb440b5592cd76b1c13878d7f10a1e568014f4dc',//Agmark123@
-									'password'=>'3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2',//123
+									'password'=>'91c8559eb34ab5e1ab86f9e80d9753c59b7da0d0e025ec8e7785f19e7852ca428587cdb4f02b5c67d1220ca5bb440b5592cd76b1c13878d7f10a1e568014f4dc',//Agmark123@
+								//	'password'=>'3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2',//123
 									'mobile'=>base64_encode($htmlencodedmobile),
 									'landline'=>base64_encode($htmlencodedlandline),
 									'document'=>$document,
@@ -276,8 +276,8 @@
 										'district'=>$district,
 										'postal_code'=>$htmlencodedpostalcode,
 										'email'=>$htmlencodedemail,
-									//	'password'=>'91c8559eb34ab5e1ab86f9e80d9753c59b7da0d0e025ec8e7785f19e7852ca428587cdb4f02b5c67d1220ca5bb440b5592cd76b1c13878d7f10a1e568014f4dc',//Agmark123@
-										'password'=>'3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2',//123
+										'password'=>'91c8559eb34ab5e1ab86f9e80d9753c59b7da0d0e025ec8e7785f19e7852ca428587cdb4f02b5c67d1220ca5bb440b5592cd76b1c13878d7f10a1e568014f4dc',//Agmark123@
+									//	'password'=>'3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2',//123
 										'mobile'=>base64_encode($htmlencodedmobile),
 										'landline'=>base64_encode($htmlencodedlandline),
 										'document'=>$document,
@@ -631,7 +631,7 @@
 							//$this->DmiSmsEmailTemplates->sendMessage(2,$customer_id);
 						
 							//Added this call to save the user action log on 09-03-2022
-							$this->Customfunctions->userActionPerformLog('Firm Edit (Auth)','Success');
+							$this->Customfunctions->saveActionPoint('Firm Edit (Auth)','Success');
 							$message = 'Your details are updated successfully';
 							$message_theme = "success";
 							$redirect_to = 'primary_profile';
@@ -639,7 +639,7 @@
 						} else {
 							
 							//Added this call to save the user action log on 09-03-2022
-							$this->Customfunctions->userActionPerformLog('Firm Edit (Auth)','Failed');
+							$this->Customfunctions->saveActionPoint('Firm Edit (Auth)','Failed');
 							$message = 'Your details are not saved please check again';
 							$message_theme = 'failed';
 							$redirect_to = 'customer_profile';
@@ -655,7 +655,7 @@
 				} else {
 
 					//Added this call to save the user action log on 09-03-2022
-					$this->Customfunctions->userActionPerformLog('Firm Edit (Auth)','Failed');
+					$this->Customfunctions->saveActionPoint('Firm Edit (Auth)','Failed');
 					$message = 'This email id is already exist. Please provide another email id to update. Thankyou.';
 					$message_theme = 'failed';
 					$redirect_to = 'primary_profile';
@@ -1031,8 +1031,8 @@
 								'customer_primary_id'=>$customer_primary_id,
 								'customer_primary_once_no'=>null,
 								'customer_id'=>$customer_secondary_id,
-							//	'password'=>'91c8559eb34ab5e1ab86f9e80d9753c59b7da0d0e025ec8e7785f19e7852ca428587cdb4f02b5c67d1220ca5bb440b5592cd76b1c13878d7f10a1e568014f4dc',//Agmark123@
-								'password'=>'3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2',//123
+								'password'=>'91c8559eb34ab5e1ab86f9e80d9753c59b7da0d0e025ec8e7785f19e7852ca428587cdb4f02b5c67d1220ca5bb440b5592cd76b1c13878d7f10a1e568014f4dc',//Agmark123@
+							//	'password'=>'3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2',//123
 								'certification_type'=>$certification_type,
 								'firm_name'=>$htmlencoded_firm_name,
 								//'once_card_no'=>$encrypted_aadhar, //commented  on 23-03-2018 to avoid mandatory for aadhar
@@ -1066,8 +1066,8 @@
 									'customer_primary_id'=>$customer_primary_id,
 									'customer_primary_once_no'=>null,
 									'customer_id'=>$customer_secondary_id,
-								//	'password'=>'91c8559eb34ab5e1ab86f9e80d9753c59b7da0d0e025ec8e7785f19e7852ca428587cdb4f02b5c67d1220ca5bb440b5592cd76b1c13878d7f10a1e568014f4dc', //Agmark123@
-									'password'=>'3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2',//123
+									'password'=>'91c8559eb34ab5e1ab86f9e80d9753c59b7da0d0e025ec8e7785f19e7852ca428587cdb4f02b5c67d1220ca5bb440b5592cd76b1c13878d7f10a1e568014f4dc', //Agmark123@
+								//	'password'=>'3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2',//123
 									'certification_type'=>$certification_type,
 									'firm_name'=>$htmlencoded_firm_name,
 									//'once_card_no'=>$encrypted_aadhar, //commented  on 23-03-2018 to avoid mandatory for aadhar

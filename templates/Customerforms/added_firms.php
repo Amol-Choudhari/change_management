@@ -45,18 +45,16 @@
 												</div>
 											</div>
 											<div class="col-sm-6">
-												<div class="form-group">
-													<label for="field3"><span>Profile Picture
-														<?php if (!empty($added_firm['profile_pic'])) { ?>
-																<a  target="_blank" href="<?php echo str_replace("D:/xampp/htdocs","",$added_firm['profile_pic']); ?>">: Preview</a>
-														<?php } ?></span>
+												<div class="form-group row">
+													<label class="col-sm-3 col-form-label">Profile Picture
+														<?php if (!empty($added_firm['profile_pic'])) { ?><a  target="blank" href="<?php echo str_replace("D:/xampp/htdocs","",$added_firm['profile_pic']); ?>">: Preview</a><?php } ?>
 													</label>
-													<div class="custom-file">
-													<input type="file" class="custom-file-input" id="profile_pic" name="profile_pic", multiple='multiple'>
-													<label class="custom-file-label" for="customFile">Choose file</label>
-													<span id="error_profile_pic" class="error invalid-feedback"></span>
-													<span id="error_size_profile_pic" class="error invalid-feedback"></span>
-													<span id="error_type_profile_pic" class="error invalid-feedback"></span>
+													<div class="custom-file col-sm-9">
+														<input type="file" class="custom-file-input" id="profile_pic" name="profile_pic" multiple='multiple'>
+														<label class="custom-file-label">Choose file</label>
+														<span id="error_profile_pic" class="error invalid-feedback"></span>
+														<span id="error_size_profile_pic" class="error invalid-feedback"></span>
+														<span id="error_type_profile_pic" class="error invalid-feedback"></span>
 													</div>
 												</div>
 											</div>
@@ -382,4 +380,4 @@
 	</section>
 </div>
 
- <?php $this->Html->script('customerforms/added_firms'); ?>
+ <?php echo $this->Html->script('customerforms/added_firms'); ?>

@@ -1988,4 +1988,25 @@
 			exit;
 		}
 
+
+		// check If Commodity Replica Is Exists
+		// DESCRIPTION : FOR CHECKING THE REPLICA COMMODIY , RETURN THE YES OR NO
+		// @AUTHOR : AKASH THAKRE
+		// DATE : 08-09-2022
+
+		public function checkIfCommodityReplicaIsExists() {
+
+			$this->autoRender = false;
+			$commodity_code = trim($_POST['commodity']);
+			//Load Model
+			$this->loadModel('DmiReplicaChargesDetails');
+			$checkIfExist = $this->DmiReplicaChargesDetails->find()->select(['id'])->where(['commodity_code IS'=>$commodity_code])->first();
+			
+			if (empty($checkIfExist)) {
+				echo 'yes';
+			} else {
+				echo 'no';
+			}
+		}
+
 	}

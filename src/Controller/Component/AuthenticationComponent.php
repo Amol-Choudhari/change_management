@@ -346,22 +346,22 @@ class AuthenticationComponent extends Component {
 						$DmiPasswordLogs->savePasswordLogs($username, $table, $Removesaltnewpass);
 	
 					} else {
-						$this->userActionPerformLog("Password Changed","Failed");
+						#$this->saveActionPoint("Password Changed","Failed");
 						return 1;
 					}
 	
 				} else {
-					$this->userActionPerformLog("Password Changed","Failed");
+					#$this->saveActionPoint("Password Changed","Failed");
 					return 2;
 				}
 	
 			} else {
-				$this->userActionPerformLog("Password Changed","Failed");
+				#$this->saveActionPoint("Password Changed","Failed");
 				return 3;
 			}
 			
 		} else {
-			$this->userActionPerformLog("Password Changed","Failed");
+			#$this->saveActionPoint("Password Changed","Failed");
 			return 4;
 		}
 
@@ -464,19 +464,19 @@ class AuthenticationComponent extends Component {
 
 				} else {
 
-					$this->userActionPerformLog("Password Reset","Failed");
+					#$this->saveActionPoint("Password Reset","Failed");
 					return 1;
 				}
 
 			} else {
 
-				$this->userActionPerformLog("Password Reset","Failed");
+				#$this->saveActionPoint("Password Reset","Failed");
 				return 2;
 			}
 
 		} else {
 
-			$this->userActionPerformLog("Password Reset","Failed");
+			#$this->saveActionPoint("Password Reset","Failed");
 			return 3;
 		}
 
@@ -613,37 +613,6 @@ class AuthenticationComponent extends Component {
 			return 3;
 		}
 
-	}
-	
-
-
-
-	// User Action Perform Log
-	// Description : This fuction is created for Make an user action entry in user action log table
-	// @AUTHOR : Amol Chaudhari (c)
-	// #CONTRIBUTER : Akash Thakre (u) (m) 
-	// DATE : 27-04-2021
-
-	public function userActionPerformLog($userAction,$status) {
-
-		$username = $this->Session->read('customer_id');
-		$user_id = $this->Session->read('username');
-
-		$DmiUserActionLogs = TableRegistry::getTableLocator()->get('DmiUserActionLogs');
-
-		$current_ip = $_SERVER['REMOTE_ADDR'];
-
-		if ($current_ip == '::1') { $current_ip = '127.0.0.1'; }
-
-		$user_id = $_SESSION['username'];
-
-		$DmiUserActionLog = $DmiUserActionLogs->newEntity(['user_id'=>$user_id,
-												'action_perform'=>$userAction,
-												'ipaddress'=>$current_ip,
-												'status'=>$status,
-												'created'=>date('Y-m-d H:i:s')]);
-
-		$DmiUserActionLogs->save($DmiUserActionLog);
 	}
 	
 

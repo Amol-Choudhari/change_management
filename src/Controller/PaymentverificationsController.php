@@ -224,7 +224,7 @@ class PaymentverificationsController extends AppController{
 						}
 
 						//Added this call to save the user action log on 17-08-2022
-						$this->Customfunctions->userActionPerformLog('Payment Not Confirmed','Success');
+						$this->Customfunctions->saveActionPoint('Payment Not Confirmed','Success');
 
 						$this->loadModel('DmiSmsEmailTemplates');
 						$this->DmiSmsEmailTemplates->sendMessage(49,$customer_id);

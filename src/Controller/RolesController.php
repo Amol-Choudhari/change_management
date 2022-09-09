@@ -549,7 +549,7 @@ class RolesController extends AppController{
 					$name = $userFullName['f_name']." ".$userFullName['l_name'];
 
 					//Added this call to save the user action log on 22-02-2022
-					$this->Customfunctions->userActionPerformLog('Set Role','Success');
+					$this->Customfunctions->saveActionPoint('Set Role','Success');
 					$message = 'Roles are set successfully for the user '.$name.'('.base64_decode($user_email_id).')';
 					$redirect_to = 'set-roles';
 				}
@@ -1156,7 +1156,7 @@ class RolesController extends AppController{
 			if ($this->Customfunctions->ifHoLevelRoleAssigned($user_email_id,$dy_ama,$jt_ama,$ama) == 0) {
 
 				//Added this call to save the user action log on 22-02-2022
-				$this->Customfunctions->userActionPerformLog('Edit Role (HO Level)','Failed');
+				$this->Customfunctions->saveActionPoint('Edit Role (HO Level)','Failed');
 				
 				$message = 'Sorry...The Selected User already assigned HO level Role(DY.AMA/ JT.AMA/ AMA). One User can have only one HO level role.';
 				$redirect_to = '../roles/edit_roles';
@@ -1264,7 +1264,7 @@ class RolesController extends AppController{
 					if ($this->DmiUserRolesManagmentLogs->save($RolesManagmentLogsEntity)) {
 
 						//Added this call to save the user action log on 22-02-2022
-						$this->Customfunctions->userActionPerformLog('Edit Role ('.$action.')','Success');
+						$this->Customfunctions->saveActionPoint('Edit Role ('.$action.')','Success');
 						$message = 'Roles are updated successfully for the user '.$name.'('.base64_decode($user_email_id).')';
 						$message_theme = 'success';
 						$redirect_to = '../roles/edit_roles';

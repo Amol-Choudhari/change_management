@@ -293,30 +293,42 @@
 							$reset_pass_result = $this->Authentication->resetPasswordLib($table, $username, $newpassdata, $randsalt); // calling reset password library function
 
 							if ($reset_pass_result == 1) {
-
+								
+								//Added this call to save the user action log on 09-09-2022
+								$this->Customfunctions->saveActionPoint('Reset Password (Email Not Matched)','Failed');
 								$message = 'Sorry...Email id not matched by id to save new password';
 								$message_theme = 'failed';
 								$redirect_to = 'reset_password';
 
 							} elseif ($reset_pass_result == 2) {
 
+								//Added this call to save the user action log on 09-09-2022
+								$this->Customfunctions->saveActionPoint('Reset Password (Incorrect Captcha)','Failed');
 								$message = 'Sorry...Incorrect captcha code';
 								$message_theme = 'failed';
 								$redirect_to = 'reset_password';
 
 							} elseif ($reset_pass_result == 3) {
 
+								//Added this call to save the user action log on 09-09-2022
+								$this->Customfunctions->saveActionPoint('Reset Password (Password Not Macthed)','Failed');
 								$message = 'Sorry...please Check. Confirm password not matched';
 								$message_theme = 'failed';
 								$redirect_to = 'reset_password';
 
 							} elseif ($reset_pass_result == 4) {
+
+								//Added this call to save the user action log on 09-09-2022
+								$this->Customfunctions->saveActionPoint('Reset Password (Password is Same as Last)','Failed');
 								// SHOW ERROR MESSAGE IF NEW PASSWORD FOUND UNDER LAST THREE PASSWORDS OF USER By Aniket Ganvir dated 16th NOV 2020
 								$message = 'This password matched with your last three passwords, Please enter different password';
 								$message_theme = 'info';
 								$redirect_to = 'reset_password';
-							} else {
 
+							} else {
+								
+								//Added this call to save the user action log on 09-09-2022
+								$this->Customfunctions->saveActionPoint('Reset Password','Success');
 								//update link key table status to 1 for successfully
 								$this->DmiUsersResetpassKeys->updateKeySuccess($user_id, $key_id);
 								$message = 'Password Changed Successfully';
@@ -347,6 +359,7 @@
 		// @AUTHOR - AMOL CHOUDHARI
 		// @CONTRIBUTER - AKASH THAKRE
 		public function commonUserRedirectLogin($user_id) {
+
 
 			//Set the varibles blank for displaying the messages
 			$message = '';
@@ -441,7 +454,8 @@
 							));
 							
 							$this->DmiUserLogs->save($DmiUserLogsEntity);
-
+							//Added this call to save the user action log on 09-09-2022
+							$this->Customfunctions->saveActionPoint('Redirection (Password Not Matched)','Failed');
 							$this->set('return_error_msg','Sorry.. Password does not matched');
 							return null;
 							exit;
@@ -449,6 +463,8 @@
 
 					} else {
 
+						//Added this call to save the user action log on 09-09-2022
+						$this->Customfunctions->saveActionPoint('Redirection','Failed');
 						$this->set('return_error_msg','Sorry.. This username does not exist');
 						return null;
 						exit;
@@ -564,19 +580,6 @@
 				$user_data[0]['email'] = $this->Customfunctions->getMaskedValue(base64_decode($user_data[0]['email']), 'email');
 				$this->set('user_data', $user_data);
 
-
-				///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				//  added on 01-06-2017 by Amol                                                                                              //        
-				//  to decrypt aadhar number before showing on frontend                                                                      // 
-				//  commented on 15-06-2018 by Amol, no provision to store aadhar                                                            //
-				//  /*	$decrypted_aadhar = $this->decrypt($user_data[0]['Dmi_user']['once_card_no']);                                       // 
-				//                                                                                                                           //    
-				//   $decrypted_aadhar = $this->Customfunctions->getMaskedValue($decrypted_aadhar,'aadhar');//applied on 12-10-2017 by Amol  //
-				//   $this->set('decrypted_aadhar',$decrypted_aadhar);                                                                       //
-				//    */                                                                                                                     // 
-				///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 				if (null !== ($this->request->getData('ok'))) {
 					$this->redirect('/dashboard/home');
 				} elseif (null !== ($this->request->getData('update'))) {
@@ -599,19 +602,7 @@
 							exit;
 						}
 
-						////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-						//commented on 15-06-2018 by Amol, no provision to store aadhar                                                       //  
-						//    /*	if(!$this->validate_unique_post_data($this->request->getData('Dmi_user')['once_card_no'],'aadhar')== 1){  //
-						//		 $this->set('return_error_msg','Please enter proper Aadhar Card no.');                                        //
-						//		return false;                                                                                                 //  
-						//		exit;                                                                                                         //  
-						//	}                                                                                                                 //   
-						//  */                                                                                                                //  
-						////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 						//Html Encoding data before saving
-
 						$htmlencodedfname = htmlentities($this->request->getData('f_name'), ENT_QUOTES);
 						$htmlencodedlname = htmlentities($this->request->getData('l_name'), ENT_QUOTES);
 						//$htmlencodedphone = htmlentities($this->request->getData('phone'), ENT_QUOTES);
@@ -619,16 +610,9 @@
 						//commented on 15-06-2018 by Amol, no provision to store aadhar
 						//$htmlencodedaadhar = htmlentities($this->request->getData('once_card_no'), ENT_QUOTES);
 
-						//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-						//added on 01-06-2017 by Amol                                                                                           //         
-						//to encrypt aadhar number before storing to DB and Session                                                             //
-						//$encrypted_aadhar = $this->encrypt($htmlencodedaadhar);//commented on 15-06-2018 by Amol, no provision to store aadhar//
-						//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////    
-
 						$fetch_user_id = $this->DmiUsers->find('all', array('fields' => 'id', 'conditions' => array('email IS' => $this->request->getSession()->read('username'))))->first();
 
 						$user_id = $fetch_user_id['id'];
-
 
 						//below query & conditions added on 12-10-2017 by Amol To check if mobile,aadhar post in proper format, if not then save old value itself from DB
 						$user_data = $this->DmiUsers->find('all', array('conditions' => array('email IS' => $this->request->getSession()->read('username'))))->first();
@@ -636,15 +620,6 @@
 						if (preg_match("/^[X-X]{6}[0-9]{4}$/i", $this->request->getData('phone'), $matches) == 1) {
 							$htmlencodedphone = $user_data['phone'];
 						}
-
-						/////////////////////////////////////////////////////////////////////////////////////////////////////////
-						//  commented on 15-06-2018 by Amol, no provision to store aadhar                                      //  
-						// /*	if(preg_match("/^[X-X]{8}[0-9]{4}$/i", $this->request->getData('once_card_no'),$matches)==1)   //
-						//   {                                                                                                 //
-						//	$encrypted_aadhar = $user_data['once_card_no'];                                                    //         
-						//   }                                                                                                 //
-						//    */                                                                                               // 
-						/////////////////////////////////////////////////////////////////////////////////////////////////////////  
 
 						//added on 06-05-2021 for profile pic
 						if ($this->request->getData('profile_pic')->getClientFilename() != null) {
@@ -696,8 +671,8 @@
 							$this->Session->write('f_name', $htmlencodedfname);
 							$this->Session->write('l_name', $htmlencodedlname);
 							
-							//Added this call to save the user action log on 21-02-2022
-							$this->Customfunctions->userActionPerformLog('Profile Updated','Success');
+							//Added this call to save the user action log on 09-09-2022
+							$this->Customfunctions->saveActionPoint('Profile Updated','Success');
 
 							$message = 'Profile data updated successfully';
 							$message_theme = 'success';
@@ -705,8 +680,9 @@
 
 						} else {
 
-							//Added this call to save the user action log on 21-02-2022
-							$this->Customfunctions->userActionPerformLog('Profile Updated','Failed');
+							//Added this call to save the user action log on 09-09-2022
+							$this->Customfunctions->saveActionPoint('Profile Updated','Failed');
+
 							$message = 'Sorry...Please check your fields again';
 							$message_theme = 'failed';
 							$redirect_to = 'user_profile';
@@ -821,18 +797,6 @@
 						exit;
 					}
 
-
-					///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-					//commented on 15-06-2018 by Amol, no provision to store aadhar                                                          //   
-					//    /*	if(!$this->Customfunctions->validateUniquePostData($this->request->getData('once_card_no'),'aadhar')== 1){   //  
-					//	$this->set('return_error_msg','Please enter proper Aadhar Card no.');                                                //
-					//	return null;                                                                                                         //    
-					//	exit;                                                                                                                //
-					//  }                                                                                                                    //  
-					//     */                                                                                                                //        
-					///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 					$usersData = $this->request->getData();
 
 					//changed and added on the 21-02-2022 
@@ -851,12 +815,6 @@
 							$htmlencodedphone = htmlentities($this->request->getData('phone'), ENT_QUOTES);
 							$htmlencodedlandline = htmlentities($this->request->getData('landline'), ENT_QUOTES);
 							//	$htmlencodedaadhar = htmlentities($this->request->getData('once_card_no'), ENT_QUOTES); //commented on 15-06-2018 by Amol, no provision to store aadhar
-
-							//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-							//added on 01-06-2017 by Amol                                                                                               // 
-							//to encrypt aadhar number before storing to DB and Session                                                                 //
-							//	$encrypted_aadhar = $this->encrypt($htmlencodedaadhar); //commented on 15-06-2018 by Amol, no provision to store aadhar //
-							//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 							//check drop down
 							//for RO Office
@@ -933,8 +891,8 @@
 								'division' => $this->request->getData('division'),//for DMI,LMIS & BOTH)
 								'role' => $lmis_role,//to save lmis role
 								'once_card_no' => '000000000000',//no provision to store aadhar
-							//	'password' => '91c8559eb34ab5e1ab86f9e80d9753c59b7da0d0e025ec8e7785f19e7852ca428587cdb4f02b5c67d1220ca5bb440b5592cd76b1c13878d7f10a1e568014f4dc', //Agmark123@
-								'password' => '3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', //123
+								'password' => '91c8559eb34ab5e1ab86f9e80d9753c59b7da0d0e025ec8e7785f19e7852ca428587cdb4f02b5c67d1220ca5bb440b5592cd76b1c13878d7f10a1e568014f4dc', //Agmark123@
+							//	'password' => '3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', //123
 								'created_by_user' => $this->request->getSession()->read('username'),
 								'posted_ro_office' => $posted_ro_office,
 								'status' => 'active',
@@ -957,8 +915,8 @@
 									'division' => $this->request->getData('division'),
 									'role' => $lmis_role,
 									'once_card_no' => '000000000000',//no provision to store aadhar
-								//	'password' => '91c8559eb34ab5e1ab86f9e80d9753c59b7da0d0e025ec8e7785f19e7852ca428587cdb4f02b5c67d1220ca5bb440b5592cd76b1c13878d7f10a1e568014f4dc', //Agmark123@
-									'password' => '3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', //123
+									'password' => '91c8559eb34ab5e1ab86f9e80d9753c59b7da0d0e025ec8e7785f19e7852ca428587cdb4f02b5c67d1220ca5bb440b5592cd76b1c13878d7f10a1e568014f4dc', //Agmark123@
+								//	'password' => '3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', //123
 									'created_by_user' => $this->request->getSession()->read('username'),
 									'posted_ro_office' => $posted_ro_office,
 									'status' => 'active',
@@ -977,8 +935,8 @@
 								$this->set('user_registered', $user_registered);
 								$this->set('htmlencodedemail', $htmlencodedemail);
 
-								//Added this call to save the user action log on 21-02-2022
-								$this->Customfunctions->userActionPerformLog('New User Added','Success');
+								//Added this call to save the user action log on 09-09-2022
+								$this->Customfunctions->saveActionPoint('New User Added','Success');
 								$message = 'You have successfully created new User. Please set roles';
 								$message_theme = 'success';
 								$redirect_to = 'add_user';
@@ -992,8 +950,8 @@
 
 						} else {
 							
-							//Added this call to save the user action log on 21-02-2022
-							$this->Customfunctions->userActionPerformLog('New User Add','Failed');
+							//Added this call to save the user action log on 09-09-2022
+							$this->Customfunctions->saveActionPoint('New User Add','Failed');
 							$message = 'Sorry...This Mobile Number is already exists!! Please Try Again. ';
 							$message_theme = 'failed';
 							$redirect_to = 'add_user';
@@ -1001,8 +959,8 @@
 					
 					} else {
 						
-						//Added this call to save the user action log on 21-02-2022
-						$this->Customfunctions->userActionPerformLog('New User Add','Failed');
+						//Added this call to save the user action log on 09-09-2022
+						$this->Customfunctions->saveActionPoint('New User Add','Failed');
 						$message = 'Sorry...This Email ID is already exists!! Please Try Again.';
 						$message_theme = 'failed';
 						$redirect_to = 'add_user';
@@ -1010,8 +968,8 @@
 
 				} else {
 					
-					//Added this call to save the user action log on 21-02-2022
-					$this->Customfunctions->userActionPerformLog('New User Add','Failed');
+					//Added this call to save the user action log on 09-09-2022
+					$this->Customfunctions->saveActionPoint('New User Add','Failed');
 					$this->set('return_error_msg','Please check some fields are not entered');
 					return null;
 					exit;
@@ -1080,16 +1038,6 @@
 			$ral_office_posted = $this->DmiRoOffices->find('list', array('keyField' => 'id', 'valueField' => 'ro_office', 'conditions' => array('office_type' => 'RAL', 'OR' => array('delete_status IS NULL', 'delete_status' => 'no')), 'order' => 'ro_office'))->toArray();
 			$this->set('ral_office_posted', $ral_office_posted);
 
-			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			//added on 01-06-2017 by amol                                                                                           //
-			//to decrypt aadhar number before showing on frontend                                                                   // 
-			//commented on 15-06-2018 by Amol, no provision to store aadhar_ot                                                      //            
-			///	$decrypted_aadhar = $this->decrypt($user_details['once_card_no']);                                                  //
-			//                                                                                                                      // 
-			//  	$decrypted_aadhar = $this->get_masked_value($decrypted_aadhar,'aadhar');//applied on 12-10-2017 by Amol         //
-			//	$this->set('decrypted_aadhar',$decrypted_aadhar);                                                                   //
-			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 			// set variables to show popup messages from view file
 			$message = '';
 			$message_theme = '';
@@ -1137,15 +1085,6 @@
 						exit;
 					}
 
-					////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-					//commented on 15-06-2018 by Amol, no provision to store aadhar                                                       //       
-					//   /*	if(!$this->Customfunctions->validateUniquePostData($this->request->getData('once_card_no'),'aadhar')== 1){    //
-					//		 $this->set('return_error_message','Please enter proper Aadhar Card no.');                                    //
-					//		return null;                                                                                                  //   
-					//		exit;                                                                                                         //
-					//	    }                                                                                                             //
-					//    */                                                                                                              //   
-					////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 					$usersData = $this->request->getData();
 					$Checkemailexist = $this->DmiUsers->find('all', array('fields' => 'email', 'conditions' => array('id !=' => $user_table_id, 'email' => $usersData['email'])))->first();
@@ -1157,16 +1096,6 @@
 						$htmlencodedemail = base64_encode(htmlentities($this->request->getData('email'), ENT_QUOTES));//for email encoding
 						$htmlencodedphone = base64_encode(htmlentities($this->request->getData('phone'), ENT_QUOTES));
 						$htmlencodedlandline = htmlentities($this->request->getData('landline'), ENT_QUOTES);
-
-
-						//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-						//commented on 15-06-2018 by Amol, no provision to store aadhar                                                             //    
-						//	$htmlencodedaadhar = htmlentities($this->request->getData('once_card_no'), ENT_QUOTES);                                 //     
-						//added on 01-06-2017 by Amol                                                                                               //
-						//to encrypt aadhar number before storing to DB and Session                                                                 //                
-						//	$encrypted_aadhar = $this->encrypt($htmlencodedaadhar); //commented on 15-06-2018 by Amol, no provision to store aadhar //
-						//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 						//check drop down
 						//for RO Office
@@ -1224,15 +1153,6 @@
 						if (preg_match("/^[X-X]{6}[0-9]{4}$/i", $this->request->getData('phone'), $matches) == 1) {
 							$htmlencodedphone = $user_data['phone'];
 						}
-
-						//////////////////////////////////////////////////////////////////////////////////////////////////////
-						//commented on 15-06-2018 by Amol, no provision to store aadhar                                     //
-						/*	if(preg_match("/^[X-X]{8}[0-9]{4}$/i", $this->request->getData('once_card_no'),$matches)==1)    // 
-						//	{                                                                                               // 
-						//		$encrypted_aadhar = $user_data['once_card_no'];                                             //
-						//	}                                                                                               // 
-						//  */                                                                                              //
-						//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 						//added on 06-05-2021 for profile pic
 						if ($this->request->getData('profile_pic')->getClientFilename() != null) {
@@ -1293,16 +1213,16 @@
 
 							$this->set('htmlencodedemail', $htmlencodedemail);
 
-							//Added this call to save the user action log on 21-02-2022
-							$this->Customfunctions->userActionPerformLog('Edit User','Success');
+							//Added this call to save the user action log on 09-09-2022
+							$this->Customfunctions->saveActionPoint('Edit User','Success');
 							$message = 'You have successfully updated the user details.';
 							$message_theme = 'success';
 							$redirect_to = 'edit_user';
 
 						} else {
 
-							//Added this call to save the user action log on 21-02-2022
-							$this->Customfunctions->userActionPerformLog('Edit User','Failed');
+							//Added this call to save the user action log on 09-09-2022
+							$this->Customfunctions->saveActionPoint('Edit User','Failed');
 							$message = 'Sorry...Please check your fields again';
 							$message_theme = 'failed';
 							$redirect_to = 'edit_user';
@@ -1310,8 +1230,8 @@
 						
 					} else {
 
-						//Added this call to save the user action log on 21-02-2022
-						$this->Customfunctions->userActionPerformLog('Edit User','Failed');
+						//Added this call to save the user action log on 09-09-2022
+						$this->Customfunctions->saveActionPoint('Edit User','Failed');
 						$message = 'Sorry...This email_id already exist';
 						$message_theme = 'failed';
 						$redirect_to = 'edit_user';
@@ -1319,8 +1239,8 @@
 
 				} else {
 
-					//Added this call to save the user action log on 21-02-2022
-					$this->Customfunctions->userActionPerformLog('Edit User','Failed');
+					//Added this call to save the user action log on 09-09-2022
+					$this->Customfunctions->saveActionPoint('Edit User','Failed');
 					$this->set('return_error_message','Please check some fields are not entered');
 					return null;
 					exit;
@@ -1368,17 +1288,6 @@
 
 			if ($user_detail_values['status'] == 'active') {
 
-				//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				///*echo "<script>                                                                                                                                                  //
-				//                                                                                                                                                                  //
-				// 		if(confirm('Are you sure? Deactivating this user will delete all roles assigned to this user. First be sure to disallocate all task given to the user')){   //
-				//			var delete_user_confirmation = 'yes';                                                                                                                   //
-				//		}else{                                                                                                                                                      // 
-				//			var delete_user_confirmation = 'no';                                                                                                                    //
-				//		}                                                                                                                                                           // 
-				//	</script>";                                                                                                                                                     //              
-				//*/                                                                                                                                                                //     
-				//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 				//added new function call & condition on 06-08-2019 by Amol for LIMS user
 				//check if the user belongs LIMS, then get inprogress sample status
@@ -1449,8 +1358,8 @@
 
 							if ($this->DmiUsers->save($DmiUsersEntity)) {
 
-							   //Added this call to save the user action log on 21-02-2022
-								$this->Customfunctions->userActionPerformLog('User De-activation','Success');
+							   //Added this call to save the user action log on 09-09-2022
+								$this->Customfunctions->saveActionPoint('User De-activation','Success');
 								$message = 'You have Deactivated this user successfully. All roles given are removed for this user now';
 								$message_theme = 'success';
 								$redirect_to = 'all_users';
@@ -1467,8 +1376,8 @@
 
 						if ($this->DmiUsers->save($DmiUsersEntity)) {
 
-							//Added this call to save the user action log on 21-02-2022
-							$this->Customfunctions->userActionPerformLog('User De-activation','Success');
+							//Added this call to save the user action log on 09-09-2022
+							$this->Customfunctions->saveActionPoint('User De-activation','Success');
 							$message = 'You have Deactivated this user successfully.';
 							$message_theme = 'success';
 							$redirect_to = 'all_users';
@@ -1492,8 +1401,8 @@
 						$updated_message = '1) Sorry.. You can not deactivate this user, ' . $new_message . '<br><br>2) Some LIMS samples may be in progress with this user, before deactivating these works needs to be transfer to another user, from "User Work Transfer" module on LIMS dashboard.';
 					}
 
-					//Added this call to save the user action log on 21-02-2022
-					$this->Customfunctions->userActionPerformLog('User De-activation','Failed');
+					//Added this call to save the user action log on 09-09-2022
+					$this->Customfunctions->saveActionPoint('User De-activation','Failed');
 					//message updated on 17-06-2019 by Amol
 					$message = $updated_message;
 					$redirect_to = 'all_users';
@@ -1511,8 +1420,8 @@
 
 				if ($this->DmiUsers->save($DmiUsersEntity)) {
 
-					//Added this call to save the user action log on 21-02-2022
-					$this->Customfunctions->userActionPerformLog('User Activation','Success');
+					//Added this call to save the user action log on 09-09-2022
+					$this->Customfunctions->saveActionPoint('User Activation','Success');
 					$message = 'You have Activated this user successfully. Please set roles for this user now';
 					$message_theme = 'success';
 					$redirect_to = 'all_users';
@@ -1923,8 +1832,8 @@
 				}
 
 				if (!empty($unlock)) {
-					//Added this call to save the user action log on 21-02-2022
-					$this->Customfunctions->userActionPerformLog('Unlock User','Success');
+					//Added this call to save the user action log on 09-09-2022
+					$this->Customfunctions->saveActionPoint('Unlock User','Success');
 					$message = 'Unlock Successfully';
 					$message_theme = 'success';
 					$redirect_to = 'lock-users';
@@ -2176,9 +2085,7 @@
 		}
 	
 		
-		//////////////////////////////////////////
-		////REPLICA / 15 DIGIT / ECODE METHODS ///
-		//////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////REPLICA / 15 DIGIT / ECODE METHODS /////////////////////////////////////////////////////////////////////////
 		
 		
 		// REPLICA ALLOTED LIST 

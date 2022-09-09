@@ -68,9 +68,9 @@
 		$("#commodity").find('option').remove();
 		var commodity = $("#commodity_category").val();
 
-		//applied check on 08-06-2021 by Amol, CA export can not apply for BEVO category
-		if($('#certification_type option:selected').val()=='1' && $('#radioSuccess1').is(':checked') && commodity == '106'){
-			alert('As you have selected the CA with Export option, you can not select BEVO category.');
+		//applied check on 08-06-2021 by Amol, CA export can not apply for BEVO category -> THIS MESSAGE AND CONDITION IS CHANGED FOR THE EXPORT FLOW UPADTES (AKASH [30-08-2022])
+		if($('#certification_type option:selected').val()=='1' && $('#radioSuccess1').is(':checked') && commodity != '14'){
+			$.alert('As you have selected the Export option, you can not select category other than <b>Fruits & Vegetable</b>.');
 			return false;
 		}
 		
@@ -613,20 +613,18 @@
 	//$("#state").val('');//line added on 14-07-2018	
 
 
-	$('#export_unit').change(function(){
+	$('#radioSuccess1').change(function(){
 
 		$.confirm({
 			title: 'Note:',
 			content: 'You Have Selected the Export Unit. If You Want to  Proceed click on the <b>Proceed</b> or click on the <b>Cancel</b>.',
 			columnClass: 'medium',
 			type: 'dark',
-			theme: 'modern',
 			buttons: {
 				proceed: function () {
-					
 				},
 				cancel: function () {
-					$.alert('Canceled!');
+					$('#radioSuccess2').prop('checked', true);
 				}
 			}
 		});

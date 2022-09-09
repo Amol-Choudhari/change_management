@@ -6,7 +6,8 @@
 		
 
 		var isOldApplication = $("#isOldApplication").val(); 
-
+		var form_type= $("#form_type_id").val(); // This value type is added for CA EXPORT changes by Akash [07-09-2022]
+		
 		//taking values from form fields
 		var reg_licYes=$("#reg_lic-yes").val();
 		var reg_licNo=$("#reg_licNo").val();
@@ -25,11 +26,15 @@
 		var check_save_reply = $("#check_save_reply").val();
 		var old_certification_pdf = $("#old_certification_pdf").val();
 		var old_application_docs = $("#old_application_docs").val();
+		var apeda_docs = $("#apeda_docs").val();//this field is added for the new chanegs on the ca EXPORT for APEDA document done by Akash [07-09-2022].
+		var iec_code = $("#iec_code").val();//this field is added for the new chanegs on the ca EXPORT for IEC code done by Akash [07-09-2022].
+		var iec_code_docs = $("#iec_code_docs").val();//this field is added for the new chanegs on the ca EXPORT for IEC code document done by Akash [07-09-2022].
 		
+
 		var value_return = 'true';
 
 		//condition to work validations for non BEVO fields
-		if(ca_bevo_applicant == 'no'){		
+		if(ca_bevo_applicant == 'no'){
 
 			// Change Condition for validation and error message by pravin 11-07-2017
 			if(check_radio_button_validation('have_reg_no').result == false){
@@ -43,9 +48,9 @@
 				
 				// Change Condition for validation by pravin 11-07-2017 	
 				if(check_radio_value('have_reg_no') == "yes"){	
-									
-					// Change Condition for validation and error message by pravin 11-07-2017		
-					if(check_whitespace_validation_textbox(fssai_reg_no).result == false){	
+					
+					// Change Condition for validation and error message by pravin 11-07-2017
+					if(check_whitespace_validation_textbox(fssai_reg_no).result == false){
 						
 						$("#error_fssai_reg_no").show().text(check_whitespace_validation_textbox(fssai_reg_no).error_message);
 						$("#fssai_reg_no").addClass("is-invalid");
@@ -62,9 +67,9 @@
 							$("#fssai_reg_docs").addClass("is-invalid");
 							$("#fssai_reg_docs").click(function(){$("#error_fssai_reg_docs").hide().text; $("#fssai_reg_docs").removeClass("is-invalid");});
 							value_return = 'false';
-						}						
+						}
 					}
-				}				
+				}
 			}
 			
 			if(business_years==""){
@@ -99,8 +104,8 @@
 			
 			}else{
 				
-				// Change Condition for validation by pravin 11-07-2017 	
-				if(check_radio_value('authorised_for_bevo') == "yes"){	
+				// Change Condition for validation by pravin 11-07-2017
+				if(check_radio_value('authorised_for_bevo') == "yes"){
 					
 					if($("#authorised_bevo_docs_value").text() == ''){
 							
@@ -118,9 +123,9 @@
 			
 			// Add new Upload Field for VOP Registration Details by Pravin 22/07/2017
 			
-			if($("#fssai_reg_docs_value").text() == '')
-			{
-				if(check_file_upload_validation(fssai_reg_docs).result == false){	
+			if($("#fssai_reg_docs_value").text() == ''){
+				
+				if(check_file_upload_validation(fssai_reg_docs).result == false){
 				
 					$("#error_fssai_reg_docs").show().text(check_file_upload_validation(fssai_reg_docs).error_message);
 					$("#fssai_reg_docs").addClass("is-invalid");
@@ -131,9 +136,9 @@
 			
 			// Add new Upload Field for VOP Registration Details by Pravin 22/07/2017
 
-			if($("#oil_manu_affidavit_docs_value").text() == '')
-			{
-				if(check_file_upload_validation(oil_manu_affidavit_docs).result == false){	
+			if($("#oil_manu_affidavit_docs_value").text() == ''){
+
+				if(check_file_upload_validation(oil_manu_affidavit_docs).result == false){
 				
 					$("#error_oil_manu_affidavit_docs").show().text(check_file_upload_validation(oil_manu_affidavit_docs).error_message);
 					$("#oil_manu_affidavit_docs").addClass("is-invalid");
@@ -144,9 +149,9 @@
 
 			// Add new Upload Field for VOP Registration Details by Pravin 22/07/2017
 			
-			if($("#vopa_certificate_docs_value").text() == '')
-			{
-				if(check_file_upload_validation(vopa_certificate_docs).result == false){	
+			if($("#vopa_certificate_docs_value").text() == ''){
+
+				if(check_file_upload_validation(vopa_certificate_docs).result == false){
 
 					$("#error_vopa_certificate_docs").show().text(check_file_upload_validation(vopa_certificate_docs).error_message);
 					$("#vopa_certificate_docs").addClass("is-invalid");
@@ -157,7 +162,7 @@
 			
 				
 			// Change Condition for validation and error message by pravin 11-07-2017
-			if(check_number_with_decimal_two_validation(quantity_per_month).result == false){	
+			if(check_number_with_decimal_two_validation(quantity_per_month).result == false){
 				
 				$("#error_quantity_per_month").show().text(check_number_with_decimal_two_validation(quantity_per_month).error_message);
 				$("#quantity_per_month").addClass("is-invalid");
@@ -176,10 +181,10 @@
 			}
 			
 			//added on 05-08-2017 by Amol
-			if($("#bank_references_docs_value").text() == '')
-			{
+			if($("#bank_references_docs_value").text() == ''){
+
 				if(check_file_upload_validation(bank_references_docs).result == false){	
-								
+				
 					$("#error_bank_references_docs").show().text(check_file_upload_validation(bank_references_docs).error_message);
 					$("#bank_references_docs").addClass("is-invalid");
 					$("#bank_references_docs").click(function(){$("#error_bank_references_docs").hide().text; $("#bank_references_docs").removeClass("is-invalid");});
@@ -247,7 +252,7 @@
 			}
 
 			if($('#old_application_docs_value').text() == ""){
-				alert();
+				
 				if(check_file_upload_validation(old_application_docs).result == false){	
 					
 					$("#error_old_application_docs").show().text(check_file_upload_validation(old_application_docs).error_message);
@@ -258,7 +263,47 @@
 				}
 			}
 		}
+		
+
+		//for CA export new validations and points given by the DMI done by Akash [07-09-2022] 
+		if (form_type != 'F') {
 			
+			//this validation is added for the new field is added on the ca_profile template for the APEDA documents.
+			if($('#apeda_docs_value').text() == ""){
+				
+				if(check_file_upload_validation(apeda_docs).result == false){
+					
+					$("#error_apeda_docs").show().text(check_file_upload_validation(apeda_docs).error_message);
+					$("#apeda_docs").addClass("is-invalid");
+					$("#apeda_docs").click(function(){$("#error_apeda_docs").hide().text; $("#apeda_docs").removeClass("is-invalid");});
+					
+					value_return = 'false';
+				}
+			}
+
+			//this validation is added for the new field is added on the ca_profile template for the IEC Code.
+			if($("#const_oils_table tr td:first").text() == ''){
+				
+				$("#error_const_oil").show().text("Sorry. There should be minimum 1 constituent oil mill details added.");
+				$("#const_oils_table").addClass("is-invalid");
+				$("#const_oils_table").click(function(){$("#error_const_oil").hide().text; $("#const_oils_table").removeClass("is-invalid");});
+				value_return = 'false';
+			}
+
+			
+			//this validation is added for the new field is added on the ca_profile template for the IEC documents.
+			if($('#old_certification_pdf_value').text() == ""){
+				
+				if(check_file_upload_validation(old_certification_pdf).result == false){	
+					
+					$("#error_old_certification_pdf").show().text(check_file_upload_validation(old_certification_pdf).error_message);
+					$("#old_certification_pdf").addClass("is-invalid");
+					$("#old_certification_pdf").click(function(){$("#error_old_certification_pdf").hide().text; $("#old_certification_pdf").removeClass("is-invalid");});
+					
+					value_return = 'false';
+				}
+			}
+		}
 
 		if(value_return == 'false'){
 			var msg = "Please check some fields are missing or not proper.";
@@ -289,26 +334,25 @@
 		var value_return = 'true';
 		
 		//condition to work validations for non BEVO fields
-		if(ca_bevo_applicant == 'no')
-		{	
+		if(ca_bevo_applicant == 'no'){
 			
 		}
 		
 		//condition to work validations for BEVO fields
-		if(ca_bevo_applicant == 'yes')
-		{
-			if($("#tank_table tr td:first").text() == '')
-			{
+		if(ca_bevo_applicant == 'yes'){
+
+			if($("#tank_table tr td:first").text() == ''){
+
 				$("#error_tanks").show().text("Sorry. There should be minimum 1 storage tanks details added.");
 				$("#tank_table").addClass("is-invalid");
 				$("#tank_table").click(function(){$("#error_tanks").hide().text; $("#tank_table").removeClass("is-invalid");});
 				value_return = 'false';
 			}
 			
-			if($("#bevo_mills_address_docs_value").text() == '')
-			{				
-				// Change Condition for validation and error message by pravin 11-07-2017	
-				if(check_file_upload_validation(bevo_mills_address_docs).result == false){	
+			if($("#bevo_mills_address_docs_value").text() == ''){
+
+				// Change Condition for validation and error message by pravin 11-07-2017
+				if(check_file_upload_validation(bevo_mills_address_docs).result == false){
 					
 					$("#error_bevo_mills_address_docs").show().text(check_file_upload_validation(bevo_mills_address_docs).error_message);
 					$("#bevo_mills_address_docs").addClass("is-invalid");
@@ -327,12 +371,12 @@
 				value_return = 'false';
 			
 			}else{
-						
+		
 				// Change Condition for validation by pravin 11-07-2017
-				if(check_radio_value('separate_tanks_used') == "yes"){		
+				if(check_radio_value('separate_tanks_used') == "yes"){
 
 					if($("#separate_tanks_docs_value").text() == ''){
-							
+					
 						// Change Condition for validation and error message by pravin 11-07-2017	
 						if(check_file_upload_validation(separate_tanks_docs).result == false){		
 							
@@ -342,9 +386,9 @@
 							value_return = 'false';
 						}
 					}
-				}				
+				}
 			}
-					
+			
 			// Change Condition for validation and error message by pravin 11-07-2017
 			if(check_radio_button_validation('locking_for_storage_tanks').result == false){
 				
@@ -384,22 +428,14 @@
 		
 		
 		// Change Condition for validation and error message by pravin 11-07-2017
-		if(check_postal_code_validation(postal_code).result == false){	
+		if(check_postal_code_validation(postal_code).result == false){
 			
 			$("#error_postal_code").show().text(check_postal_code_validation(postal_code).error_message);
 			$("#postal_code").addClass("is-invalid");
 			$("#postal_code").click(function(){$("#error_postal_code").hide().text; $("#postal_code").removeClass("is-invalid");});
 			value_return = 'false';
 		
-		}/*else{			
-			if(!postal_code.match(/^(?=.*[0-9])[0-9]{6}$/g))   
-			{ 
-				$("#error_postal_code").show().text("Postal code is not valid, only 6 digits no. mandatory");
-				$("#postal_code").addClass("is-invalid");
-				$("#postal_code").click(function(){$("#error_postal_code").hide().text; $("#postal_code").removeClass("is-invalid");});
-				value_return = 'false';
-			}
-		}*/
+		}
 		
 		// check Condition for validation  by pravin 07-07-2017
 		if(final_submit_status != 'no_final_submit'){
@@ -414,13 +450,11 @@
 			}
 		}
 		
-		if(value_return == 'false')
-		{
+		if(value_return == 'false'){
 			var msg = "Please check some fields are missing or not proper.";
 			renderToast('error', msg);
 			return false;
-		}
-		else{
+		}else{
 			exit();
 		}
 		
@@ -451,8 +485,8 @@
 		//condition to work validations for non BEVO fields
 		if(ca_bevo_applicant == 'no'){
 
-			// Change Condition for validation and error message by pravin 11-07-2017	
-			if(check_radio_button_validation('have_details').result == false){	
+			// Change Condition for validation and error message by pravin 11-07-2017
+			if(check_radio_button_validation('have_details').result == false){
 				
 				$("#error_have_details").show().text(check_radio_button_validation('have_details').error_message);
 				$("#have_detailsYes").addClass("is-invalid");
@@ -462,9 +496,9 @@
 			}else{
 					
 				// Change Condition for validation and error message by pravin 11-07-2017
-				if(check_radio_value('have_details') == "yes"){	
+				if(check_radio_value('have_details') == "yes"){
 					
-					if($("#machinery_table tr td:first").text() == ''){	
+					if($("#machinery_table tr td:first").text() == ''){
 
 						$("#error_machinery").show().text("Sorry. There should be minimum 1 machine details added.");
 						$("#machinery_table").addClass("is-invalid");
@@ -487,7 +521,7 @@
 			}
 			
 			
-			// Change Condition for validation and error message by pravin 10-07-2017	
+			// Change Condition for validation and error message by pravin 10-07-2017
 			if(check_radio_button_validation('owned_by_applicant').result == false){
 			
 				$("#error_manufacturing_unit").show().text(check_radio_button_validation('owned_by_applicant').error_message);
@@ -498,7 +532,7 @@
 			}else{
 				
 				// Change Condition for validation and error message by pravin 11-07-2017
-				if(check_radio_value('owned_by_applicant') == "no"){	
+				if(check_radio_value('owned_by_applicant') == "no"){
 				
 					// Change Condition for validation and error message by pravin 11-07-2017
 					if(check_whitespace_validation_textarea(unit_name_address).result == false){
@@ -512,7 +546,7 @@
 					if($("#unit_related_docs_value").text() == ''){
 							
 						// Change Condition for validation and error message by pravin 11-07-2017
-						if(check_file_upload_validation(unit_related_docs).result == false){	
+						if(check_file_upload_validation(unit_related_docs).result == false){
 							
 							$("#error_unit_related_docs").show().text(check_file_upload_validation(unit_related_docs).error_message);
 							$("#unit_related_docs").addClass("is-invalid");
@@ -520,7 +554,7 @@
 							value_return = 'false';
 						}
 					}
-				}				
+				}
 			}
 		}
 
@@ -530,7 +564,7 @@
 
 			// Change Condition for validation and error message by pravin 11-07-2017
 			if(check_whitespace_validation_textbox(crushed_refined_seeds).result == false){
-						
+			
 				$("#error_crushed_refined_seeds").show().text(check_whitespace_validation_textbox(crushed_refined_seeds).error_message);
 				$("#crushed_refined_seeds").addClass("is-invalid");
 				$("#crushed_refined_seeds").click(function(){$("#error_crushed_refined_seeds").hide().text; $("#crushed_refined_seeds").removeClass("is-invalid");});
@@ -540,7 +574,7 @@
 			
 			// Change Condition for validation and error message by pravin 11-07-2017
 			if(check_number_with_decimal_two_validation(mill_business_period).result == false){
-					
+			
 				$("#error_mill_business_period").show().text(check_number_with_decimal_two_validation(mill_business_period).error_message);
 				$("#mill_business_period").addClass("is-invalid");
 				$("#mill_business_period").click(function(){$("#error_mill_business_period").hide().text; $("#mill_business_period").removeClass("is-invalid");});
@@ -560,7 +594,7 @@
 			if(applicant_type == 'bevo'){
 
 				if($("#bevo_machinery_details_docs_value").text() == ''){
-						
+				
 					// Change Condition for validation and error message by pravin 11-07-2017
 					if(check_file_upload_validation(bevo_machinery_details_docs).result == false){	
 						
@@ -589,14 +623,14 @@
 			
 				
 			// Change Condition for validation and error message by pravin 11-07-2017	
-			if(check_radio_button_validation('stored_crushed_separately').result == false){	
+			if(check_radio_button_validation('stored_crushed_separately').result == false){
 				
 				$("#error_stored_crushed_separately").show().text(check_radio_button_validation('stored_crushed_separately').error_message);
 				$("#stored_crushed_separatelyYes").addClass("is-invalid");
 				$("#stored_crushed_separatelyYes").click(function(){$("#error_stored_crushed_separately").hide().text; $("#stored_crushed_separatelyYes").removeClass("is-invalid");});
 				value_return = 'false';
 			
-			}else{	
+			}else{
 
 				if(check_radio_value('stored_crushed_separately') == "yes"){
 			
@@ -638,15 +672,12 @@
 			}
 		}
 		
-		if(value_return == 'false')
-		{
+		if(value_return == 'false'){
 			var msg = "Please check some fields are missing or not proper.";
 			renderToast('error', msg);
 			return false;
-		}
-		else{
+		}else{
 			exit();
-			
 		}
 
 	}
@@ -665,7 +696,7 @@
 		
 		var value_return = 'true';
 		
-		// Change Condition for validation and error message by pravin 10-07-2017	
+		// Change Condition for validation and error message by pravin 10-07-2017
 		if(check_radio_button_validation('proposed_to_repack').result == false){
 			
 			$("#error_proposed_to_repack").show().text(check_radio_button_validation('proposed_to_repack').error_message);
@@ -739,15 +770,12 @@
 			}
 		}
 		
-		if(value_return == 'false')
-		{
+		if(value_return == 'false'){
 			var msg = "Please check some fields are missing or not proper.";
 			renderToast('error', msg);
 			return false;
-		}
-		else{
+		}else{
 			exit();
-			
 		}
 		
 	}
@@ -771,14 +799,15 @@
 		var lab_equipped_docs=$("#lab_equipped_docs").val();
 		var chemist_detail_docs=$("#chemist_detail_docs").val();
 		var check_save_reply = $("#check_save_reply").val();
-		
+		var form_type= $("#form_type_id").val(); // New Value type added for the Export by Akash [07-09-2022]
+	
 		var value_return = 'true';
 
 		//condition to work validations for non BEVO fields
-		if(ca_bevo_applicant == 'no')
-		{
+		if(ca_bevo_applicant == 'no'){
+
 			// Change Condition for validation and error message by pravin 11-07-2017
-			if(check_whitespace_validation_textbox(laboratory_name).result == false){	
+			if(check_whitespace_validation_textbox(laboratory_name).result == false){
 				
 				$("#error_laboratory_name").show().text(check_whitespace_validation_textbox(laboratory_name).error_message);
 				$("#laboratory_name").addClass("is-invalid");
@@ -796,10 +825,10 @@
 			
 			if(laboratory_type != 1){
 
-				if($("#consent_letter_docs_value").text() == ''){		
+				if($("#consent_letter_docs_value").text() == ''){
 						
 					// Change Condition for validation and error message by pravin 11-07-2017
-					if(check_file_upload_validation(consent_letter_docs).result == false){	
+					if(check_file_upload_validation(consent_letter_docs).result == false){
 						
 						$("#error_consent_letter_docs").show().text(check_file_upload_validation(consent_letter_docs).error_message);
 						$("#consent_letter_docs").addClass("is-invalid");
@@ -811,7 +840,7 @@
 			}else{
 				
 				// Add new field validation by pravin 22-07-2017
-				if($("#chemist_detail_docs_value").text() == ''){		
+				if($("#chemist_detail_docs_value").text() == ''){
 					
 					// Change Condition for validation and error message by pravin 11-07-2017
 					if(check_file_upload_validation(chemist_detail_docs).result == false){	
@@ -824,7 +853,7 @@
 				}
 				
 				// Add new field validation by pravin 22-07-2017
-				if($("#lab_equipped_docs_value").text() == ''){		
+				if($("#lab_equipped_docs_value").text() == ''){
 						
 					// Change Condition for validation and error message by pravin 11-07-2017
 					if(check_file_upload_validation(lab_equipped_docs).result == false){	
@@ -835,14 +864,13 @@
 						value_return = 'false';
 					}
 				}
-				
 			}
 			
 		
 			// Change Condition for validation and error message by pravin 11-07-2017
 			if(check_whitespace_validation_textbox(street_address).result == false){
 				
-				$("#error_street_address").show().text(check_whitespace_validation_textbox(street_address).error_message);		
+				$("#error_street_address").show().text(check_whitespace_validation_textbox(street_address).error_message);
 				$("#street_address").addClass("is-invalid");
 				$("#street_address").click(function(){$("#error_street_address").hide().text; $("#street_address").removeClass("is-invalid");});
 				value_return = 'false';
@@ -866,63 +894,31 @@
 			
 				
 			// Change Condition for validation and error message by pravin 11-07-2017
-			if(check_postal_code_validation(postal_code).result == false){	
+			if(check_postal_code_validation(postal_code).result == false){
 				
 				$("#error_postal_code").show().text(check_postal_code_validation(postal_code).error_message);
 				$("#postal_code").addClass("is-invalid");
 				$("#postal_code").click(function(){$("#error_postal_code").hide().text; $("#postal_code").removeClass("is-invalid");});
 				value_return = 'false';
-			
-			}/*else{			
-				if(!postal_code.match(/^(?=.*[0-9])[0-9]{6}$/g)){	
-					$("#error_postal_code").show().text("Postal code is not valid, only 6 digits no. mandatory");
-					$("#postal_code").addClass("is-invalid");
-					$("#postal_code").click(function(){$("#error_postal_code").hide().text; $("#postal_code").removeClass("is-invalid");});
-					value_return = 'false';
-				}
-			}*/
+			}
 				
 			// Change Condition for validation and error message by pravin 11-07-2017
-			if(check_email_validation(lab_email_id).result == false){	
+			if(check_email_validation(lab_email_id).result == false){
 			
 				$("#error_lab_email_id").show().text(check_email_validation(lab_email_id).error_message);
 				$("#lab_email_id").addClass("is-invalid");
 				$("#lab_email_id").click(function(){$("#error_lab_email_id").hide().text; $("#lab_email_id").removeClass("is-invalid");});
 				value_return = 'false';
-			
-			}/*else{
-				
-				if(!lab_email_id.match(/^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/))   
-				{ 
-					$("#error_lab_email_id").show().text("Please Enter id is not valid.");
-					$("#lab_email_id").addClass("is-invalid");
-					$("#lab_email_id").click(function(){$("#error_lab_email_id").hide().text; $("#lab_email_id").removeClass("is-invalid");});
-					value_return = 'false';
-				}
-			
-			}*/
-			
-			//if(lab_mobile_no==""){
+			}
 				
 			// Change Condition for validation and error message by pravin 11-07-2017
-			if(check_mobile_number_validation(lab_mobile_no).result == false){	
+			if(check_mobile_number_validation(lab_mobile_no).result == false){
 				
 				$("#error_lab_mobile_no").show().text(check_mobile_number_validation(lab_mobile_no).error_message);
 				$("#lab_mobile_no").addClass("is-invalid");
 				$("#lab_mobile_no").click(function(){$("#error_lab_mobile_no").hide().text; $("#lab_mobile_no").removeClass("is-invalid");});	
 				value_return = 'false';
-			
-			}/*else{
-				
-				if(!lab_mobile_no.match(/^(?=.*[0-9])[0-9]{10}$/g))   
-				{	
-					$("#error_lab_mobile_no").show().text("Mobile no. is not valid, only 10 digits no. allowed");
-					$("#lab_mobile_no").addClass("is-invalid");
-					$("#lab_mobile_no").click(function(){$("#error_lab_mobile_no").hide().text; $("#lab_mobile_no").removeClass("is-invalid");});
-					value_return = 'false';
-				}
-			}*/
-				
+			}
 			
 			// Change Condition for validation and error message by pravin 11-07-2017
 			if(check_landline_number_validation(lab_fax_no).result == false){	
@@ -932,57 +928,44 @@
 				$("#lab_fax_no").click(function(){$("#error_lab_fax_no").hide().text; $("#lab_fax_no").removeClass("is-invalid");});
 				value_return = 'false';
 			}
-			
-			/*if(lab_fax_no !=""){
-				if(!lab_fax_no.match(/^(?=.*[0-9])[0-9]{5,15}$/g))   
-				{
-					$("#error_lab_fax_no").show().text("Given Fax no. is not valid.");
-					$("#lab_fax_no").addClass("is-invalid");
-					$("#lab_fax_no").click(function(){$("#error_lab_fax_no").hide().text; $("#lab_fax_no").removeClass("is-invalid");});
-					value_return = 'false';
-				}
-			}*/
-		
 		}
 		
 		//condition to work validations for BEVO fields
 		if(ca_bevo_applicant == 'yes'){
-			
-			// Change Condition for validation and error message by pravin 11-07-2017	
-			if(check_radio_button_validation('is_lab_equipped').result == false){
-			
-				$("#error_is_lab_equipped").show().text(check_radio_button_validation('is_lab_equipped').error_message);
-				$("#is_lab_equippedYes").addClass("is-invalid");
-				$("#is_lab_equippedYes").click(function(){$("#error_is_lab_equipped").hide().text; $("#is_lab_equippedYes").removeClass("is-invalid");});
-				value_return = 'false';
-			}
-			
-			if($("#lab_equipped_docs_value").text() == '')
-			{		
+
+				// Change Condition for validation and error message by pravin 11-07-2017	
+				if(check_radio_button_validation('is_lab_equipped').result == false){
 				
-				// Change Condition for validation and error message by pravin 11-07-2017
-				if(check_file_upload_validation(lab_equipped_docs).result == false){	
-					
-					$("#error_lab_equipped_docs").show().text(check_file_upload_validation(lab_equipped_docs).error_message);
-					$("#lab_equipped_docs").addClass("is-invalid");
-					$("#lab_equipped_docs").click(function(){$("#error_lab_equipped_docs").hide().text; $("#lab_equipped_docs").removeClass("is-invalid");});
+					$("#error_is_lab_equipped").show().text(check_radio_button_validation('is_lab_equipped').error_message);
+					$("#is_lab_equippedYes").addClass("is-invalid");
+					$("#is_lab_equippedYes").click(function(){$("#error_is_lab_equipped").hide().text; $("#is_lab_equippedYes").removeClass("is-invalid");});
 					value_return = 'false';
 				}
-			}
-			
-			// Add new field validation by pravin 22-07-2017
-			if($("#chemist_detail_docs_value").text() == '')
-			{		
+				
+				if($("#lab_equipped_docs_value").text() == ''){
 					
-				// Change Condition for validation and error message by pravin 11-07-2017
-				if(check_file_upload_validation(chemist_detail_docs).result == false){	
-					
-					$("#error_chemist_detail_docs").show().text(check_file_upload_validation(chemist_detail_docs).error_message);
-					$("#chemist_detail_docs").addClass("is-invalid");
-					$("#chemist_detail_docs").click(function(){$("#error_chemist_detail_docs").hide().text; $("#chemist_detail_docs").removeClass("is-invalid");});
-					value_return = 'false';
+					// Change Condition for validation and error message by pravin 11-07-2017
+					if(check_file_upload_validation(lab_equipped_docs).result == false){	
+						
+						$("#error_lab_equipped_docs").show().text(check_file_upload_validation(lab_equipped_docs).error_message);
+						$("#lab_equipped_docs").addClass("is-invalid");
+						$("#lab_equipped_docs").click(function(){$("#error_lab_equipped_docs").hide().text; $("#lab_equipped_docs").removeClass("is-invalid");});
+						value_return = 'false';
+					}
 				}
-			}
+				
+				// Add new field validation by pravin 22-07-2017
+				if($("#chemist_detail_docs_value").text() == ''){
+						
+					// Change Condition for validation and error message by pravin 11-07-2017
+					if(check_file_upload_validation(chemist_detail_docs).result == false){
+						
+						$("#error_chemist_detail_docs").show().text(check_file_upload_validation(chemist_detail_docs).error_message);
+						$("#chemist_detail_docs").addClass("is-invalid");
+						$("#chemist_detail_docs").click(function(){$("#error_chemist_detail_docs").hide().text; $("#chemist_detail_docs").removeClass("is-invalid");});
+						value_return = 'false';
+					}
+				}
 				
 		}
 		
@@ -999,14 +982,12 @@
 			}
 		}
 
-		if(value_return == 'false')
-		{
+		if(value_return == 'false'){
 			var msg = "Please check some fields are missing or not proper.";
 			renderToast('error', msg);
 			return false;
-		}
-		else{
-			exit();			
+		}else{
+			exit();
 		}
 
 	}
@@ -1024,8 +1005,8 @@
 		
 		var value_return = 'true';
 		
-		if($("#tbls_table tr td:first").text() == '')
-		{	
+		if($("#tbls_table tr td:first").text() == ''){
+
 			$("#error_tbls").show().text("Sorry. There should be minimum 1 TBL details added.");
 			$("#error_tbls").css({"color":"red","font-size":"14px","font-weight":"500","text-align":"right"});
 			setTimeout(function(){ $("#error_tbls").fadeOut();},8000);
@@ -1033,7 +1014,7 @@
 		}	
 
 			
-		// Change Condition for validation and error message by pravin 10-07-2017	
+		// Change Condition for validation and error message by pravin 10-07-2017
 		if(check_radio_button_validation('tbl_belongs_to_applicant').result == false){
 				
 			$("#error_tbl_belongs_to_applicant").show().text(check_radio_button_validation('tbl_belongs_to_applicant').error_message);
@@ -1046,7 +1027,7 @@
 			// Change Condition for validation and error message by pravin 11-07-2017
 			if(check_radio_value('tbl_belongs_to_applicant') == "yes"){
 			
-				if($("#tbl_belongs_docs_value").text() == ''){	
+				if($("#tbl_belongs_docs_value").text() == ''){
 
 					// Change Condition for validation and error message by pravin 10-07-2017
 					if(check_file_upload_validation(tbl_belongs_docs).result == false){	
@@ -1056,7 +1037,7 @@
 						$("#tbl_belongs_docs").click(function(){$("#error_tbl_belongs_docs").hide().text; $("#tbl_belongs_docs").removeClass("is-invalid");});
 						value_return = 'false';
 					}
-				}					
+				}
 			}
 			
 				
@@ -1075,7 +1056,7 @@
 				if($("#tbl_consent_letter_docs_value").text() == ''){
 						
 					// Change Condition for validation and error message by pravin 10-07-2017
-					if(check_file_upload_validation(tbl_consent_letter_docs).result == false){		
+					if(check_file_upload_validation(tbl_consent_letter_docs).result == false){
 						
 						$("#error_tbl_consent_letter_docs").show().text(check_file_upload_validation(tbl_consent_letter_docs).error_message);
 						$("#tbl_consent_letter_docs").addClass("is-invalid");
@@ -1104,7 +1085,7 @@
 			renderToast('error', msg);
 			return false;
 		}else{
-			exit();			
+			exit();
 		}
 
 	}
@@ -1136,19 +1117,19 @@
 		var check_save_reply = $("#check_save_reply").val();
 		var value_return = 'true';
 		
-		if(action == 'view_premises_profile')
-		{
+		if(action == 'view_premises_profile'){
+
 			if(check_whitespace_validation_textarea(check_save_reply).result == false){
 				
 				$("#error_save_reply").show().text(check_whitespace_validation_textarea(check_save_reply).error_message);
 				$("#check_save_reply").addClass("is-invalid");
 				$("#check_save_reply").click(function(){$("#error_save_reply").hide().text; $("#check_save_reply").removeClass("is-invalid");});
-				value_return = 'false';		
+				value_return = 'false';
 			}
 		}
 
-		if($("#directors_details_table tr td:first").text() == '')
-		{
+		if($("#directors_details_table tr td:first").text() == ''){
+
 			$("#error_directors_details").show().text("Sorry. There should be minimum 1 director details added.");
 			$("#directors_details_table").addClass("is-invalid");
 			$("#directors_details_table").click(function(){$("#error_directors_details").hide().text; $("#directors_details_table").removeClass("is-invalid");});
@@ -1161,7 +1142,7 @@
 			renderToast('error', msg);
 			return false;
 		}else{
-			exit();			
+			exit();
 		}
 
 	}
@@ -1221,7 +1202,6 @@
 				$("#error_storage_site_plan_no").show().text(check_whitespace_validation_textbox(storage_site_plan_no).error_message);
 				$("#storage_site_plan_no").addClass("is-invalid");
 				$("#storage_site_plan_no").click(function(){$("#error_storage_site_plan_no").hide().text; $("#storage_site_plan_no").removeClass("is-invalid");});
-				
 				value_return = 'false';
 			}
 				
@@ -1236,9 +1216,8 @@
 					value_return = 'false';
 				}
 			}
-				
-								
-			// Change Condition for validation and error message by pravin 11-07-2017	
+			
+			// Change Condition for validation and error message by pravin 11-07-2017
 			if(check_radio_button_validation('conditions_fulfilled').result == false){
 			
 				$("#error_conditions_fulfilled").show().text(check_radio_button_validation('conditions_fulfilled').error_message);
@@ -1251,8 +1230,8 @@
 				// Change Condition for validation and error message by pravin 11-07-2017
 				if(check_radio_value('conditions_fulfilled') == "yes"){
 			
-					if($("#condition_details_docs_value").text() == '')
-					{
+					if($("#condition_details_docs_value").text() == ''){
+
 						// Change Condition for validation and error message by pravin 10-07-2017
 						if(check_file_upload_validation(condition_details_docs).result == false){	
 							
@@ -1261,7 +1240,7 @@
 							$("#condition_details_docs").click(function(){$("#error_condition_details_docs").hide().text; $("#condition_details_docs").removeClass("is-invalid");});
 							value_return = 'false';
 						}
-					}					
+					}
 				}
 
 
@@ -1281,10 +1260,10 @@
 
 			
 		//condition to work validations for BEVO fields
-		if(ca_bevo_applicant == 'yes')
-		{
-			if($("#const_oil_storage_tank_table tr td:first").text() == '')
-			{
+		if(ca_bevo_applicant == 'yes'){
+
+			if($("#const_oil_storage_tank_table tr td:first").text() == ''){
+
 				$("#error_const_oil_storage_tank").show().text("Sorry. There should be minimum 1 tank details added.");
 				$("#const_oil_storage_tank_table").addClass("is-invalid");
 				$("#const_oil_storage_tank_table").click(function(){$("#error_const_oil_storage_tank").hide().text; $("#const_oil_storage_tank_table").removeClass("is-invalid");});
@@ -1292,8 +1271,7 @@
 			}
 			
 			
-			if($("#bevo_oil_storage_tank_table tr td:first").text() == '')
-			{
+			if($("#bevo_oil_storage_tank_table tr td:first").text() == ''){
 				
 				$("#error_bevo_oil_storage_tank").show().text("Sorry. There should be minimum 1 tank details added.");
 				$("#bevo_oil_storage_tank_table").addClass("is-invalid");
@@ -1302,10 +1280,10 @@
 			}
 			
 			
-			if($("#constituent_oil_mill_docs_value").text() == '')
-			{
+			if($("#constituent_oil_mill_docs_value").text() == ''){
+
 				// Change Condition for validation and error message by pravin 10-07-2017
-				if(check_file_upload_validation(constituent_oil_mill_docs).result == false){	
+				if(check_file_upload_validation(constituent_oil_mill_docs).result == false){
 					
 					$("#error_constituent_oil_mill_docs").show().text(check_file_upload_validation(constituent_oil_mill_docs).error_message);
 					$("#constituent_oil_mill_docs").addClass("is-invalid");
@@ -1314,8 +1292,8 @@
 				}
 			}
 			
-			// Change Condition for validation and error message by pravin 10-07-2017	
-			if(check_radio_button_validation('separate_pipe_lines').result == false){	
+			// Change Condition for validation and error message by pravin 10-07-2017
+			if(check_radio_button_validation('separate_pipe_lines').result == false){
 				
 				$("#error_separate_pipe_lines").show().text(check_radio_button_validation('separate_pipe_lines').error_message);
 				$("#tbl_belongs_to_applicantYes").addClass("is-invalid");
@@ -1328,7 +1306,7 @@
 	
 		// Change Condition for validation and error message by pravin 10-07-2017
 		if(check_whitespace_validation_textbox(room_site_plan_no).result == false){
-				
+		
 			$("#error_room_site_plan_no").show().text(check_whitespace_validation_textbox(room_site_plan_no).error_message);
 			$("#room_site_plan_no").addClass("is-invalid");
 			$("#room_site_plan_no").click(function(){$("#error_room_site_plan_no").hide().text; $("#room_site_plan_no").removeClass("is-invalid");});
@@ -1336,10 +1314,10 @@
 		}
 			
 			
-			if($("#room_details_docs_value").text() == '')
-			{
+			if($("#room_details_docs_value").text() == ''){
+				
 				// Change Condition for validation and error message by pravin 10-07-2017
-				if(check_file_upload_validation(room_details_docs).result == false){	
+				if(check_file_upload_validation(room_details_docs).result == false){
 					
 					$("#error_room_details_docs").show().text(check_file_upload_validation(room_details_docs).error_message);
 					$("#room_details_docs").addClass("is-invalid");
@@ -1349,8 +1327,8 @@
 			}
 			
 			
-			// Change Condition for validation and error message by pravin 10-07-2017	
-			if(check_radio_button_validation('lighted_ventilated').result == false){		
+			// Change Condition for validation and error message by pravin 10-07-2017
+			if(check_radio_button_validation('lighted_ventilated').result == false){
 					
 				$("#error_lighted_ventilated").show().text(check_radio_button_validation('lighted_ventilated').error_message);
 				$("#lighted_ventilatedYes").addClass("is-invalid");
@@ -1363,7 +1341,7 @@
 				if(check_radio_value('lighted_ventilated') == "yes"){
 				
 					if($("#ventilation_details_docs_value").text() == ''){
-							
+					
 						// Change Condition for validation and error message by pravin 10-07-2017
 						if(check_file_upload_validation(ventilation_details_docs).result == false){	
 							
@@ -1378,7 +1356,7 @@
 			
 
 			// Change Condition for validation and error message by pravin 10-07-2017
-			if(check_whitespace_validation_textarea(ventilation_details).result == false){	
+			if(check_whitespace_validation_textarea(ventilation_details).result == false){
 				
 				$("#error_ventilation_details").show().text(check_whitespace_validation_textarea(ventilation_details).error_message);
 				$("#ventilation_details").addClass("is-invalid");
@@ -1387,8 +1365,8 @@
 			}
 			
 
-			// Change Condition for validation and error message by pravin 10-07-2017	
-			if(check_radio_button_validation('locking_adequate').result == false){	
+			// Change Condition for validation and error message by pravin 10-07-2017
+			if(check_radio_button_validation('locking_adequate').result == false){
 					
 				$("#error_locking_adequate").show().text(check_radio_button_validation('locking_adequate').error_message);
 				$("#locking_adequateYes").addClass("is-invalid");
@@ -1414,7 +1392,7 @@
 				}
 			}
 
-						
+			
 			// Change Condition for validation and error message by pravin 10-07-2017
 			if(check_whitespace_validation_textarea(locking_details).result == false){
 				
@@ -1426,12 +1404,11 @@
 			
 			
 			if(value_return == 'false'){
-
 				var msg = "Please check some fields are missing or not proper.";
 				renderToast('error', msg);
 				return false;
 			}else{
-				exit();			
+				exit();	
 			}
 	
 
@@ -1519,8 +1496,8 @@
 		
 
 		//condition to work validations for BEVO fields
-		if(ca_bevo_applicant == 'yes')
-		{
+		if(ca_bevo_applicant == 'yes'){
+
 			// Change Condition for validation and error message by pravin 12-07-2017
 			if(check_radio_button_validation('laboratory_equipped').result == false){
 				
@@ -1532,10 +1509,10 @@
 			}else{
 				
 				// Change Condition for validation and error message by pravin 12-07-2017	
-				if(check_radio_value('laboratory_equipped') == "yes"){	
+				if(check_radio_value('laboratory_equipped') == "yes"){
 				
-					if($("#laboratory_equipped_docs_value").text() == '')
-					{
+					if($("#laboratory_equipped_docs_value").text() == ''){
+
 						// Change Condition for validation and error message by pravin 12-07-2017
 						if(check_file_upload_validation(laboratory_equipped_docs).result == false){	
 							
@@ -1562,15 +1539,14 @@
 		
 		
 		if(value_return == 'false'){
-
 			var msg = "Please check some fields are missing or not proper.";
 			renderToast('error', msg);
 			return false;
 		}else{
-			exit();			
+			exit();
 		}
 
-			
+	
 	}
 
 
@@ -1585,199 +1561,195 @@
 	function other_details_report(){
 
 		//taking values from form fields
-			var commodity_quantity=$("#commodity_quantity").val();
-			var own_machinery=$("#own_machinery").val();
-			var processing_done_by=$("#processing_done_by").val();
-			var machinery_processing_docs=$("#machinery_processing_docs").val();
-			var constituent_oil_suppliers_docs=$("#constituent_oil_suppliers_docs").val();
-			var bevo_machinery_details_docs=$("#bevo_machinery_details_docs").val();
-			var fat_spread_facilitities=$("#fat_spread_facilitities").val();
-			var bevo_quantity_per_month=$("#bevo_quantity_per_month").val();
-			var graded_bevo_marketed_places=$("#graded_bevo_marketed_places").val();
-			var other_points=$("#other_points").val();
-			var recommendations=$("#recommendations").val();
-			var check_save_reply = $("#check_save_reply").val();
-			var value_return = 'true';
+		var commodity_quantity=$("#commodity_quantity").val();
+		var own_machinery=$("#own_machinery").val();
+		var processing_done_by=$("#processing_done_by").val();
+		var machinery_processing_docs=$("#machinery_processing_docs").val();
+		var constituent_oil_suppliers_docs=$("#constituent_oil_suppliers_docs").val();
+		var bevo_machinery_details_docs=$("#bevo_machinery_details_docs").val();
+		var fat_spread_facilitities=$("#fat_spread_facilitities").val();
+		var bevo_quantity_per_month=$("#bevo_quantity_per_month").val();
+		var graded_bevo_marketed_places=$("#graded_bevo_marketed_places").val();
+		var other_points=$("#other_points").val();
+		var recommendations=$("#recommendations").val();
+		var check_save_reply = $("#check_save_reply").val();
+		var value_return = 'true';
 			
 			
-			// check Condition for validation  by Amol 28-07-2017
-			if(final_status == 'referred_back'){
+		// check Condition for validation  by Amol 28-07-2017
+		if(final_status == 'referred_back'){
+		
+			if(check_whitespace_validation_textarea(check_save_reply).result == false){ 
 			
-				if(check_whitespace_validation_textarea(check_save_reply).result == false){ 
+				$("#error_save_reply").show().text(check_whitespace_validation_textarea(check_save_reply).error_message);
+				$("#check_save_reply").addClass("is-invalid");
+				$("#check_save_reply").click(function(){$("#error_save_reply").hide().text; $("#check_save_reply").removeClass("is-invalid");});
+				value_return = 'false';	
+			}
+		}
+			
+			
+		//condition to work validations for non BEVO fields
+		if(ca_bevo_applicant == 'no'){
+
+			// Change Condition for validation and error message by pravin 12-07-2017
+			if(check_number_with_decimal_two_validation(commodity_quantity).result == false){
+			
+				$("#error_commodity_quantity").show().text(check_number_with_decimal_two_validation(commodity_quantity).error_message);
+				$("#commodity_quantity").addClass("is-invalid");
+				$("#commodity_quantity").click(function(){$("#error_commodity_quantity").hide().text; $("#commodity_quantity").removeClass("is-invalid");});
+				value_return = 'false';
+			}
+			
+			// Change Condition for validation and error message by pravin 12-07-2017
+			if(check_radio_button_validation('own_machinery').result == false){
 				
-					$("#error_save_reply").show().text(check_whitespace_validation_textarea(check_save_reply).error_message);
-					$("#check_save_reply").addClass("is-invalid");
-					$("#check_save_reply").click(function(){$("#error_save_reply").hide().text; $("#check_save_reply").removeClass("is-invalid");});
-					value_return = 'false';	
+				$("#error_own_machinery").show().text(check_radio_button_validation('own_machinery').error_message);
+				$("#own_machineryYes").addClass("is-invalid");
+				$("#own_machineryYes").click(function(){$("#error_own_machinery").hide().text; $("#own_machineryYes").removeClass("is-invalid");});
+				value_return = 'false';
+
+			}else{
+				
+				// Change Condition for validation and error message by pravin 12-07-2017
+				if(check_radio_value('own_machinery') == "no"){
+					
+					// Change Condition for validation and error message by pravin 12-07-2017
+					if(check_whitespace_validation_textbox(processing_done_by).result == false){
+						
+						$("#error_processing_done_by").show().text(check_whitespace_validation_textbox(processing_done_by).error_message);
+						$("#own_machineryYes").addClass("is-invalid");
+						$("#own_machineryYes").click(function(){$("#error_processing_done_by").hide().text; $("#own_machineryYes").removeClass("is-invalid");});
+						value_return = 'false';
+					}
 				}
 			}
 			
 			
-			//condition to work validations for non BEVO fields
-			if(ca_bevo_applicant == 'no')
-			{
+			if($("#machinery_processing_docs_value").text() == ''){
 
 				// Change Condition for validation and error message by pravin 12-07-2017
-				if(check_number_with_decimal_two_validation(commodity_quantity).result == false){	
-								
-					$("#error_commodity_quantity").show().text(check_number_with_decimal_two_validation(commodity_quantity).error_message);
-					$("#commodity_quantity").addClass("is-invalid");
-					$("#commodity_quantity").click(function(){$("#error_commodity_quantity").hide().text; $("#commodity_quantity").removeClass("is-invalid");});
+				if(check_file_upload_validation(machinery_processing_docs).result == false){
+					
+					$("#error_machinery_processing_docs").show().text(check_file_upload_validation(machinery_processing_docs).error_message);
+					$("#machinery_processing_docs").addClass("is-invalid");
+					$("#machinery_processing_docs").click(function(){$("#error_machinery_processing_docs").hide().text; $("#machinery_processing_docs").removeClass("is-invalid");});
 					value_return = 'false';
 				}
-							
-						
-				// Change Condition for validation and error message by pravin 12-07-2017	
-				if(check_radio_button_validation('own_machinery').result == false){	
-					
-					$("#error_own_machinery").show().text(check_radio_button_validation('own_machinery').error_message);
-					$("#own_machineryYes").addClass("is-invalid");
-					$("#own_machineryYes").click(function(){$("#error_own_machinery").hide().text; $("#own_machineryYes").removeClass("is-invalid");});
-					value_return = 'false';
+			}
+		}
+			
+		//condition to work validations for BEVO fields
+		if(ca_bevo_applicant == 'yes'){
 
-				}else{
-					
-					// Change Condition for validation and error message by pravin 12-07-2017
-					if(check_radio_value('own_machinery') == "no"){	
-											
-						// Change Condition for validation and error message by pravin 12-07-2017
-						if(check_whitespace_validation_textbox(processing_done_by).result == false){
-							
-							$("#error_processing_done_by").show().text(check_whitespace_validation_textbox(processing_done_by).error_message);
-							$("#own_machineryYes").addClass("is-invalid");
-							$("#own_machineryYes").click(function(){$("#error_processing_done_by").hide().text; $("#own_machineryYes").removeClass("is-invalid");});
-							value_return = 'false';
-						}
-					}
-				}
-				
-				
-				if($("#machinery_processing_docs_value").text() == '')
-				{
-					// Change Condition for validation and error message by pravin 12-07-2017
-					if(check_file_upload_validation(machinery_processing_docs).result == false){	
-						
-						$("#error_machinery_processing_docs").show().text(check_file_upload_validation(machinery_processing_docs).error_message);
-						$("#machinery_processing_docs").addClass("is-invalid");
-						$("#machinery_processing_docs").click(function(){$("#error_machinery_processing_docs").hide().text; $("#machinery_processing_docs").removeClass("is-invalid");});
-						value_return = 'false';
-					}
-				}
-			}
-			
-			//condition to work validations for BEVO fields
-			if(ca_bevo_applicant == 'yes')
-			{			
-				if($("#const_oil_mills_table tr td:first").text() == '')
-				{
-					$("#error_const_oil_mills").show().text("Sorry. There should be minimum 1 oil mill details added.");
-					$("#const_oil_mills_table").addClass("is-invalid");
-					$("#const_oil_mills_table").click(function(){$("#error_const_oil_mills").hide().text; $("#const_oil_mills_table").removeClass("is-invalid");});
-					value_return = 'false';
-				}
-				
-				
-				if($("#constituent_oil_suppliers_docs_value").text() == '')
-				{
-					// Change Condition for validation and error message by pravin 12-07-2017
-					if(check_file_upload_validation(constituent_oil_suppliers_docs).result == false){	
-						
-						$("#error_constituent_oil_suppliers_docs").show().text(check_file_upload_validation(constituent_oil_suppliers_docs).error_message);
-						$("#constituent_oil_suppliers_docs").addClass("is-invalid");
-						$("#constituent_oil_suppliers_docs").click(function(){$("#error_constituent_oil_suppliers_docs").hide().text; $("#constituent_oil_suppliers_docs").removeClass("is-invalid");});
-						value_return = 'false';
-					}
-				}
-				
-				
-				// Get sub_commodity values to validate "machinery Details" box fields and "Minimum Infrastructure/Facilities" fields (Done By pravin 10-01-2018)
-				var sub_commodity_array = firm_sub_commodity;
-				sub_commodity_array_obj = JSON.parse(sub_commodity_array);
-				
-				// Check sub_commodity value is "Blended edible vegitable oil" or not (Done by pravin 10-01-2018)
-				if(jQuery.inArray("172", sub_commodity_array_obj) !== -1){
-					
-					if($("#bevo_machinery_details_docs_value").text() == '')
-					{
-						// Change Condition for validation and error message by pravin 12-07-2017
-						if(check_file_upload_validation(bevo_machinery_details_docs).result == false){	
-							
-							$("#error_bevo_machinery_details_docs").show().text(check_file_upload_validation(bevo_machinery_details_docs).error_message);
-							$("#bevo_machinery_details_docs").addClass("is-invalid");
-							$("#bevo_machinery_details_docs").click(function(){$("#error_bevo_machinery_details_docs").hide().text; $("#bevo_machinery_details_docs").removeClass("is-invalid");});
-							value_return = 'false';
-						}
-					}
-				}
-				
-				
-				// Check sub_commodity value is "fat spread" or not (Done by pravin 10-01-2018)
-				if(jQuery.inArray("173", sub_commodity_array_obj) !== -1){
-					
-					// Change Condition for validation and error message by pravin 12-07-2017	
-					if(check_radio_button_validation('fat_spread_facilitities').result == false){		
-						
-						$("#error_fat_spread_facilitities").show().text(check_radio_button_validation('fat_spread_facilitities').error_message);
-						$("#fat_spread_facilititiesYes").addClass("is-invalid");
-						$("#fat_spread_facilititiesYes").click(function(){$("#error_fat_spread_facilitities").hide().text; $("#fat_spread_facilititiesYes").removeClass("is-invalid");});
-						value_return = 'false';
-					}
-				}
-									
-				// Change Condition for validation and error message by pravin 12-07-2017	
-				if(check_number_with_decimal_two_validation(bevo_quantity_per_month).result == false){	
-						
-					$("#error_bevo_quantity_per_month").show().text(check_number_with_decimal_two_validation(bevo_quantity_per_month).error_message);
-					$("#bevo_quantity_per_month").addClass("is-invalid");
-					$("#bevo_quantity_per_month").click(function(){$("#error_bevo_quantity_per_month").hide().text; $("#bevo_quantity_per_month").removeClass("is-invalid");});
-					value_return = 'false';
-				}
-				
-					
-				// Change Condition for validation and error message by pravin 12-07-2017	
-				if(check_whitespace_validation_textarea(graded_bevo_marketed_places).result == false){		
-						
-					$("#error_graded_bevo_marketed_places").show().text(check_whitespace_validation_textarea(graded_bevo_marketed_places).error_message);
-					$("#graded_bevo_marketed_places").addClass("is-invalid");
-					$("#graded_bevo_marketed_places").click(function(){$("#error_graded_bevo_marketed_places").hide().text; $("#graded_bevo_marketed_places").removeClass("is-invalid");});
-					value_return = 'false';
-				}
-				
-			}
-			
-			
-			
-			// Change Condition for validation and error message by pravin 12-07-2017	
-			if(check_whitespace_validation_textarea(other_points).result == false){
-					
-				$("#error_other_points").show().text(check_whitespace_validation_textarea(other_points).error_message);
-				$("#other_points").addClass("is-invalid");
-				$("#other_points").click(function(){$("#error_other_points").hide().text; $("#other_points").removeClass("is-invalid");});
+			if($("#const_oil_mills_table tr td:first").text() == ''){
+
+				$("#error_const_oil_mills").show().text("Sorry. There should be minimum 1 oil mill details added.");
+				$("#const_oil_mills_table").addClass("is-invalid");
+				$("#const_oil_mills_table").click(function(){$("#error_const_oil_mills").hide().text; $("#const_oil_mills_table").removeClass("is-invalid");});
 				value_return = 'false';
 			}
 			
+			
+			if($("#constituent_oil_suppliers_docs_value").text() == ''){
+
+				// Change Condition for validation and error message by pravin 12-07-2017
+				if(check_file_upload_validation(constituent_oil_suppliers_docs).result == false){	
+					
+					$("#error_constituent_oil_suppliers_docs").show().text(check_file_upload_validation(constituent_oil_suppliers_docs).error_message);
+					$("#constituent_oil_suppliers_docs").addClass("is-invalid");
+					$("#constituent_oil_suppliers_docs").click(function(){$("#error_constituent_oil_suppliers_docs").hide().text; $("#constituent_oil_suppliers_docs").removeClass("is-invalid");});
+					value_return = 'false';
+				}
+			}
+			
+			
+			// Get sub_commodity values to validate "machinery Details" box fields and "Minimum Infrastructure/Facilities" fields (Done By pravin 10-01-2018)
+			var sub_commodity_array = firm_sub_commodity;
+			sub_commodity_array_obj = JSON.parse(sub_commodity_array);
+			
+			// Check sub_commodity value is "Blended edible vegitable oil" or not (Done by pravin 10-01-2018)
+			if(jQuery.inArray("172", sub_commodity_array_obj) !== -1){
+				
+				if($("#bevo_machinery_details_docs_value").text() == ''){
+
+					// Change Condition for validation and error message by pravin 12-07-2017
+					if(check_file_upload_validation(bevo_machinery_details_docs).result == false){
+						
+						$("#error_bevo_machinery_details_docs").show().text(check_file_upload_validation(bevo_machinery_details_docs).error_message);
+						$("#bevo_machinery_details_docs").addClass("is-invalid");
+						$("#bevo_machinery_details_docs").click(function(){$("#error_bevo_machinery_details_docs").hide().text; $("#bevo_machinery_details_docs").removeClass("is-invalid");});
+						value_return = 'false';
+					}
+				}
+			}
+			
+			
+			// Check sub_commodity value is "fat spread" or not (Done by pravin 10-01-2018)
+			if(jQuery.inArray("173", sub_commodity_array_obj) !== -1){
+				
+				// Change Condition for validation and error message by pravin 12-07-2017	
+				if(check_radio_button_validation('fat_spread_facilitities').result == false){
+					
+					$("#error_fat_spread_facilitities").show().text(check_radio_button_validation('fat_spread_facilitities').error_message);
+					$("#fat_spread_facilititiesYes").addClass("is-invalid");
+					$("#fat_spread_facilititiesYes").click(function(){$("#error_fat_spread_facilitities").hide().text; $("#fat_spread_facilititiesYes").removeClass("is-invalid");});
+					value_return = 'false';
+				}
+			}
+		
+			// Change Condition for validation and error message by pravin 12-07-2017	
+			if(check_number_with_decimal_two_validation(bevo_quantity_per_month).result == false){
+				
+				$("#error_bevo_quantity_per_month").show().text(check_number_with_decimal_two_validation(bevo_quantity_per_month).error_message);
+				$("#bevo_quantity_per_month").addClass("is-invalid");
+				$("#bevo_quantity_per_month").click(function(){$("#error_bevo_quantity_per_month").hide().text; $("#bevo_quantity_per_month").removeClass("is-invalid");});
+				value_return = 'false';
+			}
+			
+				
+			// Change Condition for validation and error message by pravin 12-07-2017
+			if(check_whitespace_validation_textarea(graded_bevo_marketed_places).result == false){
+				
+				$("#error_graded_bevo_marketed_places").show().text(check_whitespace_validation_textarea(graded_bevo_marketed_places).error_message);
+				$("#graded_bevo_marketed_places").addClass("is-invalid");
+				$("#graded_bevo_marketed_places").click(function(){$("#error_graded_bevo_marketed_places").hide().text; $("#graded_bevo_marketed_places").removeClass("is-invalid");});
+				value_return = 'false';
+			}
+			
+		}
+		
+		
+		
+		// Change Condition for validation and error message by pravin 12-07-2017
+		if(check_whitespace_validation_textarea(other_points).result == false){
+			
+			$("#error_other_points").show().text(check_whitespace_validation_textarea(other_points).error_message);
+			$("#other_points").addClass("is-invalid");
+			$("#other_points").click(function(){$("#error_other_points").hide().text; $("#other_points").removeClass("is-invalid");});
+			value_return = 'false';
+		}
+		
+
+		// Change Condition for validation and error message by pravin 12-07-2017
+		if(check_whitespace_validation_textarea(recommendations).result == false){
+			
+			$("#error_recommendations").show().text(check_whitespace_validation_textarea(recommendations).error_message);
+			$("#recommendations").addClass("is-invalid");
+			$("#recommendations").click(function(){$("#error_recommendations").hide().text; $("#recommendations").removeClass("is-invalid");});
+			value_return = 'false';
+		}
+		
+		
+		
+		if(value_return == 'false'){
+			var msg = "Please check some fields are missing or not proper.";
+			renderToast('error', msg);
+			return false;
+		}else{
+			exit();
+		}
 	
-			// Change Condition for validation and error message by pravin 12-07-2017	
-			if(check_whitespace_validation_textarea(recommendations).result == false){
-				
-				$("#error_recommendations").show().text(check_whitespace_validation_textarea(recommendations).error_message);
-				$("#recommendations").addClass("is-invalid");
-				$("#recommendations").click(function(){$("#error_recommendations").hide().text; $("#recommendations").removeClass("is-invalid");});
-				value_return = 'false';
-			}
-			
-			
-			
-			if(value_return == 'false'){
-
-				var msg = "Please check some fields are missing or not proper.";
-				renderToast('error', msg);
-				return false;
-			}else{
-				exit();			
-			}
-			
-			
 	}
 
 

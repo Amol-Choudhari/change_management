@@ -545,34 +545,38 @@ class ApplicationformspdfsController extends AppController{
 		$this->loadModel('DmiCustomerPackingDetails');
 		$this->loadModel('DmiCrushingRefiningPeriods');
 		
-		
+	
 		//added on 27-03-2018, to set default value
 		$show_esigned_by = $this->Session->read('with_esign');
-		$this->set('show_esigned_by',$show_esigned_by);		
+		$this->set('show_esigned_by',$show_esigned_by);
 
 		$customer_id = $this->Session->read('username');
 		$this->set('customer_id',$customer_id);
-		
+
+		// This is added to get the form type - Akash [07-09-2022]
+		$form_type = $this->Customfunctions->checkApplicantFormType($customer_id);
+		$this->set('form_type',$form_type);
+
 		//get nodal office of the applied CA
 		$this->loadModel('DmiApplWithRoMappings');
 		$get_office = $this->DmiApplWithRoMappings->getOfficeDetails($customer_id);
 		$this->set('get_office',$get_office);
 		
 		$pdf_date = date('d-m-Y');
-		$this->set('pdf_date',$pdf_date);				
+		$this->set('pdf_date',$pdf_date);
 		
-		//check CA BEVO Applicant		
+		//check CA BEVO Applicant
 		$ca_bevo_applicant = $this->Customfunctions->checkCaBevo($customer_id);
-		$this->set('ca_bevo_applicant',$ca_bevo_applicant);		
+		$this->set('ca_bevo_applicant',$ca_bevo_applicant);
 		
 		//check application have export unit
 		$export_unit_status = $this->Customfunctions->checkApplicantExportUnit($customer_id);
-		$this->set('export_unit_status',$export_unit_status);		
+		$this->set('export_unit_status',$export_unit_status);
 		
-		// data from DMI firm Table					
+		// data from DMI firm Table
 		$fetch_customer_firm_data = $this->DmiFirms->find('all',array('conditions'=>array('customer_id IS'=>$customer_id)))->first();
 		$customer_firm_data = $fetch_customer_firm_data;
-		$this->set('customer_firm_data',$customer_firm_data);		
+		$this->set('customer_firm_data',$customer_firm_data);
 		
 		// to show firm address name form id	
 		$fetch_district_name = $this->DmiDistricts->find('all',array('fields'=>'district_name','conditions'=>array('id IS'=>$customer_firm_data['district'], 'OR'=>array('delete_status IS NULL','delete_status ='=>'no'))))->first();
@@ -581,29 +585,29 @@ class ApplicationformspdfsController extends AppController{
 		
 		$fetch_state_name = $this->DmiStates->find('all',array('fields'=>'state_name','conditions'=>array('id IS'=>$customer_firm_data['state'], 'OR'=>array('delete_status IS NULL','delete_status ='=>'no'))))->first();
 		$firm_state_name = $fetch_state_name['state_name'];
-		$this->set('firm_state_name',$firm_state_name);		
+		$this->set('firm_state_name',$firm_state_name);
 		
 		// to show commodities and there selected sub-commodities
 		$sub_commodity_array = explode(',',$customer_firm_data['sub_commodity']);
 
 		$i=0;
 		foreach($sub_commodity_array as $sub_commodity_id)
-		{			
+		{
 			$fetch_commodity_id = $this->MCommodity->find('all',array('conditions'=>array('commodity_code IS'=>$sub_commodity_id)))->first();
-			$commodity_id[$i] = $fetch_commodity_id['category_code'];			
-			$sub_commodity_data[$i] =  $fetch_commodity_id;			
+			$commodity_id[$i] = $fetch_commodity_id['category_code'];
+			$sub_commodity_data[$i] =  $fetch_commodity_id;
 			$i=$i+1;
 		}
 
-		$unique_commodity_id = array_unique($commodity_id);		
+		$unique_commodity_id = array_unique($commodity_id);
 		$commodity_name_list = $this->MCommodityCategory->find('all',array('conditions'=>array('category_code IN'=>$unique_commodity_id, 'display'=>'Y')))->toArray();
-		$this->set('commodity_name_list',$commodity_name_list);		
+		$this->set('commodity_name_list',$commodity_name_list);
 		$this->set('sub_commodity_data',$sub_commodity_data);
 
 		//forms data starts here
 
-		// data from firm profile form					
-		$fetch_firm_last_id = $this->DmiCustomerFirmProfiles->find('list',array('valueField'=>'id','conditions'=>array('customer_id IS'=>$customer_id)))->toArray();				
+		// data from firm profile form
+		$fetch_firm_last_id = $this->DmiCustomerFirmProfiles->find('list',array('valueField'=>'id','conditions'=>array('customer_id IS'=>$customer_id)))->toArray();
 		$fetch_firm_profile_data = $this->DmiCustomerFirmProfiles->find('all',array('conditions'=>array('id'=>max($fetch_firm_last_id))))->first();
 		$firm_data = $fetch_firm_profile_data;
 		$this->set('firm_data',$firm_data);
@@ -612,14 +616,14 @@ class ApplicationformspdfsController extends AppController{
 		$business_type = $fetch_business_type['business_type'];
 		$this->set('business_type',$business_type);
 			
-		// data from premises profile form					
-		$fetch_premises_last_id = $this->DmiCustomerPremisesProfiles->find('list',array('valueField'=>'id','conditions'=>array('customer_id IS'=>$customer_id)))->toArray();				
+		// data from premises profile form
+		$fetch_premises_last_id = $this->DmiCustomerPremisesProfiles->find('list',array('valueField'=>'id','conditions'=>array('customer_id IS'=>$customer_id)))->toArray();
 		$fetch_premises_profile_data = $this->DmiCustomerPremisesProfiles->find('all',array('conditions'=>array('id'=>max($fetch_premises_last_id))))->first();
 		$premises_data = $fetch_premises_profile_data;
 		$this->set('premises_data',$premises_data);
 						
-		// data from machinery profile form					
-		$fetch_machinery_last_id = $this->DmiCustomerMachineryProfiles->find('list',array('valueField'=>'id','conditions'=>array('customer_id IS'=>$customer_id)))->toArray();				
+		// data from machinery profile form
+		$fetch_machinery_last_id = $this->DmiCustomerMachineryProfiles->find('list',array('valueField'=>'id','conditions'=>array('customer_id IS'=>$customer_id)))->toArray();
 		$fetch_machinery_profile_data = $this->DmiCustomerMachineryProfiles->find('all',array('conditions'=>array('id'=>max($fetch_machinery_last_id))))->first();
 		$machinery_data = $fetch_machinery_profile_data;
 		$this->set('machinery_data',$machinery_data);
@@ -636,7 +640,7 @@ class ApplicationformspdfsController extends AppController{
 			$machine_type_value[$i] = $get_machine_type_value['machine_types'];
 			$i=$i+1;
 		}
-		$this->set('machine_type_value',$machine_type_value);		
+		$this->set('machine_type_value',$machine_type_value);
 		
 		//fetch details from All Constituents oil mills details table
 		$all_const_oil_mill_details = $this->DmiAllConstituentOilsDetails->find('all',array('conditions'=>array('customer_id IS'=>$customer_id, 
@@ -658,69 +662,81 @@ class ApplicationformspdfsController extends AppController{
 			$tank_shape_value[$i] = $get_tank_shape_value['tank_shapes'];
 			$i=$i+1;
 		}
-		$this->set('tank_shape_value',$tank_shape_value);		
-						
-		// data from laboratory profile form	
-		$fetch_laboratory_last_id = $this->DmiCustomerLaboratoryDetails->find('list',array('valueField'=>'id','conditions'=>array('customer_id IS'=>$customer_id)))->toArray();				
-		$fetch_laboratory_detail_data = $this->DmiCustomerLaboratoryDetails->find('all',array('conditions'=>array('id'=>max($fetch_laboratory_last_id))))->first();
-		$laboratory_data = $fetch_laboratory_detail_data;
-		$this->set('laboratory_data',$laboratory_data);
-						
-		// data from TBL profile form	
-		$fetch_tbl_last_id = $this->DmiCustomerTblDetails->find('list',array('valueField'=>'id','conditions'=>array('customer_id IS'=>$customer_id)))->toArray();				
-		$fetch_tbl_detail_data = $this->DmiCustomerTblDetails->find('all',array('conditions'=>array('id'=>max($fetch_tbl_last_id))))->first();
-		$tbl_data = $fetch_tbl_detail_data;
-		$this->set('tbl_data',$tbl_data);		
+		$this->set('tank_shape_value',$tank_shape_value);
 		
-		$all_tbls_details = $this->DmiAllTblsDetails->find('all',array('conditions'=>array('customer_id IS'=>$customer_id, 'OR'=>array('delete_status IS NULL','delete_status ='=>'no'))))->toArray();
-		$this->set('all_tbls_details',$all_tbls_details);		
+		
+		//Below condition is applied for the CA EXPORT form F type - Akash [07-09-2022]
+		// data from TBL profile form	
+		if (trim($form_type) !='F') {
+
+			// data from laboratory profile form	
+			$fetch_laboratory_last_id = $this->DmiCustomerLaboratoryDetails->find('list',array('valueField'=>'id','conditions'=>array('customer_id IS'=>$customer_id)))->toArray();
+			$fetch_laboratory_detail_data = $this->DmiCustomerLaboratoryDetails->find('all',array('conditions'=>array('id'=>max($fetch_laboratory_last_id))))->first();
+			$laboratory_data = $fetch_laboratory_detail_data;
+			$this->set('laboratory_data',$laboratory_data);
+
+			$fetch_tbl_last_id = $this->DmiCustomerTblDetails->find('list',array('valueField'=>'id','conditions'=>array('customer_id IS'=>$customer_id)))->toArray();
+			$fetch_tbl_detail_data = $this->DmiCustomerTblDetails->find('all',array('conditions'=>array('id'=>max($fetch_tbl_last_id))))->first();
+			$tbl_data = $fetch_tbl_detail_data;
+			$this->set('tbl_data',$tbl_data);
+		
+		
+			$all_tbls_details = $this->DmiAllTblsDetails->find('all',array('conditions'=>array('customer_id IS'=>$customer_id, 'OR'=>array('delete_status IS NULL','delete_status ='=>'no'))))->toArray();
+			$this->set('all_tbls_details',$all_tbls_details);		
+		}
+	
+		
+	
 		
 		// for non bevo application	
 		if($ca_bevo_applicant == 'no'){ 
 		
-			// to show premises address name form id			
+			// to show premises address name form id
 			$fetch_district_name = $this->DmiDistricts->find('all',array('fields'=>'district_name','conditions'=>array('id IS'=>$premises_data['district'], 'OR'=>array('delete_status IS NULL','delete_status ='=>'no'))))->first();
 			$premises_district_name = $fetch_district_name['district_name'];
 			$this->set('premises_district_name',$premises_district_name);
 			
 			$fetch_state_name = $this->DmiStates->find('all',array('fields'=>'state_name','conditions'=>array('id IS'=>$premises_data['state'], 'OR'=>array('delete_status IS NULL','delete_status ='=>'no'))))->first();
 			$premises_state_name = $fetch_state_name['state_name'];
-			$this->set('premises_state_name',$premises_state_name);				
-									
+			$this->set('premises_state_name',$premises_state_name);
+			
 			// Takeing business year value from ca_business_year table by pravin 11-08-2017
 			//commented on 11-08-2022, as suggested after UAT phase II
-		/*	$business_years = $this->DmiCaBusinessYears->find('list',array('keyField'=>'id','valueField'=>'business_years'))->toArray();	
+			/*	$business_years = $this->DmiCaBusinessYears->find('list',array('keyField'=>'id','valueField'=>'business_years'))->toArray();	
 			$business_years_value = $business_years[$firm_data['business_years']];
 			$this->Set('business_years_value',$business_years_value);	*/
 			
-			//to fetch laboratory type name
-			$fetch_laboratory_type = $this->DmiLaboratoryTypes->find('all',array('fields'=>'laboratory_type','conditions'=>array('id IS'=>$laboratory_data['laboratory_type'], 'OR'=>array('delete_status IS NULL','delete_status ='=>'no'))))->first();
-			$laboratory_type_name = $fetch_laboratory_type['laboratory_type'];
-			$this->set('laboratory_type_name',$laboratory_type_name);
-			
-			// to show laboratory address name form id			
-			$fetch_laboratory_district_name = $this->DmiDistricts->find('all',array('fields'=>'district_name','conditions'=>array('id IS'=>$laboratory_data['district'],'OR'=>array('delete_status IS NULL','delete_status ='=>'no'))))->first();
-			$laboratory_district_name = $fetch_laboratory_district_name['district_name'];
-			$this->set('laboratory_district_name',$laboratory_district_name);
-			
-			$fetch_laboratory_state_name = $this->DmiStates->find('all',array('fields'=>'state_name','conditions'=>array('id IS'=>$laboratory_data['state'], 'OR'=>array('delete_status IS NULL','delete_status ='=>'no'))))->first();
-			$laboratory_state_name = $fetch_laboratory_state_name['state_name'];
-			$this->set('laboratory_state_name',$laboratory_state_name);
-							
+			//Below condition is applied for the CA EXPORT form F type - Akash [07-09-2022]
+			// data from TBL profile form	
+			if (trim($form_type) !='F') {
+
+				//to fetch laboratory type name
+				$fetch_laboratory_type = $this->DmiLaboratoryTypes->find('all',array('fields'=>'laboratory_type','conditions'=>array('id IS'=>$laboratory_data['laboratory_type'], 'OR'=>array('delete_status IS NULL','delete_status ='=>'no'))))->first();
+				$laboratory_type_name = $fetch_laboratory_type['laboratory_type'];
+				$this->set('laboratory_type_name',$laboratory_type_name);
+				
+				// to show laboratory address name form id
+				$fetch_laboratory_district_name = $this->DmiDistricts->find('all',array('fields'=>'district_name','conditions'=>array('id IS'=>$laboratory_data['district'],'OR'=>array('delete_status IS NULL','delete_status ='=>'no'))))->first();
+				$laboratory_district_name = $fetch_laboratory_district_name['district_name'];
+				$this->set('laboratory_district_name',$laboratory_district_name);
+				
+				$fetch_laboratory_state_name = $this->DmiStates->find('all',array('fields'=>'state_name','conditions'=>array('id IS'=>$laboratory_data['state'], 'OR'=>array('delete_status IS NULL','delete_status ='=>'no'))))->first();
+				$laboratory_state_name = $fetch_laboratory_state_name['state_name'];
+				$this->set('laboratory_state_name',$laboratory_state_name);
+			}
+
 			// data from packing profile form	
 			$fetch_packing_last_id = $this->DmiCustomerPackingDetails->find('list',array('valueField'=>'id','conditions'=>array('customer_id IS'=>$customer_id)))->toArray();				
 			$fetch_packing_detail_data = $this->DmiCustomerPackingDetails->find('all',array('conditions'=>array('id'=>max($fetch_packing_last_id))))->first();
 			$packing_data = $fetch_packing_detail_data;
 			$this->set('packing_data',$packing_data);
-			
-		}
-		elseif($ca_bevo_applicant == 'yes')
-		{ 
+
+		} elseif($ca_bevo_applicant == 'yes') {
+
 			//query applied on 22-08-2017 by Amol
 			$get_crushed_refined_period = $this->DmiCrushingRefiningPeriods->find('all',array('conditions'=>array('id IS'=>$machinery_data['mill_business_period'])))->first();
 			$crushed_refined_period = $get_crushed_refined_period['crushing_refining_periods'];
 			$this->set('crushed_refined_period',$crushed_refined_period);
-			
 		}
 			
 		//This below line is added for the QR Code genration on Shankhpal [16-08-2022]	

@@ -162,7 +162,8 @@
 				$DmiOldApplicationDetails = TableRegistry::getTableLocator()->get('DmiOldApplicationCertificateDetails');
 				
 				$CustomersController = new CustomersController;
-				
+				$form_type = $CustomersController->Customfunctions->checkApplicantFormType($customer_id);
+
 				$ca_bevo_applicant = $CustomersController->Customfunctions->checkCaBevo($customer_id); 
 				$oldapplication = $CustomersController->Customfunctions->isOldApplication($customer_id);
 				$section_form_details = $this->sectionFormDetails($customer_id);
@@ -296,6 +297,42 @@
 					$have_reg_no = null;
 					//$fssai_reg_docs = null;
 				
+				} 
+				
+				//This below code block is added for the CA EXPORT form F chaneges given by DMI - Akash [07-09-2022]
+				if ($form_type == 'F') {
+
+					$iec_code = htmlentities($forms_data['iec_code'], ENT_QUOTES);
+
+					//file uploading
+					if(!empty($forms_data['apeda_docs']->getClientFilename())){
+						
+						$file_name = $forms_data['apeda_docs']->getClientFilename();
+						$file_size = $forms_data['apeda_docs']->getSize();
+						$file_type = $forms_data['apeda_docs']->getClientMediaType();
+						$file_local_path = $forms_data['apeda_docs']->getStream()->getMetadata('uri');
+						
+						$apeda_docs = $CustomersController->Customfunctions->fileUploadLib($file_name,$file_size,$file_type,$file_local_path); // calling file uploading function
+					
+					}else{ $apeda_docs = $section_form_details[0]['apeda_docs']; }
+
+					//file uploading
+					if(!empty($forms_data['iec_code_docs']->getClientFilename())){
+						
+						$file_name = $forms_data['iec_code_docs']->getClientFilename();
+						$file_size = $forms_data['iec_code_docs']->getSize();
+						$file_type = $forms_data['iec_code_docs']->getClientMediaType();
+						$file_local_path = $forms_data['iec_code_docs']->getStream()->getMetadata('uri');
+						
+						$iec_code_docs = $CustomersController->Customfunctions->fileUploadLib($file_name,$file_size,$file_type,$file_local_path); // calling file uploading function
+					
+					}else{ $iec_code_docs = $section_form_details[0]['iec_code_docs']; }
+
+				} else {
+					
+					$apeda_docs = null;
+					$iec_code = null;
+					$iec_code_docs = null;
 				}
 				
 				
@@ -304,8 +341,8 @@
 				$business_type = $CustomersController->Customfunctions->dropdownSelectInputCheck($table,$post_input_request);//calling library function
 
 				
-				//file uploading					
-				if(!empty($forms_data['business_type_docs']->getClientFilename())){				
+				//file uploading
+				if(!empty($forms_data['business_type_docs']->getClientFilename())){
 					
 					$file_name = $forms_data['business_type_docs']->getClientFilename();
 					$file_size = $forms_data['business_type_docs']->getSize();
@@ -378,13 +415,17 @@
 					'customer_reply_date'=>$customer_reply_date,
 					'cr_comment_ul'=>$cr_comment_ul,
 					'created'=>$created,
-					'modified'=>date('Y-m-d H:i:s')));
+					'modified'=>date('Y-m-d H:i:s'),
+					'apeda_docs'=>$apeda_docs, #this new fields are added for the CA EXPORT form F by Akash [07-09-2022]
+					'iec_code'=>$iec_code, #this new fields are added for the CA EXPORT form F by Akash [07-09-2022]
+					'iec_code_docs'=>$iec_code_docs #this new fields are added for the CA EXPORT form F by Akash [07-09-2022]
+				));
 				
 				if ($this->save($newEntity)){ 			
 					
 					if($oldapplication == 'yes'){
 						
-											$old_certificate_details = $DmiOldApplicationDetails->oldApplicationCertificationDetails($customer_id);
+						$old_certificate_details = $DmiOldApplicationDetails->oldApplicationCertificationDetails($customer_id);
 											
 						if(!empty($forms_data['old_certification_pdf']->getClientFilename())){
 									
@@ -531,7 +572,10 @@
 				'mo_comment_ul'=>$mo_comment_ul,
 				'ro_reply_comment'=>$ro_reply_comment,
 				'ro_reply_comment_date'=>$ro_reply_comment_date,
-				'rr_comment_ul'=>$rr_comment_ul
+				'rr_comment_ul'=>$rr_comment_ul,
+				'apeda_docs'=>$forms_data['apeda_docs'], #this new fields are added for the CA EXPORT form F by Akash [07-09-2022]
+				'iec_code'=>$forms_data['iec_code'], #this new fields are added for the CA EXPORT form F by Akash [07-09-2022]
+				'iec_code_docs'=>$forms_data['iec_code_docs'] #this new fields are added for the CA EXPORT form F by Akash [07-09-2022]
 				
 			));
 			
@@ -539,9 +583,9 @@
 			
 				if($oldapplication == 'yes'){
                                     
-                                        $old_certificate_details = $DmiOldApplicationDetails->oldApplicationCertificationDetails($customer_id);
-                                        
-					$DmiOldApplicationDetailsEntity = $DmiOldApplicationDetails->newEntity(array(											
+					$old_certificate_details = $DmiOldApplicationDetails->oldApplicationCertificationDetails($customer_id);
+
+					$DmiOldApplicationDetailsEntity = $DmiOldApplicationDetails->newEntity(array(
                                             'id'=>$old_certificate_details['id'],
                                             'old_certificate_pdf'=>$old_certificate_details['old_certificate_pdf'],
                                             'old_application_docs'=>$old_certificate_details['old_application_docs'],
@@ -556,17 +600,18 @@
 
 
 		public function postDataValidation($customer_id,$forms_data){
-		//	print_r($forms_data); exit;
+			
 			$returnValue = true;
 			$section_form_details = $this->sectionFormDetails($customer_id);
 			$CustomersController = new CustomersController;
-			
+			$form_type = $CustomersController->Customfunctions->checkApplicantFormType($customer_id);
 			$DmiAllDirectorsDetails = TableRegistry::getTableLocator()->get('DmiAllDirectorsDetails');			
 			$added_directors_details = $DmiAllDirectorsDetails->allDirectorsDetail($customer_id);
 			$oldapplication = $CustomersController->Customfunctions->isOldApplication($customer_id);
 			$ca_bevo_applicant = $CustomersController->Customfunctions->checkCaBevo($customer_id);
 			
 			if($ca_bevo_applicant=='yes'){
+
 				if(empty($section_form_details[0]['id'])){
 					
 					if($forms_data['authorised_for_bevo'] == 'yes'){
@@ -575,7 +620,7 @@
 					if(empty($forms_data['oil_manu_affidavit_docs']->getClientFilename())){ $returnValue = null ; }
 					if(empty($forms_data['fssai_reg_docs']->getClientFilename())){ $returnValue = null ; }
 					if(empty($forms_data['vopa_certificate_docs']->getClientFilename())){ $returnValue = null ; }
-					if(empty($forms_data['bank_references_docs']->getClientFilename())){ $returnValue = null ; }
+					if(empty($forms_data['bank_references_docs']->getClientFilename())){ $returnValue = null ; }	
 				}else{
 					if($forms_data['authorised_for_bevo'] == 'yes' && $section_form_details[0]['authorised_bevo_docs'] == ""){
 						if(empty($forms_data['authorised_bevo_docs']->getClientFilename())){ $returnValue = null ; }
@@ -588,7 +633,7 @@
 				if(empty($forms_data['bank_references'])){ $returnValue = null ; }
 					
 			}else{				
-			
+				
 				if(empty($section_form_details[0]['id'])){
 					
 					if(empty($forms_data['fssai_reg_docs']->getClientFilename())){ $returnValue = null ; }
@@ -608,6 +653,16 @@
 					if(empty($forms_data['old_application_docs']->getClientFilename())){ $returnValue = null ; }					
 				}
 				if(empty($added_directors_details)){ $returnValue = null ; }	
+			}
+
+			//Below code is added for the CA EXPORT form type F for saving the new fields added . By Akash [07-09-2022]
+			if($form_type == 'F'){
+				
+				if(empty($section_form_details[0]['id'])){
+					
+					if(empty($forms_data['apeda_docs']->getClientFilename())){ $returnValue = null ; }
+					if(empty($forms_data['iec_code_docs']->getClientFilename())){ $returnValue = null ; }
+				}
 			}
 			
 			return $returnValue;

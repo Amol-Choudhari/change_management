@@ -78,6 +78,22 @@
 			$this->set('final_submit_status',$final_status);
 		}
 
+		 //To create captcha code, called from component on 14-07-2017 by Amol
+		 public function createCaptcha() {
+
+			$this->autoRender = false;
+			$this->Createcaptcha->createCaptcha();
+		}
+	
+	
+		//To Refresh Captcha Code
+		public function refreshCaptchaCode() {
+	
+			$this->autoRender = false;
+			$this->Createcaptcha->refreshCaptchaCode();
+			exit;
+		}
+	
 
 
 
@@ -361,7 +377,8 @@
 									'chemist_lname'=>$htmlEncoded_chemistLastname,
 									'chemist_id'=>$chemist_id,
 									'email'=>$htmlEncoded_email,
-									'password'=>'3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', // 123
+									'password'=>'91c8559eb34ab5e1ab86f9e80d9753c59b7da0d0e025ec8e7785f19e7852ca428587cdb4f02b5c67d1220ca5bb440b5592cd76b1c13878d7f10a1e568014f4dc', //Agmark123@
+								//	'password'=>'3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', // 123
 									'mobile'=>base64_encode($htmlEncoded_mobile),
 									'dob'=>$htmlEncoded_dob,
 									'created_by'=>$username,
@@ -380,7 +397,8 @@
 										'chemist_lname'=>$htmlEncoded_chemistLastname,
 										'chemist_id'=>$chemist_id,
 										'email'=>$htmlEncoded_email,
-										'password'=>'3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', // 123
+										'password'=>'91c8559eb34ab5e1ab86f9e80d9753c59b7da0d0e025ec8e7785f19e7852ca428587cdb4f02b5c67d1220ca5bb440b5592cd76b1c13878d7f10a1e568014f4dc', //Agmark123@
+									//	'password'=>'3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', // 123
 										'mobile'=>base64_encode($htmlEncoded_mobile),
 										'dob'=>$htmlEncoded_dob,
 										'created_by'=>$username,

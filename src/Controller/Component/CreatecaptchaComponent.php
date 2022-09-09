@@ -78,8 +78,8 @@
 					if($match == 1 ){
 						$string = substr($string, 0, 6);
 						$code=$string;
-						//$_SESSION["code"]=$code;
-						$_SESSION["code"]='123';
+						$_SESSION["code"]=$code;
+						
 						echo "<label class='refresh_captcha'>".$_SESSION['code']."</label>";
 					}
 				}

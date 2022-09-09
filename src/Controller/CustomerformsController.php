@@ -19,6 +19,8 @@ class CustomerformsController extends AppController{
 		   
 		// public $helpers = array('Form','Html','Time');
 		$this->viewBuilder()->setHelpers(['Form','Html']);
+		$this->loadComponent('Customfunctions');
+		$this->loadComponent('Authentication');
     }
 	
 	public function beforeFilter(EventInterface $event) {
@@ -31,7 +33,6 @@ class CustomerformsController extends AppController{
 					
 		} else {//to allow only logged in Applicant
 		
-			$this->loadComponent('Customfunctions');
 			$customer_last_login = $this->Customfunctions->customerLastLogin();
 			$this->set('customer_last_login',$customer_last_login);
 			
@@ -122,9 +123,7 @@ class CustomerformsController extends AppController{
         $this->set('current_menu', 'menu_firm');
 
     	$this->viewBuilder()->setLayout('corporate_customer');
-		
-		$this->loadComponent('Customfunctions');
-		
+				
 		$this->loadModel('MCommodityCategory');
 		$this->loadModel('DmiCertificateTypes');
 		$this->loadModel('DmiPackingTypes');
@@ -367,14 +366,14 @@ class CustomerformsController extends AppController{
 					//$this->DmiSmsEmailTemplates->sendMessage(4,$firm_id);
 				
 					//Added this call to save the user action log on 01-03-2022
-					$this->Authentication->userActionPerformLog('Update Firm Details','Success');
+					$this->Customfunctions->saveActionPoint('Update Firm Details','Success');
 					$message = 'Firm details are updated '. $message;
 					$message_theme = 'success';
 					$redirect_to = 'added_firms';
 					
 				} else {
 					//Added this call to save the user action log on 01-03-2022
-					$this->Authentication->userActionPerformLog('Update Firm Details','Failed');
+					$this->Customfunctions->saveActionPoint('Update Firm Details','Failed');
 					$message = 'Sorry... Firm details are not updated';
 					$message_theme = 'failed';
 					$redirect_to = 'added_firms';
@@ -382,7 +381,7 @@ class CustomerformsController extends AppController{
 					
 			} else {
 				//Added this call to save the user action log on 01-03-2022
-				$this->Authentication->userActionPerformLog('Update Firm Details','Failed');
+				$this->Customfunctions->saveActionPoint('Update Firm Details','Failed');
 				$message = 'This email id is already exist. Please provide another email id to update. Thankyou.';
 				$message_theme = 'failed';
 				$redirect_to = 'added_firms';
@@ -417,9 +416,6 @@ class CustomerformsController extends AppController{
 		$this->loadModel('DmiOldApplicationRenewalDates');
 		$this->loadModel('DmiSmsEmailTemplates');
 		$this->loadModel('DmiFirmHistoryLogs');
-		
-		//Load Component
-		$this->loadComponent('Customfunctions');
 		
 		//$commodities = $this->Dmi_commodity->find('list',array('fields'=>'commodity_name','conditions'=>array('display'=>'Y')));
 		//$this->set('commodities',$commodities);
@@ -504,17 +500,6 @@ class CustomerformsController extends AppController{
 						return null;
 						exit;
 					}
-
-
-					//////////////////////////////////////////////////////////////////////////////////////////////////
-					//commented  on 23-03-2018 to avoid mandatory for aadhar 										//					
-					/*if (!$this->validate_unique_post_data($this->request->data['once_card_no'],'aadhar')== 1){ 	//
-					//	echo "<script>alert('Please enter proper Aadhar Card no.')</script>";						//
-					//	return false;																				//
-					//	exit;																						//
-					//}*/																							//	
-					//////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 					if ($this->Session->read('username')!= '') {
 					
@@ -786,8 +771,8 @@ class CustomerformsController extends AppController{
 							'customer_primary_id'=>$customer_primary_id,
 							//'customer_primary_once_no'=>$this->Session->read('once_card_no'), //commented on 23-03-2018 to avoid mandatory for aadhar
 							'customer_id'=>$customer_secondary_id,
-						//	'password'=>'91c8559eb34ab5e1ab86f9e80d9753c59b7da0d0e025ec8e7785f19e7852ca428587cdb4f02b5c67d1220ca5bb440b5592cd76b1c13878d7f10a1e568014f4dc',//Agmark123@
-							'password'=>'3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2',//123
+							'password'=>'91c8559eb34ab5e1ab86f9e80d9753c59b7da0d0e025ec8e7785f19e7852ca428587cdb4f02b5c67d1220ca5bb440b5592cd76b1c13878d7f10a1e568014f4dc',//Agmark123@
+						//	'password'=>'3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2',//123
 							'certification_type'=>$certification_type,
 							'firm_name'=>$htmlencoded_firm_name,
 							//'once_card_no'=>$encrypted_aadhar, //commented on 23-03-2018 to avoid mandatory for aadhar
@@ -823,8 +808,8 @@ class CustomerformsController extends AppController{
 								'customer_primary_id'=>$customer_primary_id,
 								//'customer_primary_once_no'=>$this->Session->read('once_card_no'), //commented on 23-03-2018 to avoid mandatory for aadhar
 								'customer_id'=>$customer_secondary_id,
-							//	'password'=>'91c8559eb34ab5e1ab86f9e80d9753c59b7da0d0e025ec8e7785f19e7852ca428587cdb4f02b5c67d1220ca5bb440b5592cd76b1c13878d7f10a1e568014f4dc', //Agmark123@
-								'password'=>'3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2',//123
+								'password'=>'91c8559eb34ab5e1ab86f9e80d9753c59b7da0d0e025ec8e7785f19e7852ca428587cdb4f02b5c67d1220ca5bb440b5592cd76b1c13878d7f10a1e568014f4dc',//Agmark123@
+							//	'password'=>'3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2',//123
 								'certification_type'=>$certification_type,
 								'firm_name'=>$htmlencoded_firm_name,
 								//'once_card_no'=>$encrypted_aadhar, //commented on 23-03-2018 to avoid mandatory for aadhar
@@ -924,7 +909,7 @@ class CustomerformsController extends AppController{
 							}
 								
 							//called function to send link for reset password on registered email on 13-02-2018 by Amol
-							$this->loadComponent('Authentication');
+							
 							$this->Authentication->forgotPasswordLib('DmiFirms',$htmlencoded_email);
 							
 							$secondary_registered = 'done';
@@ -942,14 +927,14 @@ class CustomerformsController extends AppController{
 							//$this->DmiSmsEmailTemplates->sendMessage(3,$customer_secondary_id);
 							
 							//Added this call to save the user action log on 01-03-2022
-							$this->Authentication->userActionPerformLog('Add Firm','Success');
+							$this->Customfunctions->saveActionPoint('Add Firm','Success');
 							$this->set('toastTheme', 'success');
 							$this->set('toastMsg', 'Successfully added new firm !');
 								
 						} else {
 							
 							//Added this call to save the user action log on 01-03-2022
-							$this->Authentication->userActionPerformLog('Add Firm','Failed');
+							$this->Customfunctions->saveActionPoint('Add Firm','Failed');
 							$message = 'Sorry... New firm Not created please try again';
 							$redirect_to = 'add_firm';	
 						}
@@ -970,7 +955,7 @@ class CustomerformsController extends AppController{
 			} else {
 				
 				//Added this call to save the user action log on 01-03-2022
-				$this->Authentication->userActionPerformLog('Add Firm','Failed');
+				$this->Customfunctions->saveActionPoint('Add Firm','Failed');
 				$message = 'This email id is already registered with us. Please create firm with another email id. Thankyou.';
 				$redirect_to = 'add_firm';		
 			}

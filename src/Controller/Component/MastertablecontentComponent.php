@@ -1316,7 +1316,7 @@ class MastertablecontentComponent extends Component {
 		$htmlencoded_charges = htmlentities($postData['replica_charges'], ENT_QUOTES);
 		$htmlencoded_quantity = htmlentities($postData['minimum_quantity'], ENT_QUOTES);
 		$htmlencoded_replica_code = htmlentities($postData['replica_code'], ENT_QUOTES);
-
+		
 		//for add
 		if ($record_id == null) {
 			
@@ -1348,13 +1348,16 @@ class MastertablecontentComponent extends Component {
 
 		}
 
-		//Save The Data
-		$DmiReplicaChargesDetailsEntity = $DmiReplicaChargesDetails->newEntity($dataArray);
+		if (!empty($dataArray)) {
+			//Save The Data
+			$DmiReplicaChargesDetailsEntity = $DmiReplicaChargesDetails->newEntity($dataArray);
 
-		if ($DmiReplicaChargesDetails->save($DmiReplicaChargesDetailsEntity)) {
+			if ($DmiReplicaChargesDetails->save($DmiReplicaChargesDetailsEntity)) {
 
-			return true;
+				return true;
+			}
 		}
+		
 	}
 
 

@@ -248,9 +248,9 @@ class BeforepageloadComponent extends Component {
 					//on 29-03-2022 by Amol
 					$getId = $logTable->find('all',array('fields'=>'id','conditions'=>$conditions,'order'=>'id desc'))->first();
 					$logTable->updateAll(array('time_out' => "$dateMod"),array('id' => $getId['id']));
-				//temp commented on 10-05-2022, for testing purpose.	
-					//$this->Authentication->browserLoginStatus($username,null);
-					//$this->Controller->Session->destroy();						
+					
+					$this->Authentication->browserLoginStatus($username,null);
+					$this->Controller->Session->destroy();	
 				}
 			}
 		}

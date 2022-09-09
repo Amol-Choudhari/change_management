@@ -247,4 +247,6 @@
 	
 	<input type="hidden" id="final_submit_status_id" value="<?php echo $final_submit_status; ?>">
 	<input type="hidden" id="ca_bevo_applicant_id" value="<?php echo $ca_bevo_applicant; ?>">
+	<input type="hidden" id="form_type_id" value="<?php echo $form_type; ?>">
+	
 	<?php echo $this->Html->script('element/application_forms/new/ca/ca_laboratory') ?>

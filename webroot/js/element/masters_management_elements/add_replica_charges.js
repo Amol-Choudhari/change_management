@@ -11,7 +11,8 @@ function get_commodity(){
                     xhr.setRequestHeader('X-CSRF-Token', $('[name="_csrfToken"]').val());
             },
             success: function (data) {
-                    $("#commodity").append(data);
+                $("#commodity").find('option').remove();
+                $("#commodity").append(data);
             }
     });
 }

@@ -161,7 +161,7 @@
 					$redirect_to = 'change_password';
 
 				} else {
-					$this->Authentication->userActionPerformLog('Change Password','Success');
+					$this->Customfunctions->saveActionPoint('Change Password','Success');
 					$message = 'Password Changed Successfully';
 					$message_theme = 'success';
 					$redirect_to = 'change_password';

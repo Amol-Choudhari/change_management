@@ -451,9 +451,9 @@
 
 						//Added this call to save the user action log on 04-03-2022 by Akash
 						if ($application_type == 4) {
-							$this->Authentication->userActionPerformLog('Application '."($process_query)", 'Success');
+							$this->Customfunctions->saveActionPoint('Application '."($process_query)", 'Success');
 						} else {
-							$this->Authentication->userActionPerformLog('Firm '."($process_query)", 'Success');
+							$this->Customfunctions->saveActionPoint('Firm '."($process_query)", 'Success');
 						}
 						
 						$message_theme = 'success';
@@ -465,9 +465,9 @@
 
 						//Added this call to save the user action log on 04-03-2022 by Akash
 						if ($application_type == 4) {
-							$this->Authentication->userActionPerformLog('Application '."($process_query)", 'Failed');
+							$this->Customfunctions->saveActionPoint('Application '."($process_query)", 'Failed');
 						} else {
-							$this->Authentication->userActionPerformLog('Firm '."($process_query)", 'Failed');
+							$this->Customfunctions->saveActionPoint('Firm '."($process_query)", 'Failed');
 						}
 						$message = "Please check and fill all required fields before proceeding.";
 						$message_theme = 'failed';
@@ -493,7 +493,7 @@
 						//Added this call to save the user action log on 04-03-2022 by Akash
 						if ($application_type == 4) {
 
-							$this->Authentication->userActionPerformLog('Application Final Submitted', 'Success');
+							$this->Customfunctions->saveActionPoint('Application Final Submitted', 'Success');
 							// SMS - APPLICATION SUBMITTED 
 							#$this->DmiSmsEmailTemplates->sendMessage(69,$customer_id); # CHEMIST
 							#$this->DmiSmsEmailTemplates->sendMessage(70,$customer_id); # RO
@@ -502,7 +502,7 @@
 
 							// SMS - APPLICATION SUBMITTED 
 							#$this->DmiSmsEmailTemplates->sendMessage(6,$customer_id); # APPLICANT , RO , DDO
-							$this->Authentication->userActionPerformLog('Firm Final Submitted', 'Success');
+							$this->Customfunctions->saveActionPoint('Firm Final Submitted', 'Success');
 						}
 
 						//For Chemist i.e Apllication Type 4 then redirect to Chemist Home after Final Submit -> Akash [29-09-2021].
@@ -518,9 +518,9 @@
 						
 						//Added this call to save the user action log on 04-03-2022 by Akash
 						if ($application_type == 4) {
-							$this->Authentication->userActionPerformLog('Application Final Submitted', 'Failed');
+							$this->Customfunctions->saveActionPoint('Application Final Submitted', 'Failed');
 						} else {
-							$this->Authentication->userActionPerformLog('Firm Final Submitted', 'Failed');
+							$this->Customfunctions->saveActionPoint('Firm Final Submitted', 'Failed');
 						}
 
 						$message = $firm_type_text.' - All Sections not filled, Please fill all Section and then Final Submit ';
@@ -832,7 +832,7 @@
 							}
 							
 							//Added this call to save the user action log on 04-03-2022 by Akash
-							$this->Authentication->userActionPerformLog('Firm Final Submitted', 'Success');
+							$this->Customfunctions->saveActionPoint('Firm Final Submitted', 'Success');
 	
 							//SMS for Application Submitted on 12-08-2022 By Akash
 							$this->DmiSmsEmailTemplates->sendMessage(6,$customer_id); #To Applicant , RO , DDO
@@ -846,7 +846,7 @@
 						} else {
 
 							//Added this call to save the user action log on 04-03-2022 by Akash
-							$this->Authentication->userActionPerformLog('Firm Final Submitted', 'Failed');
+							$this->Customfunctions->saveActionPoint('Firm Final Submitted', 'Failed');
 							$message_theme = 'failed';
 							$message = $firm_type_text.' - All Sections not filled, Please fill all Section and then Final Submit ';
 							$redirect_to = '../application/application-for-certificate';

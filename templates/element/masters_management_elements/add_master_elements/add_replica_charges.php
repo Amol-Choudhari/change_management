@@ -9,7 +9,7 @@
 			</div>
 			<div class="col-md-6">
 				<label>Commodity Name <span class="cRed">*</span></label>
-				<?php echo $this->Form->control('sub_commodity', array('type'=>'select', 'empty'=>'Select Commodity', 'id'=>'commodity', 'label'=>false,'class'=>'form-control')); ?>
+				<?php echo $this->Form->control('sub_commodity', array('type'=>'select', 'id'=>'commodity', 'label'=>false,'class'=>'form-control')); ?>
 				<span class="error invalid-feedback" id="error_commodity"></span>
 			</div>
 		</div>

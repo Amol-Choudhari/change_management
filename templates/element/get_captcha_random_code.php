@@ -17,9 +17,10 @@
 
             $string = substr($string, 0, 6);//string should not more than 5 length
             $code=$string;
-            //$_SESSION["code"]=$code;
-				    $_SESSION["code"]='123';
+            $_SESSION["code"]=$code;
+								
 
         }
     }
 ?>
+

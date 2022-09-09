@@ -1222,13 +1222,16 @@
 
 
 				} elseif (empty($customer_level_2_approved) && $siteinspection_forms_status == 'true') {
-
-					echo "<script>alert('Sorry... You have referred back to the applicant and not approved the forms')</script>";
-					return false;
+					
+					//this below is changed from script alert to the  returning variables - Akash [08-09-2022]
+				    $messagevariable = "Sorry... You have referred back to the applicant and not approved the forms";
+					return $messagevariable;
 
 				} else {
-					echo "<script>alert('Sorry...All forms and reports should be properly saved to final report')</script>";
-					return false;
+					
+					//this below is changed from script alert to the  returning variables - Akash [08-09-2022]
+					$messagevariable ="Sorry...All forms and reports should be properly saved to final report";
+					return $messagevariable;
 				}
 
 			} else {
@@ -1299,8 +1302,9 @@
 				if (!empty($customer_level_3_approved)) {
 						return true;
 				} else {
-						echo "<script>alert('Sorry... Please approved applicant forms first which you have referred back.')</script>";
-						return false;
+					//this below is changed from script alert to the  returning variables - Akash [08-09-2022]
+					$messagevariable = "Sorry... Please approved applicant forms first which you have referred back.";
+					return $messagevariable;
 				}
 
 			} else {
@@ -2151,13 +2155,13 @@
 
 			if (filter_var($post_input_request, FILTER_VALIDATE_INT, array("options" => array("min_range"=>$min_id_from_list, "max_range"=>$max_id_from_list))) === false) {
 
-				//commented below code and created the variable for passing message to the view , replcaing the script alerts
-				//echo "<script>alert('One of selected drop down value is not proper')</script>";
-				$this->Controller->set('returnFalseMessage',$this->returnFalseMessage);
-				//$this->Session->destroy();
-				//exit();
+				$message = 'One of selected drop down value is not proper';
+				$this->Session->destroy();
+				echo $message;?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login</a><?php
+				exit;
+
 			} else {
-					return $post_input_request;
+				return $post_input_request;
 			}
 		}
 
@@ -2171,10 +2175,8 @@
 
 			if (count($get_extension_value) != 2 ) {
 
-				$message = 'Invalid file type.';
-				echo '<script type="text/javascript">alert("'.$message.'");</script>';
 				$this->Session->destroy();
-				echo "";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>">Please Login</a><?php
+				echo "Invalid file type.";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login</a><?php
 				exit;
 
 			} else {
@@ -2183,28 +2185,22 @@
 
 				if (in_array($extension_name,$valid_extension_file)) {} else {
 
-					$message = 'Invalid file type.';
-					echo '<script type="text/javascript">alert("'.$message.'");</script>';
 					$this->Session->destroy();
-					echo "";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>">Please Login</a><?php
+					echo "Invalid file type.";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login</a><?php
 					exit;
 				}
 			}
 
 			if (($file_size > 2097152)) {
 
-				$message = 'File too large. File must be less than 2 megabytes.';
-				echo '<script type="text/javascript">alert("'.$message.'");</script>';
 				$this->Session->destroy();
-				echo "";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>">Please Login</a><?php
+				echo "File too large. File must be less than 2 megabytes.";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login</a><?php
 				exit;
 
 			} elseif (($file_type != "application/pdf") && ($file_type != "image/jpeg")) {
 
-				$message = 'Invalid file type. Only PDF, JPG types are accepted.';
-				echo '<script type="text/javascript">alert("'.$message.'");</script>';
 				$this->Session->destroy();
-				echo "";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>">Please Login</a><?php
+				echo "Invalid file type. Only PDF, JPG types are accepted.";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login</a><?php
 				exit;
 
 			} else {
@@ -2227,24 +2223,22 @@
 
 							if ($cleaned_pdf_content=='invalid') {
 
-								echo "<script>alert('File seems to be corrupted !')</script>";
 								$this->Session->destroy();
-								echo "";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>">Please Login</a><?php
+								echo "File seems to be corrupted !";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login</a><?php
 								exit;
 							}
 
 						} else {
 
-							echo "<script>alert('Sorry....modified PDF file')</script>";
 							$this->Session->destroy();
-							echo "";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>">Please Login</a><?php
+							echo "Sorry....modified PDF file";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login</a><?php
 							exit;
 						}
 
 					} else {
 
-						echo "<script>alert('Not getting file path')</script>";
-						return false;
+						echo "Not getting file path";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login</a><?php
+						exit;
 					}
 
 				} elseif ($file_type == "image/jpeg" ) {
@@ -2264,9 +2258,8 @@
 								// original file
 							} else {
 
-								echo "<script>alert('File seems to be corrupted !')</script>";
-							//	$this->Session->destroy();
-								echo "";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>">Please Login</a><?php
+								$this->Session->destroy();
+								echo "File seems to be corrupted !";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login</a><?php
 								exit;
 							}
 
@@ -2276,26 +2269,22 @@
 
 							if ($cleaned_img_content=='invalid') {
 
-								echo "<script>alert('File seems to be corrupted !')</script>";
-							//	$this->Session->destroy();
-								echo "";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>">Please Login</a><?php
+								$this->Session->destroy();
+								echo "File seems to be corrupted !";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login</a><?php
 								exit;
 							}
 
 						} else {
 
-							echo "<script>alert('Sorry....modified JPG file')</script>";
-						//	$this->Session->destroy();
-							echo "";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>">Please Login</a><?php
+							$this->Session->destroy();
+							echo "Sorry....modified JPG file";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login</a><?php
 							exit;
-							//return false;
 						}
 
 					} else {
 
-						echo "<script>alert('Not getting file path')</script>";
-						return false;
-
+						echo "Not getting file path";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login</a><?php
+						exit;
 					}
 
 				} elseif ($file_type == "image/jpg") {
@@ -2315,9 +2304,8 @@
 								// original file
 							} else {
 
-								echo "<script>alert('File seems to be corrupted !')</script>";
 								$this->Session->destroy();
-								echo "";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>">Please Login</a><?php
+								echo "File seems to be corrupted !";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login</a><?php
 								exit;
 							}
 
@@ -2327,25 +2315,22 @@
 
 							if ($cleaned_img_content=='invalid') {
 
-								echo "<script>alert('File seems to be corrupted !')</script>";
 								$this->Session->destroy();
-								echo "";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>">Please Login</a><?php
+								echo "File seems to be corrupted !";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login</a><?php
 								exit;
 							}
 
 						} else {
 
-							echo "<script>alert('Sorry....modified JPG file')</script>";
 							$this->Session->destroy();
-							echo "";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>">Please Login</a><?php
+							echo "Sorry....modified JPG file";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login</a><?php
 							exit;
-							//return false;
 						}
 
 					} else {
 
-						echo "<script>alert('Not getting file path')</script>";
-						return false;
+						echo "Not getting file path";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login</a><?php
+						exit;
 
 					}
 
@@ -2363,7 +2348,8 @@
 
 				} else {
 
-					echo "<script>alert('File not uploaded please select proper file')</script>";
+					echo "File not uploaded please select proper file";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login</a><?php
+					exit;
 				}
 
 			}
@@ -2459,9 +2445,7 @@
 					return $post_input_request;
 
 			} else {
-
-				echo "<script>alert('one of YES/NO button input is not proper')</script>";
-				return false;
+				return null;
 			}
 		}
 
@@ -2525,8 +2509,7 @@
 
 			} else {
 
-				echo "<script>alert('One of the given input should be in no. only')</script>";
-				return false;
+				return null;
 			}
 		}
 
@@ -3295,11 +3278,8 @@
 
 			//Load Model
 			$DmiReplicaChargesDetails = TableRegistry::getTableLocator()->get('DmiReplicaChargesDetails');
-
-			//$checkIfExist = $DmiReplicaChargesDetails->find('all',array('fields'=>'id','valueField'=>'commodity_code','conditions'=>array('commodity_code IS'=>$commodity_code)))->toArray();
 			$checkIfExist = $DmiReplicaChargesDetails->find()->select(['id'])->where(['commodity_code IS'=>$commodity_code])->first();
-
-
+			
 			if (empty($checkIfExist)) {
 				return true;
 			} else {
@@ -3372,22 +3352,27 @@
 
 
 		//User Action Performed Action for Logs
-		public function userActionPerformLog($userAction,$status) {
+		public function saveActionPoint($action,$status) {
+			
+			//get user type
+			$user_type = $this->userType();
+			
+			if ($user_type == 'User' || $user_type == 'Chemist') {
+				#load model to save action 
+				$action_model = 'DmiUserActionLogs';
+			} elseif ($user_type == 'Primary') {
+				#load model to save action 
+				$action_model = 'DmiCustomerActionLogs';
+			} elseif ($user_type == 'Secondary') {
+				#load model to save action 
+				$action_model = 'DmiFirmActionLogs';
+			}
 
-			$user_id = $this->Session->read('username');
-			$DmiUserActionLogs = TableRegistry::getTableLocator()->get('DmiUserActionLogs');
 
-			$current_ip = $_SERVER['REMOTE_ADDR'];
-
-			if ($current_ip == '::1') { $current_ip = '127.0.0.1'; }
-
-			$DmiUserActionLog = $DmiUserActionLogs->newEntity(['user_id'=>$user_id,
-													'action_perform'=>$userAction,
-													'ipaddress'=>$current_ip,
-													'status'=>$status,
-													'created'=>date('Y-m-d H:i:s')]);
-
-			$DmiUserActionLogs->save($DmiUserActionLog);
+			$model = TableRegistry::getTableLocator()->get($action_model);
+			
+			//calling the model save function
+			$model->saveActionLogs($action,$status);
 		}
 		
 		
@@ -3413,9 +3398,13 @@
 		
 		public function getQrCode($result){
 		    
-			
 			$customer_id = $this->Session->read('customer_id');
 			
+			#this condition is added if there is no customer_id in the session. - Akash [08-09-2022]
+			if (empty($customer_id)) {
+				$customer_id = $this->Session->read('username');
+			}
+
 			$DmiCertQrCodes = TableRegistry::getTableLocator()->get('DmiCertQrCodes'); //initialize model in component
 			
 			$resultdata = $DmiCertQrCodes->find('all',array('conditions'=>array('customer_id'=>$customer_id)))->toArray();
@@ -3446,7 +3435,7 @@
 														]);
              
 			    $DmiCertQrCodes->save($DmiCertificateQrAdd);
-		//	}
+			//	}
 
 			$qrimage = $DmiCertQrCodes->find('all',array('field'=>'qr_code_path','conditions'=>array('customer_id'=>$customer_id)))->first();
             
@@ -3517,5 +3506,34 @@
 		}
 
 
+
+
+		// for checking user type
+		public function userType(){
+
+			// If the user having email id
+			$username = $this->Session->read('username');
+			if (strpos(base64_decode($username),'@')) {
+				$userType = 'User';
+			} else {
+				$countspecialchar = substr_count($username, "/");
+
+				if ($countspecialchar == 1) {
+					$userType = 'Primary';
+				} elseif ($countspecialchar == 2) {
+					$userType = 'Chemist';
+				} elseif ($countspecialchar == 3) {
+					$userType = 'Secondary';
+				}
+			}
+
+			return $userType;
+		}
+	
+	
+	
+	
+	
+	
 	}
 ?>

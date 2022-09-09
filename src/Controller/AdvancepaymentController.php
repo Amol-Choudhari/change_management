@@ -140,10 +140,10 @@
 		// ADD PAYMENT
 		// @AUTHOR : PRAVIN BHAKARE
 		// @CONTRIBUTER : AKASH THAKRE
-		// DATE : 04-03-2022 (U)
+		// DATE : 09-09-2022 (U)
 		
 		public function addPayment(){
-
+			
 			//Set the variables
 			$message = '';
 			$message_theme = '';
@@ -199,14 +199,12 @@
 
 				if ($this->DmiAdvPaymentDetails->save($DmiAdvPaymentDetailsEntity)) {
 
-					//SMS For PACKER When Advance Payment is Final Submitted
-					//$this->DmiSmsEmailTemplates->sendMessage(108,$customer_id,'DmiChemistFinalSubmits');
-
-					//SMS For DDO/PAO When Advance Payment is Final Submitted
-					//$this->DmiSmsEmailTemplates->sendMessage(109,$customer_id,'DmiChemistFinalSubmits');
+					//SMS/EMAIL - Adavance Payment Final Submit
+					//$this->DmiSmsEmailTemplates->sendMessage(108,$customer_id,'DmiChemistFinalSubmits'); #PACKER
+					//$this->DmiSmsEmailTemplates->sendMessage(109,$customer_id,'DmiChemistFinalSubmits'); #DDO
 					
-					///Added this call to save the user action log on 04-03-2022 by Akash
-					$this->Authentication->userActionPerformLog('Advance Payment(Save)', 'Success');
+					///Added this call to save the user action log on 09-09-2022 by Akash
+					$this->Customfunctions->saveActionPoint('Advance Payment(Save)', 'Success');
 					$message = 'Advance payment saved. After verification of payment details, the amount will be creadited on your account.';
 					$message_theme = 'success';
 					$redirect_to = 'add_payment';
@@ -217,14 +215,14 @@
 				$get_payment_details = $this->Paymentdetails->saveApplicantPaymentDetails($this->request->getData(),'DmiAdvPaymentDetails');
 				
 				if ($get_payment_details == 1) {
-					///Added this call to save the user action log on 04-03-2022 by Akash
-					$this->Authentication->userActionPerformLog('Advance Payment(Save)', 'Success');
+					///Added this call to save the user action log on 09-09-2022 by Akash
+					$this->Customfunctions->saveActionPoint('Advance Payment Final Submit', 'Success');
 					$message = 'Advance Payment, Saved successfully';
 					$message_theme = 'success';
 					$redirect_to = 'add_payment';
 				} else {
-					///Added this call to save the user action log on 04-03-2022 by Akash
-					$this->Authentication->userActionPerformLog('Advance Payment(Save)', 'Failed');
+					///Added this call to save the user action log on 09-09-2022 by Akash
+					$this->Customfunctions->saveActionPoint('Advance Payment Final Submit', 'Failed');
 					$message = 'Advance Payment Not, Saved successfully';
 					$message_theme = 'failed';
 					$redirect_to = 'add_payment';

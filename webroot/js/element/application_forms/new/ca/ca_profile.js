@@ -52,6 +52,16 @@
 		return false;
 	});
 
+	$("#apeda_docs").change(function(){
+		file_browse_onclick('apeda_docs');
+		return false;
+	});
+
+	$("#iec_code_docs").change(function(){
+		file_browse_onclick('iec_code_docs');
+		return false;
+	});
+
 
 	var final_submit_status = $('#final_submit_status_id').val();
 	var ca_bevo_applicant = $('#ca_bevo_applicant_id').val();
@@ -78,7 +88,7 @@
 		// Change Condition for validation and error message by pravin 12-07-2017
 		if(check_whitespace_validation_textbox(mill_name_address).result == false){
 
-			$("#error_mill_name_address_add").show().text("Please enter mill name & addres");
+			$("#error_mill_name_address_add").show().text("Please enter mill name & address");
 			setTimeout(function(){ $("#error_mill_name_address_add").fadeOut();},5000);
 			$("#mill_name_address").addClass("is-invalid");
 			$("#mill_name_address").click(function(){$("#error_mill_name_address_add").hide().text; $("#mill_name_address").removeClass("is-invalid");});
@@ -89,7 +99,7 @@
 		// Change Condition for validation and error message by pravin 12-07-2017
 		if(check_number_with_decimal_two_validation(quantity_procured).result == false){
 
-			$("#error_quantity_procured_add").show().text("Please enter procured quantity, only number value allowd");
+			$("#error_quantity_procured_add").show().text("Please enter procured quantity, only number value allowed");
 			setTimeout(function(){ $("#error_quantity_procured_add").fadeOut();},5000);
 			$("#quantity_procured").addClass("is-invalid");
 			$("#quantity_procured").click(function(){$("#error_quantity_procured_add").hide().text; $("#quantity_procured").removeClass("is-invalid");});
@@ -97,8 +107,7 @@
 		}
 
 
-		if(value_return == 'false')
-		{
+		if(value_return == 'false'){
 			var msg = "Please check some fields are missing or not proper.";
 			renderToast('error', msg);
 			return false;

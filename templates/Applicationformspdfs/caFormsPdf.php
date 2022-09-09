@@ -42,7 +42,7 @@
 	foreach($sub_commodity_data as $sub_commodity){
 		
 		$sub_commodities_array[$i] = $sub_commodity['commodity_name'];
-	$i=$i+1;
+		$i=$i+1;
 	} 
 	
 	$sub_commodities_list = implode(',',$sub_commodities_array);
@@ -236,7 +236,7 @@
 				
 					
 			<?php if($ca_bevo_applicant == 'no'){ ?>	
-			
+				
 			<tr>
 						<td style="padding:10px; vertical-align:top;">1.Name and Postal address of the Firm, Contact details (mobile no, Fax, e-mail etc.)</td>
 						<td style="padding:10px; vertical-align:top;"><?php echo $customer_firm_data['firm_name']; ?> <br>
@@ -447,133 +447,150 @@
 						<td style="padding:10px; vertical-align:top;"><?php if(!empty($packing_data['grading_other_info'])){ echo $packing_data['grading_other_info']; }else{ echo 'NA'; } ?></td>
 					</tr>
 					<?php } ?>
+
+					<?php if($form_type == 'F'){?>
+						<tr>
+							<td style="padding:10px; vertical-align:top;">11. Certificates of APEDA :</td>
+							<td style="padding:10px; vertical-align:top;"><?php if(!empty($packing_data['grading_other_info'])){ echo $packing_data['grading_other_info']; }else{ echo 'NA'; } ?></td>
+						</tr>
+						<tr>
+							<td style="padding:10px; vertical-align:top;">12. IEC Code :</td>
+							<td style="padding:10px; vertical-align:top;"><?php if(!empty($packing_data['grading_other_info'])){ echo $packing_data['grading_other_info']; }else{ echo 'NA'; } ?></td>
+						</tr>
+						<tr>
+							<td style="padding:10px; vertical-align:top;">12(a). IEC Document :</td>
+							<td style="padding:10px; vertical-align:top;"><?php if(!empty($packing_data['grading_other_info'])){ echo $packing_data['grading_other_info']; }else{ echo 'NA'; } ?></td>
+						</tr>
+
+					<?php } ?>
 					
 					
 					
 								
 					
-					
-					<tr>
-						<td style="padding:10px; vertical-align:top;">11. Specify type of the Laboratory through which grading and marking is proposed to be undertaken i.e. Own laboratory/ State Grading Laboratory/ Commercial Laboratory (Consent letter of the laboratory may be enclosed, not required in case of own laboratory.)</td>
-						<td style="padding:10px; vertical-align:top;"><?php if(!empty($laboratory_type_name)){ echo $laboratory_type_name; }else{ echo 'NA'; } ?>
-						</td>
-					</tr>
-					
-					<?php if($laboratory_type_name == 'Own Laboratory'){?>
-					
-					<!-- Add By Pravin 22-07-2017 -->
-					<tr>
-						<td style="padding:10px; vertical-align:top;">11(a). Chemist Details:</td>
-						<td style="padding:10px; vertical-align:top;"><?php  if(!empty($laboratory_data['chemist_detail_docs'])){ $split_file_path = explode("/",$laboratory_data['chemist_detail_docs']);
-																	$file_name = $split_file_path[count($split_file_path) - 1];?>
-																<a href="<?php  echo $laboratory_data['chemist_detail_docs']; ?>"><?php echo substr($file_name, 23); ?></a><?php }else{ echo 'NA'; }  ?></td>
-					</tr>
-					
-					<tr>
-						<td style="padding:10px; vertical-align:top;">11(b). List of equipments, Glasswares & chemicals duly signed & stamp by the applicant:</td>
-						<td style="padding:10px; vertical-align:top;"><?php  if(!empty($laboratory_data['lab_equipped_docs'])){ $split_file_path = explode("/",$laboratory_data['lab_equipped_docs']);
-																	$file_name = $split_file_path[count($split_file_path) - 1];?>
-																<a href="<?php  echo $laboratory_data['lab_equipped_docs']; ?>"><?php echo substr($file_name, 23); ?></a><?php }else{ echo 'NA'; }  ?></td>
-					</tr>
-					
-					
-					<?php }else{ ?>
+					<?php if($form_type != 'F') { #This condition is applied for the changes on CA EXPORT - Akash [07-09-2022] ?>
 
-					<tr>
-						<td style="padding:10px; vertical-align:top;">11(a). Consent letter Document:</td>
-						<td style="padding:10px; vertical-align:top;"><?php if(!empty($laboratory_data['consent_letter_docs'])){ $split_file_path = explode("/",$laboratory_data['consent_letter_docs']);
-																	$file_name = $split_file_path[count($split_file_path) - 1];?>
-																<a href="<?php echo $laboratory_data['consent_letter_docs']; ?>"><?php echo substr($file_name, 23); ?></a><?php }else{ echo 'NA'; }  ?></td>
-					</tr>
-					<?php } ?>
-					
-					
-					
-					<tr>
-						<td style="padding:10px; vertical-align:top;">12. Name and address of the approved laboratory.</td>
-						<td style="padding:10px; vertical-align:top;"><?php if(!empty($laboratory_data['street_address'])){ echo $laboratory_data['street_address'].', '; }else{ echo 'NA'; } 
-																			if(!empty($laboratory_district_name)){	echo $laboratory_district_name.', '; }else{ echo 'NA'; }
-																			if(!empty($laboratory_state_name)){	echo $laboratory_state_name.', '; }else{ echo 'NA'; }
-																			if(!empty($laboratory_data['postal_code'])){	echo $laboratory_data['postal_code'].'.<br>'; }else{ echo 'NA'; }
-																			if(!empty($laboratory_data['lab_email_id'])){	echo 'Email: '.base64_decode($laboratory_data['lab_email_id']).',<br>'; }else{ echo 'NA'; } //for email encoding
-																			if(!empty($laboratory_data['lab_mobile_no'])){	echo 'Phone: '.base64_decode($laboratory_data['lab_mobile_no']).',<br>'; }else{ echo 'NA'; }
-																			if(!empty($laboratory_data['lab_fax_no'])){	echo 'Landline: '.base64_decode($laboratory_data['lab_fax_no']); }else{ echo 'NA'; } ?>
-						</td>
-					</tr>
-					
-					
-					
-					
-					
-					
-					
-					<tr>
-						<td style="padding:10px; vertical-align:top;">13. Name(s) of the Trade Brand Label (TBL)  proposed to be applied on the graded packages.</td>
-					
-					
-						<td style="padding:10px; vertical-align:top;">
-							<table width="100%" border="1">
-								<tr>
-									<th style="padding:10px;" width="25%" cellspacing="50" align="left">Name</th>
-									<th style="padding:10px;" width="25%" cellspacing="50" align="left">Is Registered?</th>
-									<th style="padding:10px;" width="25%" cellspacing="50" align="left">Reg. No.</th>
-									<th style="padding:10px;" width="25%" cellspacing="50" align="left">Document</th>
-								</tr>
-						
-							<?php foreach($all_tbls_details as $each_tbl){?>
-								<tr>
-									<td style="padding:10px; vertical-align:top;"><?php if(!empty($each_tbl['tbl_name'])){ echo $each_tbl['tbl_name']; }else{ echo 'NA'; }  ?></td>
-									<td style="padding:10px; vertical-align:top;"><?php if(!empty($each_tbl['tbl_registered'])){ echo $each_tbl['tbl_registered']; }else{ echo 'NA'; } ?></td>
-									<td style="padding:10px; vertical-align:top;">
-										<?php 
-											if($each_tbl['tbl_registered']=='yes'){
-												echo $each_tbl['tbl_registered_no']; 
-											}else{
-												echo "----";
-											}										
-										?>
-									</td>
-									<td style="padding:10px; vertical-align:top;"><?php if(!empty($each_tbl['tbl_registration_docs'])){ $split_file_path = explode("/",$each_tbl['tbl_registration_docs']);
-																			$file_name = $split_file_path[count($split_file_path) - 1];?>
-																		<a href="<?php echo $each_tbl['tbl_registration_docs']; ?>"><?php echo substr($file_name, 23); ?></a><?php }else{ echo 'NA'; }  ?></td>
-								</tr>
-							<?php } ?>
-							</table>
-						</td>
-					</tr>
-					
-					<tr>
-						<td style="padding:10px; vertical-align:top;">14. Whether the proposed TBLs belongs to the applicant ?</td>
-						<td style="padding:10px; vertical-align:top;"><?php if(!empty($tbl_data['tbl_belongs_to_applicant'])){ echo ucfirst($tbl_data['tbl_belongs_to_applicant']); }else{ echo 'NA'; }  ?>
-						</td>
-					</tr>
-					
-					<?php if($tbl_data['tbl_belongs_to_applicant'] == 'yes'){?>
-					
-					<tr>
-						<td style="padding:10px; vertical-align:top;">14(a). TBLs(Form-A2) Document:</td>
-						<td style="padding:10px; vertical-align:top;"><?php if(!empty($tbl_data['tbl_belongs_docs'])){ $split_file_path = explode("/",$tbl_data['tbl_belongs_docs']);
-																	$file_name = $split_file_path[count($split_file_path) - 1];?>
-																<a href="<?php echo $tbl_data['tbl_belongs_docs']; ?>"><?php echo substr($file_name, 23); ?></a><?php }else{ echo 'NA'; }  ?></td>
-					</tr>
-					<?php }else{ ?>
-					
 						<tr>
-							<td style="padding:10px; vertical-align:top;">14(a). Name of the firm to which the proposed TBL belongs.</td>
-							<td style="padding:10px; vertical-align:top;"><?php if(!empty($tbl_data['tbl_proposed_firm'])){ echo $tbl_data['tbl_proposed_firm']; }else{ echo 'NA'; } ?>
+							<td style="padding:10px; vertical-align:top;">11. Specify type of the Laboratory through which grading and marking is proposed to be undertaken i.e. Own laboratory/ State Grading Laboratory/ Commercial Laboratory (Consent letter of the laboratory may be enclosed, not required in case of own laboratory.)</td>
+							<td style="padding:10px; vertical-align:top;"><?php if(!empty($laboratory_type_name)){ echo $laboratory_type_name; }else{ echo 'NA'; } ?>
+							</td>
+						</tr>
+						
+						<?php if($laboratory_type_name == 'Own Laboratory'){?>
+						
+						<!-- Add By Pravin 22-07-2017 -->
+						<tr>
+							<td style="padding:10px; vertical-align:top;">11(a). Chemist Details:</td>
+							<td style="padding:10px; vertical-align:top;"><?php  if(!empty($laboratory_data['chemist_detail_docs'])){ $split_file_path = explode("/",$laboratory_data['chemist_detail_docs']);
+																		$file_name = $split_file_path[count($split_file_path) - 1];?>
+																	<a href="<?php  echo $laboratory_data['chemist_detail_docs']; ?>"><?php echo substr($file_name, 23); ?></a><?php }else{ echo 'NA'; }  ?></td>
+						</tr>
+						
+						<tr>
+							<td style="padding:10px; vertical-align:top;">11(b). List of equipments, Glasswares & chemicals duly signed & stamp by the applicant:</td>
+							<td style="padding:10px; vertical-align:top;"><?php  if(!empty($laboratory_data['lab_equipped_docs'])){ $split_file_path = explode("/",$laboratory_data['lab_equipped_docs']);
+																		$file_name = $split_file_path[count($split_file_path) - 1];?>
+																	<a href="<?php  echo $laboratory_data['lab_equipped_docs']; ?>"><?php echo substr($file_name, 23); ?></a><?php }else{ echo 'NA'; }  ?></td>
+						</tr>
+						
+						
+						<?php }else{ ?>
+
+						<tr>
+							<td style="padding:10px; vertical-align:top;">11(a). Consent letter Document:</td>
+							<td style="padding:10px; vertical-align:top;"><?php if(!empty($laboratory_data['consent_letter_docs'])){ $split_file_path = explode("/",$laboratory_data['consent_letter_docs']);
+																		$file_name = $split_file_path[count($split_file_path) - 1];?>
+																	<a href="<?php echo $laboratory_data['consent_letter_docs']; ?>"><?php echo substr($file_name, 23); ?></a><?php }else{ echo 'NA'; }  ?></td>
+						</tr>
+						<?php } ?>
+						
+						
+						
+						<tr>
+							<td style="padding:10px; vertical-align:top;">12. Name and address of the approved laboratory.</td>
+							<td style="padding:10px; vertical-align:top;"><?php if(!empty($laboratory_data['street_address'])){ echo $laboratory_data['street_address'].', '; }else{ echo 'NA'; } 
+																				if(!empty($laboratory_district_name)){	echo $laboratory_district_name.', '; }else{ echo 'NA'; }
+																				if(!empty($laboratory_state_name)){	echo $laboratory_state_name.', '; }else{ echo 'NA'; }
+																				if(!empty($laboratory_data['postal_code'])){	echo $laboratory_data['postal_code'].'.<br>'; }else{ echo 'NA'; }
+																				if(!empty($laboratory_data['lab_email_id'])){	echo 'Email: '.base64_decode($laboratory_data['lab_email_id']).',<br>'; }else{ echo 'NA'; } //for email encoding
+																				if(!empty($laboratory_data['lab_mobile_no'])){	echo 'Phone: '.base64_decode($laboratory_data['lab_mobile_no']).',<br>'; }else{ echo 'NA'; }
+																				if(!empty($laboratory_data['lab_fax_no'])){	echo 'Landline: '.base64_decode($laboratory_data['lab_fax_no']); }else{ echo 'NA'; } ?>
 							</td>
 						</tr>
 					
-						<tr>
-							<td style="padding:10px; vertical-align:top;">14(b). TBLs Consent Letter:</td>
-							<td style="padding:10px; vertical-align:top;"><?php if(!empty($tbl_data['tbl_consent_letter_docs'])){ $split_file_path = explode("/",$tbl_data['tbl_consent_letter_docs']);
-																	$file_name = $split_file_path[count($split_file_path) - 1];?>
-																<a href="<?php echo $tbl_data['tbl_consent_letter_docs']; ?>"><?php echo substr($file_name, 23); ?></a><?php }else{ echo 'NA'; }  ?></td>
-						</tr>
-					
-					
 					<?php } ?>
 					
+					
+					<?php if($form_type != 'F') { #This condition is applied for the changes on CA EXPORT - Akash [07-09-2022] ?>
+						
+						<tr>
+							<td style="padding:10px; vertical-align:top;">13. Name(s) of the Trade Brand Label (TBL)  proposed to be applied on the graded packages.</td>
+						
+						
+							<td style="padding:10px; vertical-align:top;">
+								<table width="100%" border="1">
+									<tr>
+										<th style="padding:10px;" width="25%" cellspacing="50" align="left">Name</th>
+										<th style="padding:10px;" width="25%" cellspacing="50" align="left">Is Registered?</th>
+										<th style="padding:10px;" width="25%" cellspacing="50" align="left">Reg. No.</th>
+										<th style="padding:10px;" width="25%" cellspacing="50" align="left">Document</th>
+									</tr>
+							
+								<?php foreach($all_tbls_details as $each_tbl){?>
+									<tr>
+										<td style="padding:10px; vertical-align:top;"><?php if(!empty($each_tbl['tbl_name'])){ echo $each_tbl['tbl_name']; }else{ echo 'NA'; }  ?></td>
+										<td style="padding:10px; vertical-align:top;"><?php if(!empty($each_tbl['tbl_registered'])){ echo $each_tbl['tbl_registered']; }else{ echo 'NA'; } ?></td>
+										<td style="padding:10px; vertical-align:top;">
+											<?php 
+												if($each_tbl['tbl_registered']=='yes'){
+													echo $each_tbl['tbl_registered_no']; 
+												}else{
+													echo "----";
+												}										
+											?>
+										</td>
+										<td style="padding:10px; vertical-align:top;"><?php if(!empty($each_tbl['tbl_registration_docs'])){ $split_file_path = explode("/",$each_tbl['tbl_registration_docs']);
+																				$file_name = $split_file_path[count($split_file_path) - 1];?>
+																			<a href="<?php echo $each_tbl['tbl_registration_docs']; ?>"><?php echo substr($file_name, 23); ?></a><?php }else{ echo 'NA'; }  ?></td>
+									</tr>
+								<?php } ?>
+								</table>
+							</td>
+						</tr>
+						
+						<tr>
+							<td style="padding:10px; vertical-align:top;">14. Whether the proposed TBLs belongs to the applicant ?</td>
+							<td style="padding:10px; vertical-align:top;"><?php if(!empty($tbl_data['tbl_belongs_to_applicant'])){ echo ucfirst($tbl_data['tbl_belongs_to_applicant']); }else{ echo 'NA'; }  ?>
+							</td>
+						</tr>
+						
+						<?php if($tbl_data['tbl_belongs_to_applicant'] == 'yes'){?>
+						
+						<tr>
+							<td style="padding:10px; vertical-align:top;">14(a). TBLs(Form-A2) Document:</td>
+							<td style="padding:10px; vertical-align:top;"><?php if(!empty($tbl_data['tbl_belongs_docs'])){ $split_file_path = explode("/",$tbl_data['tbl_belongs_docs']);
+																		$file_name = $split_file_path[count($split_file_path) - 1];?>
+																	<a href="<?php echo $tbl_data['tbl_belongs_docs']; ?>"><?php echo substr($file_name, 23); ?></a><?php }else{ echo 'NA'; }  ?></td>
+						</tr>
+						<?php }else{ ?>
+						
+							<tr>
+								<td style="padding:10px; vertical-align:top;">14(a). Name of the firm to which the proposed TBL belongs.</td>
+								<td style="padding:10px; vertical-align:top;"><?php if(!empty($tbl_data['tbl_proposed_firm'])){ echo $tbl_data['tbl_proposed_firm']; }else{ echo 'NA'; } ?>
+								</td>
+							</tr>
+						
+							<tr>
+								<td style="padding:10px; vertical-align:top;">14(b). TBLs Consent Letter:</td>
+								<td style="padding:10px; vertical-align:top;"><?php if(!empty($tbl_data['tbl_consent_letter_docs'])){ $split_file_path = explode("/",$tbl_data['tbl_consent_letter_docs']);
+																		$file_name = $split_file_path[count($split_file_path) - 1];?>
+																	<a href="<?php echo $tbl_data['tbl_consent_letter_docs']; ?>"><?php echo substr($file_name, 23); ?></a><?php }else{ echo 'NA'; }  ?></td>
+							</tr>
+						
+						
+						<?php } ?>
+						
+					<?php } ?>
 					
 					
 			<?php }elseif($ca_bevo_applicant == 'yes'){ ?>	
@@ -831,7 +848,8 @@
 					</tr>
 					
 					
-					
+				<?php if($form_type != 'F') { #This condition is applied for the changes on CA EXPORT - Akash [07-09-2022] ?>
+
 					<tr>
 						<td style="padding:10px; vertical-align:top;">15. Whether the laboratory is fully equipped for analysis of constituent oils and Blended Edible Vegetable oils?</td>
 						<td style="padding:10px; vertical-align:top;"><?php if(!empty($laboratory_data['is_lab_equipped'])){ echo ucfirst($laboratory_data['is_lab_equipped']); }else{ echo 'NA'; } ?>
@@ -928,27 +946,32 @@
 					
 					<?php } ?>
 	
-					
+				<?php } ?>	
+
 			<?php } ?>	
 
 			</table>
-			
-			<table>
-					<tr>
-						<td align="left">
-							<h4>I hereby declare that the above information is correct.</h4>
-						</td>
-					</tr>
-			</table>
-			
-			<table>					
-					<tr>
-						<td  align="left">
-							Date: <?php echo $pdf_date;?>
-						</td>
-					</tr>
-			</table>
-			
+
+		<?php if($form_type == 'F') { #This condition is applied for the changes on CA EXPORT - Akash [07-09-2022] ?>
+			<br pagebreak="true" />	
+		<?php } ?>	
+
+		<table>
+				<tr>
+					<td align="left">
+						<h4>I hereby declare that the above information is correct.</h4>
+					</td>
+				</tr>
+		</table>
+		
+		<table>					
+				<tr>
+					<td  align="left">
+						Date: <?php echo $pdf_date;?>
+					</td>
+				</tr>
+		</table>
+		
 		<?php //if($show_esigned_by=='yes'){ ?><!-- Condition added on 27-03-2018 by Amol -->	
 			<table align="right">	
 					
@@ -962,4 +985,6 @@
 					</tr>
 			</table>
 		<?php //} ?>	
+
+	
 		

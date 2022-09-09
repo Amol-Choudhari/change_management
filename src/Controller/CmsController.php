@@ -106,7 +106,7 @@ class CmsController extends AppController{
 			if ($this->Mastertablecontent->addEditCmsPages($this->request->getData())) {
 
 				//Added this call to save the user action log on 22-02-2022
-				$this->Customfunctions->userActionPerformLog('Add Page','Success');
+				$this->Customfunctions->saveActionPoint('Add Page','Success');
 				$message = 'You have created new page successfully.';
 				$message_theme = 'success';
 				$redirect_to = 'all_pages';
@@ -114,7 +114,7 @@ class CmsController extends AppController{
 			} else {
 
   				//Added this call to save the user action log on 22-02-2022
-                $this->Customfunctions->userActionPerformLog('Add Page','Failed');
+                $this->Customfunctions->saveActionPoint('Add Page','Failed');
 				$message = 'Sorry.. Please Check all fileds are proper.';
 				$message_theme = 'failed';
 				$redirect_to = 'add_page';
@@ -187,14 +187,14 @@ class CmsController extends AppController{
 			if ($this->Mastertablecontent->addEditCmsPages($postData,$record_id)) {
 				
 				//Added this call to save the user action log on 22-02-2022
-				$this->Customfunctions->userActionPerformLog('Edit Page','Success');
+				$this->Customfunctions->saveActionPoint('Edit Page','Success');
 				$message = 'You have Edited selected page successfully.';
 				$message_theme = 'success';
 
 			} else {
 				
   				//Added this call to save the user action log on 22-02-2022
-				$this->Customfunctions->userActionPerformLog('Edit Page','Failed');
+				$this->Customfunctions->saveActionPoint('Edit Page','Failed');
 				$message = 'Sorry.. Please Check all fileds are proper.';
 				$message_theme = 'failed';
 			}
@@ -229,7 +229,7 @@ class CmsController extends AppController{
 		if ($this->DmiPages->save($DmiPagesEntity)) {
 
 			//Added this call to save the user action log on 22-02-2022
-			$this->Customfunctions->userActionPerformLog('Page Delete','Success');
+			$this->Customfunctions->saveActionPoint('Page Delete','Success');
 			$message = 'The Selected Page is Deleted Successfully !';
 			$message_theme = 'success';
 			$redirect_to = '../all_pages';
@@ -323,7 +323,7 @@ class CmsController extends AppController{
 			if ($this->Mastertablecontent->addEditCmsMenus($postData)) {
 
 				//Added this call to save the user action log on 22-02-2022
-				$this->Customfunctions->userActionPerformLog('Add Menu','Success');
+				$this->Customfunctions->saveActionPoint('Add Menu','Success');
 				$message = 'You have created new Menu Succesfully.';
 				$message_theme = 'success';
 				$redirect_to = 'all_menus';
@@ -331,7 +331,7 @@ class CmsController extends AppController{
 			} else {
 
 				//Added this call to save the user action log on 22-02-2022
-				$this->Customfunctions->userActionPerformLog('Edit Menu','Failed');
+				$this->Customfunctions->saveActionPoint('Edit Menu','Failed');
 				$message = 'Sorry.. Please Check all fileds are proper.';
 				$message_theme = 'failed';
 				$redirect_to = 'add_menu';
@@ -387,14 +387,14 @@ class CmsController extends AppController{
 			if ($this->Mastertablecontent->addEditCmsMenus($postData,$record_id)) {
 
 				//Added this call to save the user action log on 22-02-2022
-				$this->Customfunctions->userActionPerformLog('Edit Menu','Success');
+				$this->Customfunctions->saveActionPoint('Edit Menu','Success');
 				$message = 'You have Updated Menu Succesfully.';
 				$message_theme = 'success';
 
 			} else {
 
 				//Added this call to save the user action log on 22-02-2022
-				$this->Customfunctions->userActionPerformLog('Edit Menu','Failed');
+				$this->Customfunctions->saveActionPoint('Edit Menu','Failed');
 				$message = 'Sorry.. Please Check all fileds are proper.';
 				$message_theme = 'failed';
 
@@ -429,7 +429,7 @@ class CmsController extends AppController{
 		if ($this->DmiMenus->save($DmiMenusEntity)) {
 
 			//Added this call to save the user action log on 22-02-2022
-			$this->Customfunctions->userActionPerformLog('Menu Delete','Success');
+			$this->Customfunctions->saveActionPoint('Menu Delete','Success');
 			// set variables to show popup messages from view file
 			$message = 'The Selected Menu is Deleted Successfully';
 			$message_theme = 'success';
@@ -487,7 +487,7 @@ class CmsController extends AppController{
 			if (!empty($check_duplicate_filename)) {
 				
 				//Added this call to save the user action log on 22-02-2022
-				$this->Customfunctions->userActionPerformLog('File Upload','Failed');
+				$this->Customfunctions->saveActionPoint('File Upload','Failed');
 				$message = 'File with same name is already exist... Please change file name and try again!!';
 				$message_theme = 'failed';
 				$redirect_to = 'file_uploads';
@@ -516,7 +516,7 @@ class CmsController extends AppController{
 					if ($this->DmiUserFileUploads->save($DmiUserFileUploadsEntity)) {
 
 						//Added this call to save the user action log on 21-02-2022
-						$this->Customfunctions->userActionPerformLog('File Upload','Success');
+						$this->Customfunctions->saveActionPoint('File Upload','Success');
 						$message = 'Your File is Uploaded Successfully.';
 						$message_theme = "success";
 						$redirect_to = 'file_uploads';
@@ -578,7 +578,7 @@ class CmsController extends AppController{
 		if ($this->DmiUserFileUploads->save($DmiUserFileUploadsEntity)) {
 
 			//Added this call to save the user action log on 21-02-2022
-			$this->Customfunctions->userActionPerformLog('Uploaded File Delete','Success');
+			$this->Customfunctions->saveActionPoint('Uploaded File Delete','Success');
 			$message = 'Selected File is Deleted Successfully';
 			$message_theme = 'success';
 			$redirect_to = '../file_uploads';

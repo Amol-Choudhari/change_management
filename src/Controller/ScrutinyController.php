@@ -508,7 +508,7 @@
 					if($result == 1){
 
 						//This below action call is added t save the action log for the user by AKASH on 18-08-2022
-						$this->Customfunctions->userActionPerformLog('Application Reffered Back to Applicant', 'Success');
+						$this->Customfunctions->saveActionPoint('Application Reffered Back to Applicant', 'Success');
 						$message = 'All reffered back comments to applicant sent successfully';
 						$message_theme = "success";
 						$redirect_to = "../dashboard/home";
@@ -516,7 +516,7 @@
 					}elseif($result == 2){
 						
 						//This below action call is added t save the action log for the user by AKASH on 18-08-2022
-						$this->Customfunctions->userActionPerformLog('Application Reffered Back to Applicant', 'Failed');
+						$this->Customfunctions->saveActionPoint('Application Reffered Back to Applicant', 'Failed');
 						$message = $firm_type_text." - Reffered back are not saved, Please save Referred back on Atleast one Section and then Final Submit";
 						$message_theme = "warning";
 						$redirect_to = "../scrutiny/form-scrutiny";
@@ -530,7 +530,7 @@
 					if($result[0] == 1){
 
 						//This below action call is added t save the action log for the user by AKASH on 19-08-2022
-						$this->Customfunctions->userActionPerformLog('Application Reffered Back to RO', 'Success');
+						$this->Customfunctions->saveActionPoint('Application Reffered Back to RO', 'Success');
 						$message = $firm_type_text." application sent to $result[1] successfully";
 						$message_theme = "success";
 						$redirect_to ="../dashboard/home";
@@ -538,7 +538,7 @@
 					}elseif($result[0] == 2){
 
 						//This below action call is added t save the action log for the user by AKASH on 19-08-2022
-						$this->Customfunctions->userActionPerformLog('Application Reffered Back to RO', 'Failed');
+						$this->Customfunctions->saveActionPoint('Application Reffered Back to RO', 'Failed');
 						$message = $firm_type_text." - Replies/Comments are not saved, Please save Comments on Atleast one Section and then Final Submit";
 						$message_theme = "failed";
 						$redirect_to = "../scrutiny/form-scrutiny";
@@ -546,7 +546,7 @@
 					}elseif($result[0] == 3){
 
 						//This below action call is added t save the action log for the user by AKASH on 19-08-2022
-						$this->Customfunctions->userActionPerformLog('Application Reffered Back to RO', 'Failed');
+						$this->Customfunctions->saveActionPoint('Application Reffered Back to RO', 'Failed');
 						$message = "Scrutinizer is not allocated for this application yet";
 						$message_theme = "failed";
 						$redirect_to ="../scrutiny/form-scrutiny";

@@ -887,7 +887,7 @@
 				if ($this->$masterTable->save($masterTableEntity)) {
 					
 					//Added this call to save the user action log on 21-02-2022 by Akash
-					$this->Customfunctions->userActionPerformLog($checkFieldName.' Master (Delete)', 'Success');
+					$this->Customfunctions->saveActionPoint($checkFieldName.' Master (Delete)', 'Success');
 					$this->message = 'The selected record has been deleted successfully.';
 					$this->message_theme = 'success';
 				}
@@ -895,7 +895,7 @@
 			} else {
 
 				//Added this call to save the user action log on 21-02-2022 by Akash
-				$this->Customfunctions->userActionPerformLog($checkFieldName.' Master (Delete)', 'Failed');
+				$this->Customfunctions->saveActionPoint($checkFieldName.' Master (Delete)', 'Failed');
 				$this->message = 'Unable to edit/delete this record, as it is currently exist with some applications';
 				$this->message_theme = 'failed';
 
@@ -933,7 +933,7 @@
 					if ($this->Mastertablecontent->addEditStateMaster($postData,$record_id)) {
 
 						//Added this call to save the user action log on 21-02-2022 by Akash
-						$this->Customfunctions->userActionPerformLog('State Master '."($forActionLog)", 'Success');
+						$this->Customfunctions->saveActionPoint('State Master '."($forActionLog)", 'Success');
 						$this->message = 'You have '.$action_var.' State Successfully';
 						$this->message_theme = 'success';
 					}
@@ -941,7 +941,7 @@
 				} else {
 
 					//Added this call to save the user action log on 21-02-2022 by Akash
-					$this->Customfunctions->userActionPerformLog('State Master '."($forActionLog)", 'Failed');
+					$this->Customfunctions->saveActionPoint('State Master '."($forActionLog)", 'Failed');
 					$this->message = 'Unable to edit/delete this record, as it is currently exist with some applications';
 					$this->message_theme = 'failed';
 				}
@@ -955,7 +955,7 @@
 					if ($this->Mastertablecontent->addEditDistrictMaster($postData,$record_id)) {
 
 						//Added this call to save the user action log on 21-02-2022 by Akash
-						$this->Customfunctions->userActionPerformLog('District Master '."($forActionLog)", 'Success');
+						$this->Customfunctions->saveActionPoint('District Master '."($forActionLog)", 'Success');
 						$this->message = 'You have '.$action_var.' District Successfully';
 						$this->message_theme = 'success';
 					}
@@ -963,7 +963,7 @@
 				} else {
 
 					//Added this call to save the user action log on 21-02-2022 by Akash
-					$this->Customfunctions->userActionPerformLog('District Master '."($forActionLog)", 'Failed');
+					$this->Customfunctions->saveActionPoint('District Master '."($forActionLog)", 'Failed');
 					$this->message = 'Unable to edit/delete this record, as it is currently exist with some applications';
 					$this->message_theme = 'failed';
 				}
@@ -976,7 +976,7 @@
 					if ($this->Mastertablecontent->addEditBusinessTypeMaster($postData,$record_id)) {
 
 						//Added this call to save the user action log on 21-02-2022 by Akash
-						$this->Customfunctions->userActionPerformLog('Buisness Master '."($forActionLog)", 'Success');
+						$this->Customfunctions->saveActionPoint('Buisness Master '."($forActionLog)", 'Success');
 						$this->message = 'You have '.$action_var.' Business Type Successfully';
 						$this->message_theme = 'success';
 					}
@@ -984,7 +984,7 @@
 				} else {
 
 					//Added this call to save the user action log on 21-02-2022 by Akash
-					$this->Customfunctions->userActionPerformLog('Buisness Master '."($forActionLog)", 'Failed');
+					$this->Customfunctions->saveActionPoint('Buisness Master '."($forActionLog)", 'Failed');
 					$this->message = 'Unable to edit/delete this record, as it is currently exist with some applications';
 					$this->message_theme = 'failed';
 				}
@@ -1013,7 +1013,7 @@
 
 					if ($this->Mastertablecontent->addEditPackingTypeMaster($postData,$record_id)) {
 						//Added this call to save the user action log on 21-02-2022 by Akash
-						$this->Customfunctions->userActionPerformLog('Packing Master '."($forActionLog)", 'Success');
+						$this->Customfunctions->saveActionPoint('Packing Master '."($forActionLog)", 'Success');
 						$this->message = 'You have '.$action_var.' Packing Type Successfully';
 						$this->message_theme = 'success';
 					}
@@ -1021,7 +1021,7 @@
 				} else {
 
 					//Added this call to save the user action log on 21-02-2022 by Akash
-					$this->Customfunctions->userActionPerformLog('Packing Master '."($forActionLog)", 'Failed');
+					$this->Customfunctions->saveActionPoint('Packing Master '."($forActionLog)", 'Failed');
 					$this->message = 'Unable to edit/delete this record, as it is currently exist with some applications';
 					$this->message_theme = 'failed';
 				}
@@ -1034,7 +1034,7 @@
 					if ($this->Mastertablecontent->addEditLaboratoryTypeMaster($postData,$record_id)) {
 
 						//Added this call to save the user action log on 21-02-2022 by Akash
-						$this->Customfunctions->userActionPerformLog('Laboratory Master '."($forActionLog)", 'Success');
+						$this->Customfunctions->saveActionPoint('Laboratory Master '."($forActionLog)", 'Success');
 						$this->message = 'You have '.$action_var.' Laboratory Type Successfully';
 						$this->message_theme = 'success';
 					}
@@ -1042,7 +1042,7 @@
 				} else {
 
 					//Added this call to save the user action log on 21-02-2022 by Akash
-					$this->Customfunctions->userActionPerformLog('Laboratory Master '."($forActionLog)", 'Failed');
+					$this->Customfunctions->saveActionPoint('Laboratory Master '."($forActionLog)", 'Failed');
 					$this->message = 'Unable to edit/delete this record, as it is currently exist with some applications';
 					$this->message_theme = 'failed';
 				}
@@ -1055,7 +1055,7 @@
 					if ($this->Mastertablecontent->addEditMachineTypeMaster($postData,$record_id)) {
 
 						//Added this call to save the user action log on 21-02-2022 by Akash
-						$this->Customfunctions->userActionPerformLog('Machine Master '."($forActionLog)", 'Success');
+						$this->Customfunctions->saveActionPoint('Machine Master '."($forActionLog)", 'Success');
 						$this->message = 'You have '.$action_var.' Machine Type Successfully';
 						$this->message_theme = 'success';
 					}
@@ -1063,7 +1063,7 @@
 				} else {
 
 					//Added this call to save the user action log on 21-02-2022 by Akash
-					$this->Customfunctions->userActionPerformLog('Machine Master '."($forActionLog)", 'Failed');
+					$this->Customfunctions->saveActionPoint('Machine Master '."($forActionLog)", 'Failed');
 					$this->message = 'Unable to edit/delete this record, as it is currently exist with some applications';
 					$this->message_theme = 'failed';
 				}
@@ -1076,7 +1076,7 @@
 					if ($this->Mastertablecontent->addEditTankShapesMaster($postData,$record_id)){
 
 						//Added this call to save the user action log on 21-02-2022 by Akash
-						$this->Customfunctions->userActionPerformLog('Tank Master '."($forActionLog)", 'Success');
+						$this->Customfunctions->saveActionPoint('Tank Master '."($forActionLog)", 'Success');
 						$this->message = 'You have '.$action_var.' Tank Shape Successfully';
 						$this->message_theme = 'success';
 
@@ -1085,7 +1085,7 @@
 				} else {
 
 					//Added this call to save the user action log on 21-02-2022 by Akash
-					$this->Customfunctions->userActionPerformLog('Tank Master '."($forActionLog)", 'Failed');
+					$this->Customfunctions->saveActionPoint('Tank Master '."($forActionLog)", 'Failed');
 					$this->message = 'Unable to edit/delete this record, as it is currently exist with some applications';
 					$this->message_theme = 'failed';
 				}
@@ -1097,7 +1097,7 @@
 				if ($this->Mastertablecontent->addEditapplChargeMaster($postData,$record_id)) {
 					
 					///Added this call to save the user action log on 21-02-2022 by Akash
-					$this->Customfunctions->userActionPerformLog('Application Charges Master '."($forActionLog)", 'Success');
+					$this->Customfunctions->saveActionPoint('Application Charges Master '."($forActionLog)", 'Success');
 					$this->message = 'You have '.$action_var.' Application Charge Successfully';
 					$this->message_theme = 'success';
 				}
@@ -1113,7 +1113,7 @@
 					if ($this->Mastertablecontent->addEditbusinessYearsMaster($postData,$record_id)) {
 
 						///Added this call to save the user action log on 21-02-2022 by Akash
-						$this->Customfunctions->userActionPerformLog('Buisness Years Master '."($forActionLog)", 'Success');
+						$this->Customfunctions->saveActionPoint('Buisness Years Master '."($forActionLog)", 'Success');
 						$this->message = 'You have '.$action_var.' Business Year Successfully';
 						$this->message_theme = 'success';
 					}
@@ -1128,7 +1128,7 @@
 							if ($this->Mastertablecontent->addEditbusinessYearsMaster($postData,$record_id)) {
 
 								///Added this call to save the user action log on 21-02-2022 by Akash
-								$this->Customfunctions->userActionPerformLog('Buisness Years Master '."($forActionLog)", 'Success');
+								$this->Customfunctions->saveActionPoint('Buisness Years Master '."($forActionLog)", 'Success');
 								$this->message = 'You have '.$action_var.' Business Year Successfully';
 								$this->message_theme = 'success';
 							}
@@ -1136,7 +1136,7 @@
 						} else {
 
 							///Added this call to save the user action log on 21-02-2022 by Akash
-							$this->Customfunctions->userActionPerformLog('Buisness Years Master '."($forActionLog)", 'Failed');
+							$this->Customfunctions->saveActionPoint('Buisness Years Master '."($forActionLog)", 'Failed');
 							$this->message = 'Unable to edit/delete this record, as it is currently exist with some applications';
 							$this->message_theme = 'failed';
 						}
@@ -1158,7 +1158,7 @@
 					if ($this->Mastertablecontent->addEditOfficeMaster($postData,$record_id)) {
 
 							///Added this call to save the user action log on 21-02-2022 by Akash
-							$this->Customfunctions->userActionPerformLog('Office Details Master '."($forActionLog)", 'Success');
+							$this->Customfunctions->saveActionPoint('Office Details Master '."($forActionLog)", 'Success');
 							$this->message = 'You have <b>'.$action_var.'</b> Office Successfully. Please <i>Set/Update</i> Jurisdictions for '.$action_var.' Office from <b>District Master.</b>';
 							$this->message_theme = 'success';
 					}
@@ -1169,7 +1169,7 @@
 					if ($this->reallocateOfficeIncharge($postData,$record_id)) {
 
 						///Added this call to save the user action log on 21-02-2022 by Akash
-						$this->Customfunctions->userActionPerformLog('User Reallocate', 'Success');
+						$this->Customfunctions->saveActionPoint('User Reallocate', 'Success');
 						$this->message = 'You have Reallocated Office In-charge Successfully';
 						$this->message_theme = 'success';
 					}
@@ -1179,7 +1179,7 @@
 					if ($this->Mastertablecontent->addEditOfficeMaster($postData,$record_id)) {
 
 						///Added this call to save the user action log on 21-02-2022 by Akash
-						$this->Customfunctions->userActionPerformLog('Office Details Master '."($forActionLog)", 'Success');
+						$this->Customfunctions->saveActionPoint('Office Details Master '."($forActionLog)", 'Success');
 						$this->message = 'You have <b>'.$action_var.'</b> Office Successfully. Please <i>Set/Update</i> Jurisdictions for '.$action_var.' Office from <b>District Master.</b>';
 						$this->message_theme = 'success';
 					}
@@ -1191,7 +1191,7 @@
 				if ($this->Mastertablecontent->addEditMessageTemplateMaster($postData,$record_id)) {
 
 					///Added this call to save the user action log on 21-02-2022 by Akash
-					$this->Customfunctions->userActionPerformLog('SMS-Email Master '."($forActionLog)", 'Success');
+					$this->Customfunctions->saveActionPoint('SMS-Email Master '."($forActionLog)", 'Success');
 					$this->message = 'You have '.$action_var.' SMS/Email Template Successfully';
 					$this->message_theme = 'success';
 				}
@@ -1204,7 +1204,7 @@
 					if ($this->Mastertablecontent->addEditPaoMaster($postData,$record_id)) {
 
 						///Added this call to save the user action log on 21-02-2022 by Akash
-						$this->Customfunctions->userActionPerformLog('PAO/DDO Master '."($forActionLog)", 'Success');
+						$this->Customfunctions->saveActionPoint('PAO/DDO Master '."($forActionLog)", 'Success');
 						$this->message = 'You have '.$action_var.' PAO/DDO successfully';
 						$this->message_theme = 'success';
 					}
@@ -1221,7 +1221,7 @@
 				if ($this->Mastertablecontent->addEditFeedbackTypeMaster($postData,$record_id)){
 
 					///Added this call to save the user action log on 21-02-2022 by Akash
-					$this->Customfunctions->userActionPerformLog('Feedback Master '."($forActionLog)", 'Success');
+					$this->Customfunctions->saveActionPoint('Feedback Master '."($forActionLog)", 'Success');
 					$this->message = 'You have '.$action_var.' Feedback Type Successfully';
 					$this->message_theme = 'success';
 				}
@@ -1232,7 +1232,7 @@
 				if ($this->Mastertablecontent->addEditReplicaChargesMaster($postData,$record_id)) {
 
 					///Added this call to save the user action log on 21-02-2022 by Akash
-					$this->Customfunctions->userActionPerformLog('Replica Master '."($forActionLog)", 'Success');
+					$this->Customfunctions->saveActionPoint('Replica Master '."($forActionLog)", 'Success');
 					$this->message = 'You have '.$action_var.' Replica Charge Successfully.';
 					$this->message_theme = 'success';
 				}
@@ -1244,7 +1244,7 @@
 				if ($this->Mastertablecontent->addEditEducationTypeMaster($postData,$record_id)) {
 
 					///Added this call to save the user action log on 21-02-2022 by Akash
-					$this->Customfunctions->userActionPerformLog('Education Master '."($forActionLog)", 'Success');
+					$this->Customfunctions->saveActionPoint('Education Master '."($forActionLog)", 'Success');
 					$this->message = 'You have '.$action_var.' Education Type Successfully.';
 					$this->message_theme = 'success';
 				}
@@ -1255,7 +1255,7 @@
 				if ($this->Mastertablecontent->addEditDivisionGradeMaster($postData,$record_id)) {
 
 					///Added this call to save the user action log on 21-02-2022 by Akash
-					$this->Customfunctions->userActionPerformLog('Division Master '."($forActionLog)", 'Success');
+					$this->Customfunctions->saveActionPoint('Division Master '."($forActionLog)", 'Success');
 					$this->message = 'You have '.$action_var.' Division Grade Successfully.';
 					$this->message_theme = 'success';
 				}
@@ -1266,7 +1266,7 @@
 				if ($this->Mastertablecontent->addEditDocumentsMaster($postData,$record_id)) {
 
 					///Added this call to save the user action log on 21-02-2022 by Akash
-					$this->Customfunctions->userActionPerformLog('Documents Master '."($forActionLog)", 'Success');
+					$this->Customfunctions->saveActionPoint('Documents Master '."($forActionLog)", 'Success');
 					$this->message = 'You have '.$action_var.' Documents Type Successfully.';
 					$this->message_theme = 'success';
 				}
@@ -1275,8 +1275,13 @@
 			if ($this->message == '') {
 
 				///Added this call to save the user action log on 21-02-2022 by Akash
-				$this->Customfunctions->userActionPerformLog('Master '."($forActionLog)", 'Failed');
-				$this->message = 'Record not '.$action_var.', Please Try Again.';
+				$this->Customfunctions->saveActionPoint('Master '."($forActionLog)", 'Failed');
+				if ($masterId=='16') {
+					$this->message = 'Replica Charges for selected commodity is already exist.';
+				}else{
+					$this->message = 'Record not '.$action_var.', Please Try Again.';
+				}
+				
 				$this->message_theme = 'failed';
 			}
 
@@ -1349,7 +1354,7 @@
 				if ($this->DmiRoAllocationLogs->save($DmiRoAllocationLogsEntity)) {
 					
 					///Added this call to save the user action log on 21-02-2022 by Akash
-					$this->Customfunctions->userActionPerformLog('Re-allocate Office Incharge', 'Success');
+					$this->Customfunctions->saveActionPoint('Re-allocate Office Incharge', 'Success');
 					return true;
 				}
 			}
@@ -1476,12 +1481,12 @@
 			if ($sms_template_values['status'] == 'active') {
 				$status = 'disactive';
 				///Added this call to save the user action log on 21-02-2022 by Akash
-				$this->Customfunctions->userActionPerformLog('SMS/Email Master (Template Deactivate)','Success');
+				$this->Customfunctions->saveActionPoint('SMS/Email Master (Template Deactivate)','Success');
 				$this->message = 'You have <b>Deactivated</b> this SMS/Email Template';
 				$this->message_theme = 'success';
 			} else {
 				///Added this call to save the user action log on 21-02-2022 by Akash
-				$this->Customfunctions->userActionPerformLog('SMS/Email Master (Template Activate)','Success');
+				$this->Customfunctions->saveActionPoint('SMS/Email Master (Template Activate)','Success');
 				$status = 'active';
 				$this->message = 'You have <b>Activated</b> this SMS/Email Template';
 				$this->message_theme = 'success';
@@ -1622,7 +1627,7 @@
 						if ($this->DmiApplAddedForReEsigns->save($DmiApplAddedEntity)) {
 
 							///Added this call to save the user action log on 21-02-2022 by Akash
-							$this->Customfunctions->userActionPerformLog('Re-Esign Request', 'Success');
+							$this->Customfunctions->saveActionPoint('Re-Esign Request', 'Success');
 							$this->message = 'New Application Added for Re_esign the Renewal Certificate.';
 							$this->message_theme = 'success';
 						}
@@ -1630,7 +1635,7 @@
 					} else {
 
 						///Added this call to save the user action log on 21-02-2022 by Akash
-						$this->Customfunctions->userActionPerformLog('Re-Esign Request', 'Failed');
+						$this->Customfunctions->saveActionPoint('Re-Esign Request', 'Failed');
 						$this->message = 'Sorry... The renewal is not granted yet, for the entered application id.';
 						$this->message_theme = 'failed';
 					}
@@ -1638,7 +1643,7 @@
 				} else {
 
 					///Added this call to save the user action log on 21-02-2022 by Akash
-					$this->Customfunctions->userActionPerformLog('Re-Esign Request', 'Failed');
+					$this->Customfunctions->saveActionPoint('Re-Esign Request', 'Failed');
 					$this->message = 'Sorry..This Application id is already added for Re-esign.';
 					$this->message_theme = 'failed';
 				}
@@ -1665,7 +1670,7 @@
 
 			if ($this->DmiApplAddedForReEsigns->save($DmiApplAddedEntity)) {
 				///Added this call to save the user action log on 21-02-2022 by Akash
-				$this->Customfunctions->userActionPerformLog('Re-Esign Request Deactivate', 'Success');
+				$this->Customfunctions->saveActionPoint('Re-Esign Request Deactivate', 'Success');
 				$this->redirect('/masters/add_appl_for_re_esign');
 			}
 		}
@@ -1738,7 +1743,7 @@
 					if ($this->DmiDatesExtensionsLogs->save($DmiDatesExtensionsEntity)) {
 
 						///Added this call to save the user action log on 21-02-2022 by Akash
-						$this->Customfunctions->userActionPerformLog('Extend-Dates', 'Success');
+						$this->Customfunctions->saveActionPoint('Extend-Dates', 'Success');
 						$message = 'You have successfully updated the date. Thank you';
 						$message_theme = 'success';
 						$redirect_to = 'extend_dates';
