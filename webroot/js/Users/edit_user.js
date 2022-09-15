@@ -14,6 +14,13 @@ $(".update_btn").click(function(e){
 
 });
 
+
+var return_error_msg = $('#return_error_msg').val();
+
+if(return_error_msg != ''){
+		$.alert(return_error_msg);
+}
+
     $(document).ready(function(){
 
         bsCustomFileInput.init();//added on 06-05-2021 for profile pic
@@ -185,11 +192,5 @@ $(".update_btn").click(function(e){
             }
 
 
-            var return_error_msg = $('#return_error_msg').val();
-            
-            if(return_error_msg != ''){
-                $.alert(return_error_msg);
-            }
+
     });
-
-

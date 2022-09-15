@@ -85,7 +85,7 @@
 
 				//check login lockout status, applied on 24-04-2018 by Amol
 				$lockout_status = $this->Customfunctions->checkLoginLockout('DmiUserLogs', base64_encode($this->request->getData('email')));//for email encoding
-				
+
 				if ($lockout_status == 'yes') {
 
 					$message = 'Sorry... Your account is disabled for today, on account of 3 login failure.';
@@ -108,7 +108,7 @@
 
 					// show user login failed messages (by pravin 27/05/2017)
 					if ($login_result == 0) {
-						
+
 						$message = 'Sorry... It seems you are LMIS module user. Please use "LMIS Login".';
 						$message_theme = 'failed';
 						$redirect_to = $this->getRequest()->getAttribute('webroot');
@@ -146,7 +146,7 @@
 
 					 //created/updated/added on 25-06-2021 for multiple logged in check security updates, by Amol
 					} elseif ($login_result == 5) {
-										
+
 						$already_loggedin_msg = 'yes';
 					}
 				}
@@ -260,15 +260,15 @@
 
 					///////////////////////////////////////////////////////////////////////////////////////////////
 					//commented on 18-06-2018, Now no provision to store aadhar no. so no need to autheticate.   //
-					//    /*	//check aadhar authentication already done or not                                //  
+					//    /*	//check aadhar authentication already done or not                                //
 					//		$already_aadhar_auth = $this->DmiUsersResetpassKeys->checkAadharAuth($user_id);      //
-					//		if($already_aadhar_auth==2){                                                         //    
-					//                                                                                           //   
-					//			$this->Session->write('user_id',$user_id);                                       //   
-					//			$this->Session->write('key_id',$key_id);                                         //   
+					//		if($already_aadhar_auth==2){                                                         //
+					//                                                                                           //
+					//			$this->Session->write('user_id',$user_id);                                       //
+					//			$this->Session->write('key_id',$key_id);                                         //
 					//			$this->redirect('aadhar_auth_on_pass_reset');                                    //
-					//		}                                                                                    //    
-					//	*/                                                                                       //     
+					//		}                                                                                    //
+					//	*/                                                                                       //
 					///////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -293,7 +293,7 @@
 							$reset_pass_result = $this->Authentication->resetPasswordLib($table, $username, $newpassdata, $randsalt); // calling reset password library function
 
 							if ($reset_pass_result == 1) {
-								
+
 								//Added this call to save the user action log on 09-09-2022
 								$this->Customfunctions->saveActionPoint('Reset Password (Email Not Matched)','Failed');
 								$message = 'Sorry...Email id not matched by id to save new password';
@@ -326,7 +326,7 @@
 								$redirect_to = 'reset_password';
 
 							} else {
-								
+
 								//Added this call to save the user action log on 09-09-2022
 								$this->Customfunctions->saveActionPoint('Reset Password','Success');
 								//update link key table status to 1 for successfully
@@ -337,7 +337,7 @@
 							}
 						}
 					}
-				
+
 				} elseif ($valid_key_result == 2) {
 
 					$message = 'Sorry.. This link to Reset Password was Expired. Please proceed through "Forgot Password" again.';
@@ -350,8 +350,8 @@
 			$this->set('message', $message);
 			$this->set('message_theme', $message_theme);
 			$this->set('redirect_to', $redirect_to);
-		
-		
+
+
 		}
 
 
@@ -372,7 +372,7 @@
 			$this->loadModel('DmiUserLogs');
 
 			//commented this condition on 23-07-2018 by Amol, conflicting session between DMI/LIMS redirection
-			
+
 			if (!empty($user_id)) {
 
 				$get_user_email_id = $this->DmiUsers->find('all', array('conditions' => array('id IS' => $user_id)))->first();
@@ -435,7 +435,7 @@
 							$this->Session->write('profile_pic', $user_data_query['profile_pic']);
 							$this->Session->write('userloggedin','yes');
 							$this->redirect('/dashboard/home');
-						
+
 						} else {
 
 							$current_ip = $this->getRequest()->clientIp();
@@ -452,13 +452,13 @@
 								'time_in' => date('H:i:s'),
 								'remark' => 'Failed'
 							));
-							
+
 							$this->DmiUserLogs->save($DmiUserLogsEntity);
 							//Added this call to save the user action log on 09-09-2022
 							$this->Customfunctions->saveActionPoint('Redirection (Password Not Matched)','Failed');
 							$this->set('return_error_msg','Sorry.. Password does not matched');
 							return null;
-							exit;
+
 						}
 
 					} else {
@@ -467,7 +467,7 @@
 						$this->Customfunctions->saveActionPoint('Redirection','Failed');
 						$this->set('return_error_msg','Sorry.. This username does not exist');
 						return null;
-						exit;
+
 					}
 				}
 
@@ -480,7 +480,7 @@
 			$this->set('message_theme', $message_theme);
 			$this->set('return_error_msg',null);
 			$this->set('redirect_to', $redirect_to);
-		
+
 		}
 
 
@@ -496,11 +496,11 @@
 				echo "Sorry You are not authorized to view this page..'<a href='login_user'>'Please login'</a>'";
 				exit();
 			}
-			
+
 			//Set the Layout
 			$this->viewBuilder()->setLayout('admin_dashboard');
 			$user_logs = $this->DmiUserLogs->find('all', array('conditions'=>array('email_id IS'=>$this->Session->read('username')),'order' => 'id DESC'))->toArray();
-			
+
 			//to hide current session logout time.
 			$user_logs[0]['time_out'] = null;
 			$this->set('user_logs',$user_logs);
@@ -508,7 +508,7 @@
 		}
 
 
-		
+
 		// USER DIVISION TYPES
 		// @ AUTHOR - PRAVIN BHAKARE
 		public function userDivisionTypes() {
@@ -534,7 +534,7 @@
 		////////////////////////////////
 		//// USER MANAGEMENT METHODS ///
 		////////////////////////////////
-		
+
 		// AUTHENTICATE USER
 		public function authenicateUser() {
 
@@ -574,7 +574,7 @@
 			$user_data = $this->DmiUsers->find('all', array('conditions' => array('email IS' => $this->request->getSession()->read('username'))))->toArray();
 
 			if (!empty($user_data)) {
-				
+
 				//get personal details masked by custom function to show in secure mode applied on 12-10-2017 by Amol
 				$user_data[0]['phone'] = $this->Customfunctions->getMaskedValue(base64_decode($user_data[0]['phone']), 'mobile');
 				$user_data[0]['email'] = $this->Customfunctions->getMaskedValue(base64_decode($user_data[0]['email']), 'email');
@@ -587,19 +587,19 @@
 					//applied condition to check all post data for !empty validation on server side on 21/10/2017 by Amol
 					if (!empty($this->request->getData('f_name')) && !empty($this->request->getData('l_name')) && !empty($this->request->getData('email')) &&
 						//commented on 15-06-2018 by Amol, no provision to store aadhar
-						!empty($this->request->getData('phone')) /*&& !empty($this->request->getData('once_card_no'))*/) 
+						!empty($this->request->getData('phone')) /*&& !empty($this->request->getData('once_card_no'))*/)
 					{
 
 						if (!$this->Customfunctions->validateUniquePostData($this->request->getData('phone'), 'mobile') == 1) {
 							$this->set('return_error_msg','Please enter proper Mobile no.');
-							return false;
-							exit;
+							return null;
+
 						}
-						
+
 						if (!$this->Customfunctions->validateUniquePostData($this->request->getData('email'), 'email') == 1) {
 							 $this->set('return_error_msg','Please enter proper Email id');
-							return false;
-							exit;
+							return null;
+
 						}
 
 						//Html Encoding data before saving
@@ -670,7 +670,7 @@
 
 							$this->Session->write('f_name', $htmlencodedfname);
 							$this->Session->write('l_name', $htmlencodedlname);
-							
+
 							//Added this call to save the user action log on 09-09-2022
 							$this->Customfunctions->saveActionPoint('Profile Updated','Success');
 
@@ -691,8 +691,8 @@
 					} else {
 
 						$this->set('return_error_msg','Please check some fields are not entered');
-						return false;
-						exit;
+						return null;
+
 					}
 				}
 
@@ -738,7 +738,7 @@
 					$i = $i + 1;
 				}
 			}
-			
+
 			$this->set('all_users', $all_users);
 			$this->set('posted_ro_office', $posted_ro_office);
 
@@ -782,32 +782,32 @@
 				if (!empty($this->request->getData('f_name')) && !empty($this->request->getData('l_name')) && !empty($this->request->getData('email')) &&
 					!empty($this->request->getData('phone')) && !empty($this->request->getData('profile_pic')) /* && !empty($this->request->getData('office_posted')) */
 					//commented on 15-06-2018 by Amol, no provision to store aadhar
-					/* && !empty($this->request->getData('once_card_no')) && $this->request->getData('aadhar_auth_check')==1*/) 
+					/* && !empty($this->request->getData('once_card_no')) && $this->request->getData('aadhar_auth_check')==1*/)
 				{
 
 					if (!$this->Customfunctions->validateUniquePostData($this->request->getData('phone'), 'mobile') == 1) {
 						$this->set('return_error_msg','Please enter proper mobile no.');
 						return null;
-						exit;
+
 					}
-					
+
 					if (!$this->Customfunctions->validateUniquePostData($this->request->getData('email'), 'email') == 1) {
 					   $this->set('return_error_msg','Please enter proper Email id');
 						return null;
-						exit;
+
 					}
 
 					$usersData = $this->request->getData();
 
-					//changed and added on the 21-02-2022 
+					//changed and added on the 21-02-2022
 					$Checkemailexist = $this->DmiUsers->find('all', array('fields' => 'email', 'conditions' => array('email IS' => base64_encode($usersData['email']))))->first(); //for email encoding
-					
+
 					$checkMobileExist = $this->DmiUsers->find('all', array('fields' => 'phone', 'conditions' => array('phone IS' => base64_encode($usersData['phone']))))->first();
 
 					if ($Checkemailexist == null) {
 						//check if mobile number is already or not
 						if ($checkMobileExist == null) {
-					  
+
 							//Html Encoding data before saving
 							$htmlencodedfname = htmlentities($this->request->getData('f_name'), ENT_QUOTES);
 							$htmlencodedlname = htmlentities($this->request->getData('l_name'), ENT_QUOTES);
@@ -860,7 +860,7 @@
 									}
 
 									return null;
-									exit;
+
 								}
 							}
 
@@ -949,16 +949,16 @@
 							}
 
 						} else {
-							
+
 							//Added this call to save the user action log on 09-09-2022
 							$this->Customfunctions->saveActionPoint('New User Add','Failed');
 							$message = 'Sorry...This Mobile Number is already exists!! Please Try Again. ';
 							$message_theme = 'failed';
 							$redirect_to = 'add_user';
 						}
-					
+
 					} else {
-						
+
 						//Added this call to save the user action log on 09-09-2022
 						$this->Customfunctions->saveActionPoint('New User Add','Failed');
 						$message = 'Sorry...This Email ID is already exists!! Please Try Again.';
@@ -967,28 +967,28 @@
 					}
 
 				} else {
-					
+
 					//Added this call to save the user action log on 09-09-2022
 					$this->Customfunctions->saveActionPoint('New User Add','Failed');
 					$this->set('return_error_msg','Please check some fields are not entered');
 					return null;
-					exit;
+
 				}
 			}
 
 			// set variables to show popup messages from view file
 			$this->set('message', $message);
 			$this->set('message_theme', $message_theme);
-			$this->set('return_error_msg',null); 
+			$this->set('return_error_msg',null);
 			$this->set('redirect_to', $redirect_to);
 
 		}
 
-		
+
 
 		// FETCH USER ID
 		public function fetchUserId($id) {
-			
+
 			$this->Session->write('user_table_id', $id);
 			$this->redirect(array('controller' => 'users', 'action' => 'edit_user'));
 		}
@@ -996,7 +996,7 @@
 
 		// CHANGE STATUS USER ID
 		public function changeStatusUserId($id) {
-			
+
 			$this->Session->write('user_table_id', $id);
 			$this->redirect(array('controller' => 'users', 'action' => 'change_status_user'));
 		}
@@ -1006,7 +1006,7 @@
 		// @AUTHOR : AMOL CHOUDHARI
 		// @CONTRIBUTER : AKASH THAKRE (Migration & Updates)
 		// DATE : 12-10-2017 (C), 21-02-2022 (U)
-		
+
 		public function editUser() {
 
 			//authenticate user
@@ -1025,7 +1025,7 @@
 
 			//get personal details masked by custom function to show in secure mode
 			//applied on 12-10-2017 by Amol
-			
+
 			$user_details['phone'] = $this->Customfunctions->getMaskedValue(base64_decode($user_details['phone']), 'mobile');
 			$user_details['email'] = $this->Customfunctions->getMaskedValue(base64_decode($user_details['email']), 'email');
 			$this->set('user_details', $user_details);
@@ -1068,21 +1068,21 @@
 				if (!empty($this->request->getData('f_name')) && !empty($this->request->getData('l_name')) && !empty($this->request->getData('email')) &&
 					!empty($this->request->getData('phone')) /* && !empty($this->request->getData('landline')) && !empty($this->request->getData('office_posted')) */
 					//commented on 15-06-2018 by Amol, no provision to store aadhar
-					/*&& !empty($this->request->getData('once_card_no')) && $this->request->getData('aadhar_auth_check')==1*/) 
+					/*&& !empty($this->request->getData('once_card_no')) && $this->request->getData('aadhar_auth_check')==1*/)
 				{
 
 					if (!$this->Customfunctions->validateUniquePostData($this->request->getData('phone'), 'mobile') == 1) {
 
-						$this->set('return_error_message','Please enter proper Mobile no.');
+						$this->set('return_error_msg','Please enter proper Mobile no.');
 						return null;
-						exit;
+
 					}
 
 					if (!$this->Customfunctions->validateUniquePostData($this->request->getData('email'), 'email') == 1) {
 
-						$this->set('return_error_message','Please enter proper Email id');
+						$this->set('return_error_msg','Please enter proper Email id');
 						return null;
-						exit;
+
 					}
 
 
@@ -1126,23 +1126,23 @@
 
 								if ($lmis_role == 'RO/SO OIC') {
 
-									$this->set('return_error_message','Sorry, this office already have Incharge. There should be only one Incharge for one office.');
+									$this->set('return_error_msg','Sorry, this office already have Incharge. There should be only one Incharge for one office.');
 
 								} elseif ($lmis_role == 'Inward Officer') {
 
-								   $this->set('return_error_message','Sorry, this Lab already have Inward Officer. There should be only one Inward Officer for one lab.');
+								   $this->set('return_error_msg','Sorry, this Lab already have Inward Officer. There should be only one Inward Officer for one lab.');
 
 								} elseif ($lmis_role == 'Lab Incharge') {
 
-									$this->set('return_error_message','Sorry, this Lab already have Lab Incharge. There should be only one Lab Incharge for one lab.');
+									$this->set('return_error_msg','Sorry, this Lab already have Lab Incharge. There should be only one Lab Incharge for one lab.');
 
 								} elseif ($lmis_role == 'RAL/CAL OIC') {
 
-									$this->set('return_error_message','Sorry, this Lab already have Incharge. There should be only one Incharge for one lab.');
+									$this->set('return_error_msg','Sorry, this Lab already have Incharge. There should be only one Incharge for one lab.');
 								}
 
 								return null;
-								exit;
+
 							}
 						}
 
@@ -1227,7 +1227,7 @@
 							$message_theme = 'failed';
 							$redirect_to = 'edit_user';
 						}
-						
+
 					} else {
 
 						//Added this call to save the user action log on 09-09-2022
@@ -1241,9 +1241,8 @@
 
 					//Added this call to save the user action log on 09-09-2022
 					$this->Customfunctions->saveActionPoint('Edit User','Failed');
-					$this->set('return_error_message','Please check some fields are not entered');
+					$this->set('return_error_msg','Please check some fields are not entered');
 					return null;
-					exit;
 				}
 			}
 
@@ -1261,7 +1260,7 @@
 		// @AUTHOR : AMOL CHOUDHARI
 		// @CONTRIBUTER : AKASH THAKRE (Migration & Updates)
 		// DATE : 21-02-2022 (Updated)
-		
+
 		public function changeStatusUser() {
 
 			//authenticate user
@@ -1292,7 +1291,7 @@
 				//added new function call & condition on 06-08-2019 by Amol for LIMS user
 				//check if the user belongs LIMS, then get inprogress sample status
 				$samples_inprogress = $this->getLimsUserWiseSamplesInprogress($user_table_id);
-				
+
 				$lims_user_can_deactivate = 'no';
 
 				if ($samples_inprogress == false) {
@@ -1309,9 +1308,9 @@
 				$new_message = '';
 
 				if (!empty($ro_office_details)) {
-					
+
 					$i = 0;
-					
+
 					foreach ($ro_office_details as $ro_office) {
 
 						$ro_office_name[$i] = $ro_office['ro_office'];
@@ -1442,7 +1441,7 @@
 		// @AUTHOR : AMOL CHOUDHARI
 		// @CONTRIBUTER : AKASH THAKRE (Migration)
 		// DATE : 06-12-2020
-		
+
 		public function checkUserInprocessAppl($user_email_id) {
 
 			//get flow wise tables to check user allocated appln.
@@ -1520,7 +1519,7 @@
 							}
 
 
-							/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////    
+							/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 							//    /*	$check_application_status = $this->$final_submit->find('all',array('conditions'=>array('customer_id IS'=>$customer_id, 'status'=>'approved','current_level'=>'level_3'),'order'=>'id desc'))->first(); //
 							//                                                                                                                                                                                                                 //
 							//  if(empty($check_application_status))                                                                                                                                                                           //
@@ -1534,7 +1533,7 @@
 
 					if (!empty($find_ho_allocation)) {
 						foreach ($find_ho_allocation as $each_allocation) {
-							
+
 							$customer_id = $each_allocation['customer_id'];
 
 							$check_application_status = $this->$final_submit->find('all', array('conditions' => array('customer_id IS' => $customer_id, 'status' => 'approved', 'current_level' => 'level_3'), 'order' => 'id desc'))->first();
@@ -1554,8 +1553,8 @@
 			}
 
 			return $user_can_deactivated;
-		
-		
+
+
 		}
 
 
@@ -1565,7 +1564,7 @@
 		// @AUTHOR : AMOL CHOUDHARI
 		// @CONTRIBUTER : AKASH THAKRE (Migration)
 		// DATE : 21-02-2022
-		
+
 		public function getLimsUserWiseSamplesInprogress($user_table_id) {
 
 			$from_user = $user_table_id;
@@ -1592,7 +1591,7 @@
 			$lims_role = $get_user_lims_role['role'];
 
 			if ($lims_role == 'RO/SO OIC' || $lims_role == 'RO Officer' || $lims_role == 'SO Officer' || $lims_role == 'Ro_assistant') {
-				
+
 				foreach ($PendingFinalGradingSample as $eachkey => $eachValue) {
 
 					//check if the sample is forwarded by the user
@@ -1619,7 +1618,7 @@
 				$chemistcode = array();
 				$finalresult = array();
 				$in_src_usr_cd_pr = array();
-				
+
 				foreach ($PendingFinalGradingSample as $eachkey => $eachValue) {
 
 					//Getting list of stage sample status flag for particular original sample code for from user id
@@ -1635,7 +1634,7 @@
 
 							$teststatus[] = $eachkey1;
 						}
-						
+
 						if (trim($eachValue1) == 'TABC') {
 
 							$tabc[] = $eachkey1;
@@ -1660,13 +1659,13 @@
 					}
 				}
 
-	
+
 				foreach ($in_src_usr_cd_pr as $eachloop) {
 
 					foreach ($eachloop as $eachloopkey => $eachloopvalue) {
 
 						$loopvaluewithFT = $this->Workflow->find('all', array('fields' => 'id', 'conditions' => array('stage_smpl_cd IS' => $eachloopvalue, 'stage_smpl_flag' => 'FT')))->first();
-						
+
 						if (empty($loopvaluewithFT)) {
 
 							$update_src_code_id[] = trim($eachloopkey);
@@ -1690,13 +1689,13 @@
 
 						$teststagecd = $this->Workflow->find('all', array('fields' => array('id', 'stage_smpl_cd'), 'conditions' => array('id IS' => $eachtest)))->first();
 						$testsamplestage = array();
-						
+
 						if (!empty($teststagecd)) {
-							
+
 							$testsamplestage = $this->Workflow->find('all', array('fields' => array('id', 'stage_smpl_cd'), 'conditions' => array('stage_smpl_cd IS' => $teststagecd['stage_smpl_cd'], 'stage_smpl_flag' => 'FT')))->first();
-							
+
 							if (empty($testsamplestage)) {
-								
+
 								$pendingtest[] = $eachtest;
 								$chemistcode[] = trim($teststagecd['stage_smpl_cd']);
 							}
@@ -1725,8 +1724,8 @@
 			} else {
 				return false;
 			}
-		
-		
+
+
 		}
 
 
@@ -1736,19 +1735,19 @@
 		// DATE : 21-02-2022
 		/* This function is used for to unlock the locked user by three consecutive unsuccessful login
 		/* Why Created : Provided the unlocked user functionality to Admin user */
-		
+
 		public function lockUserRedirect($lockListFor) {
 			$this->Session->write('lockListFor', $lockListFor);
 			$this->Redirect('/users/lock-users');
 		}
-		
-		
-		
+
+
+
 		// LOCK USERS
 		// @AUTHOR : AMOL CHOUDHARI
 		// @CONTRIBUTER : AKASH THAKRE (Migration)
 		// DATE : 21-02-2022 (Updated)
-		
+
 		public function lockUsers() {
 
 			$message = '';
@@ -1783,7 +1782,7 @@
 					$i = $i + 1;
 				}
 			}
-			
+
 			if (!empty($_POST)) {
 
 				$postvalue = array_keys($this->request->getData());
@@ -1793,7 +1792,7 @@
 				} else {
 					$postArray = $postvalue;
 				}
-				
+
 				foreach ($postArray as $index => $each) {
 
 					if ($index != '0') {//condition applied intensionaly for some reason
@@ -1847,13 +1846,13 @@
 
 		}
 
-		
-		
+
+
 		// GET LOCKED USERS LIST
 		// @AUTHOR : AMOL CHOUDHARI
 		// @CONTRIBUTER : AKASH THAKRE (migration)
 		// DATE : 11-05-2021
-		
+
 		public function getLockedUsersList($listFor) {
 
 			if ($listFor == 'primary') {
@@ -1889,7 +1888,7 @@
 
 
 			$j = 0;
-			
+
 			foreach ($all_user_list as $each_user_id) {
 
 				//added condition on 11-05-2021 by Amol for field name email_id
@@ -1912,20 +1911,20 @@
 			}
 
 			return $lock_user_list;
-		
-		
+
+
 		}
 
-		
-		
+
+
 		// ADMIN LOGS
 		// @AUTHOR : AMOL CHOUDHARI
 		// @CONTRIBUTER : AKASH THAKRE (migration)
 		// DATE : 29-04-2021
-		
+
 		public function adminLogs() {
 
-			if ($this->Session->read('username') == null) { 
+			if ($this->Session->read('username') == null) {
 				echo "Sorry You are not authorized to view this page..'<a href='login_user'>'Please login'</a>'";
 				exit();
 			}
@@ -1942,13 +1941,13 @@
 
 		}
 
-	
+
 
 		// ALL USER LOGS
 		// @AUTHOR : AMOL CHOUDHARI
 		// @CONTRIBUTER : AKASH THAKRE (migration)
 		// DATE : 29-04-2021
-		
+
 		public function allUsersLogs() {
 
 
@@ -1978,7 +1977,7 @@
 					$this->set('return_error_msg','Please  Proper Dates.');
 					return null;
 				}
-				
+
 				$this->set(compact('to_dt', 'from_dt'));
 			}
 
@@ -2006,18 +2005,18 @@
 
 				$this->set('user_logs', $user_logs);
 			}
-				
+
 			$this->set('return_error_msg',null);
 
 		}
-	
+
 
 
 		// showApplStatusPopup
 		// DESCRIPTION : to show application basic details to RO/SO user in popup
 		// @AUTHOR : AMOL CHOUDHARI
 		// DATE : 23-06-2021
-	
+
 		public function showApplStatusPopup(){
 
 			$this->autoRender = false;
@@ -2083,39 +2082,39 @@
 			return '~'.json_encode($result).'~';
 
 		}
-	
-		
+
+
 		///////////////////////////////////////////////////////////////////////////////REPLICA / 15 DIGIT / ECODE METHODS /////////////////////////////////////////////////////////////////////////
-		
-		
-		// REPLICA ALLOTED LIST 
+
+
+		// REPLICA ALLOTED LIST
 		// @AUTHOR : AKASH THAKRE
 		// DATE : 10-08-2021
-		 
+
 		public function replicaAllotedList() {
 
 			$this->viewBuilder()->setLayout('admin_dashboard');
 			$this->Customfunctions->replicaAllotedListCall('replica');
 		}
-		
-		
-		
-		// ALLOTED 15-DIGIT LIST 
+
+
+
+		// ALLOTED 15-DIGIT LIST
 		// @AUTHOR : AMOL CHOUDHARI
 		// DATE : 26-11-2021
-		
+
 		public function alloted15DigitList() {
 
 			$this->viewBuilder()->setLayout('admin_dashboard');
 			$this->Customfunctions->replicaAllotedListCall('15Digit');
 		}
-		
-		
-		
-		// ALLOTED E-CODE LIST 
+
+
+
+		// ALLOTED E-CODE LIST
 		// @AUTHOR : AMOL CHOUDHARI
 		// DATE : 26-11-2021
-		
+
 		public function allotedECodeList() {
 
 			$this->viewBuilder()->setLayout('admin_dashboard');
@@ -2128,7 +2127,7 @@
 		// DESCRIPTION : TO SHOW THE PACKERS TRANSACTION TO THE DDO/PAO AND RO/SO
 		// @AUTHOR : AKASH THAKRE
 		// DATE : 10-08-2021
-		
+
 		public function replicaTransaction() {
 
 			//Set the Layout
@@ -2143,24 +2142,24 @@
 			$this->loadModel('DmiFirms');
 			$this->loadModel('DmiRoOffices');
 			$this->loadModel('DmiAdvPaymentTransactions');
-			
+
 			//check role if RO/SO or PAO/DDO
 			$current_user_role = $this->DmiUserRoles->find('all',array('conditions'=>array('user_email_id IS'=>$username)))->first();
 			$packer_list = array();
 			$packer_name = null;
-			
+
 			//If DDO/PAO
 			if ($current_user_role['pao'] == 'yes' && $current_user_role['ro_inspection'] ) {
-			   
-				//get pao get_details   
+
+				//get pao get_details
 				$get_pao_details = $this->DmiUsers->find('all',array('conditions'=>array('email IS'=>$username,'status'=>'active')))->first();
 
 				$pao_id = $get_pao_details['id'];
 
 				$get_pao_user_id = $this->DmiPaoDetails->find('all',array('fields'=>'id','conditions'=>array('pao_user_id IS'=>$pao_id)))->first();
-			
+
 				$get_packer_list = $this->DmiAdvPaymentDetails->find('all',array('fields'=>'customer_id','conditions'=>array('pao_id IS'=>$get_pao_user_id['id'],'payment_confirmation'=>'confirmed'),'group'=>'customer_id'))->toArray();
-		   
+
 				$i=0;
 				if (!empty($get_packer_list)) {
 
@@ -2210,17 +2209,17 @@
 			if (null!== ($this->request->getData('packer_id'))) {
 
 				$packer_id = $this->request->getData('packer_list');
-			
+
 				$transactionsHistory = $this->DmiAdvPaymentTransactions->find('all',array('conditions'=>array('customer_id IS'=>$packer_id),'order'=>array('id desc')))->toArray();
 				if (!empty($transactionsHistory)) {
 
 				   $getPackerName = $this->DmiFirms->find('all')->Select(['firm_name'])->where(['customer_id IS' => $transactionsHistory[0]['customer_id'], 'certification_type' => '1','delete_status IS NULL'])->first();
-				   $packer_name = $getPackerName['firm_name'];  
-				   $this->set('packer_name',$packer_name); 
+				   $packer_name = $getPackerName['firm_name'];
+				   $this->set('packer_name',$packer_name);
 				   $this->set('transactionhistory',$transactionsHistory);
 				}
 			}
-		
+
 		}
 
 

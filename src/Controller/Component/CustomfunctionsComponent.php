@@ -3355,9 +3355,9 @@
 		public function saveActionPoint($action,$status) {
 			
 			//get user type
-			$user_type = $this->userType();
+			$user_type = $this->getuserType();
 			
-			if ($user_type == 'User' || $user_type == 'Chemist') {
+			if ($user_type == 'User') {
 				#load model to save action 
 				$action_model = 'DmiUserActionLogs';
 			} elseif ($user_type == 'Primary') {
@@ -3366,8 +3366,9 @@
 			} elseif ($user_type == 'Secondary') {
 				#load model to save action 
 				$action_model = 'DmiFirmActionLogs';
+			} else {
+				$action_model = 'DmiChemistActionLogs';
 			}
-
 
 			$model = TableRegistry::getTableLocator()->get($action_model);
 			
@@ -3508,11 +3509,14 @@
 
 
 
-		// for checking user type
-		public function userType(){
 
-			// If the user having email id
-			$username = $this->Session->read('username');
+		//User Type
+		//Description: Returns the user text or type against the username.
+		//@Author : Akash Thakre
+		//Date : 14-09-2022
+
+		public function getUserType($username){
+
 			if (strpos(base64_decode($username),'@')) {
 				$userType = 'User';
 			} else {

@@ -42,8 +42,10 @@
 												<!--<td><?php echo $i;?></td>-->
 												<td><?php if ($userType == 'User') { ?> 
 														<?php echo base64_decode($user_log['user_id']); //for email encoding ?>
+													<?php } elseif ($userType == 'Primary' || $userType == 'Secondary') { ?>
+														<?php echo $user_log['customer_id']; ?>
 													<?php } else { ?>
-														<?php echo $user_log['user_id']; ?>
+														<?php echo $user_log['chemist_id']; ?>
 													<?php } ?>
 												</td>
 												<td><?php echo $user_log['ipaddress'];?></td>

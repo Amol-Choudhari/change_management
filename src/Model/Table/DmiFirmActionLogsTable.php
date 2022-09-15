@@ -11,7 +11,7 @@ class DmiFirmActionLogsTable extends Table{
 
 
 	public function getActionLogs(){
-
+		return $this->find('all', array('conditions' => array('customer_id IS' => $_SESSION['username'],'action_perform IS NOT NULL'), 'order' => array('id desc'), 'limit' => '100'))->toArray();
 	}
 
 	public function saveActionLogs($userAction,$status){
@@ -20,13 +20,13 @@ class DmiFirmActionLogsTable extends Table{
 
 		if ($current_ip == '::1') { $current_ip = '127.0.0.1'; }
 
-		$action_entity = $this->newEntity(['customer_id'=>$_SESSION['username'],
-										   'action_perform'=>$userAction,
-										   'ip_address'=>$current_ip,
-										   'status'=>$status,
-										   'created'=>date('Y-m-d H:i:s')]);
+		$entity = $this->newEntity(['customer_id'=>$_SESSION['username'],
+									'action_perform'=>$userAction,
+									'ipaddress'=>$current_ip,
+									'status'=>$status,
+									'created'=>date('Y-m-d H:i:s')]);
 
-		$this->save($action_entity);
+		$this->save($entity);
 	}
 
 
