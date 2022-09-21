@@ -488,21 +488,18 @@
 
 					if ($final_submit_call_result == true) {
 
+						$this->Customfunctions->saveActionPoint('Application Final Submit', 'Success'); #Action
 						$message = $firm_type_text.' - Final submitted successfully ';
+						$message_theme = 'success';
 
 						//Added this call to save the user action log on 04-03-2022 by Akash
 						if ($application_type == 4) {
-
-							$this->Customfunctions->saveActionPoint('Application Final Submitted', 'Success');
 							// SMS - APPLICATION SUBMITTED 
 							#$this->DmiSmsEmailTemplates->sendMessage(69,$customer_id); # CHEMIST
 							#$this->DmiSmsEmailTemplates->sendMessage(70,$customer_id); # RO
-
 						} else {
-
 							// SMS - APPLICATION SUBMITTED 
 							#$this->DmiSmsEmailTemplates->sendMessage(6,$customer_id); # APPLICANT , RO , DDO
-							$this->Customfunctions->saveActionPoint('Firm Final Submitted', 'Success');
 						}
 
 						//For Chemist i.e Apllication Type 4 then redirect to Chemist Home after Final Submit -> Akash [29-09-2021].
@@ -516,13 +513,7 @@
 
 					} else {
 						
-						//Added this call to save the user action log on 04-03-2022 by Akash
-						if ($application_type == 4) {
-							$this->Customfunctions->saveActionPoint('Application Final Submitted', 'Failed');
-						} else {
-							$this->Customfunctions->saveActionPoint('Firm Final Submitted', 'Failed');
-						}
-
+						$this->Customfunctions->saveActionPoint('Application Final Submit', 'Failed'); #Action
 						$message = $firm_type_text.' - All Sections not filled, Please fill all Section and then Final Submit ';
 						$message_theme = 'failed';
 						$redirect_to = '../application/application-for-certificate';
@@ -835,7 +826,7 @@
 							$this->Customfunctions->saveActionPoint('Firm Final Submitted', 'Success');
 	
 							//SMS for Application Submitted on 12-08-2022 By Akash
-							$this->DmiSmsEmailTemplates->sendMessage(6,$customer_id); #To Applicant , RO , DDO
+							#$this->DmiSmsEmailTemplates->sendMessage(6,$customer_id); #To Applicant , RO , DDO
 
 							$message_theme = 'success';
 							$message = $firm_type_text.' - Final submitted successfully ';

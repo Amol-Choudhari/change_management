@@ -35,8 +35,8 @@
 
 			if ($this->Session->read('username') == null) {
 				
-				echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot');?>users/login_user">Please Login</a><?php
-				exit();
+				echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+				exit;
 			}
 
 			// Change layout for Ajax requests
@@ -70,8 +70,8 @@
 			$user_access = $this->DmiUserRoles->find('all',array('conditions'=>array('old_appln_data_entry'=>'yes','user_email_id IS'=>$this->Session->read('username'))))->first();
 			
 			if (empty($user_access)) {
-				echo "Sorry.. You don't have permission to view this page";
-				exit();
+				echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+				exit;
 			}
 			
 			$primary_reg_list = array();
@@ -130,8 +130,8 @@
 			//check if user have role
 			$user_access = $this->DmiUserRoles->find('all',array('conditions'=>array('old_appln_data_entry'=>'yes','user_email_id IS'=>$this->Session->read('username'))))->first();
 			if (empty($user_access)) {
-				echo "Sorry.. You don't have permission to view this page";
-				exit();
+				echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+				exit;
 			}
 
 
@@ -386,8 +386,8 @@
 
 			$user_access = $this->DmiUserRoles->find('all',array('conditions'=>array('old_appln_data_entry'=>'yes','user_email_id'=>$this->Session->read('username'))))->first();
 			if (empty($user_access)) {
-				echo "Sorry.. You don't have permission to view this page";
-				exit();
+				echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+				exit;
 			}
 
 
@@ -700,8 +700,8 @@
 			$user_access = $this->DmiUserRoles->find('all',array('conditions'=>array('old_appln_data_entry'=>'yes','user_email_id IS'=>$this->Session->read('username'))))->first();
 			
 			if (empty($user_access)) {
-				echo "Sorry.. You don't have permission to view this page";
-				exit();
+				echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+				exit;
 			}
 
 			$primary_id_list = $this->DmiAuthPrimaryRegistrations->find('list',array('keyField'=>'primary_id','valueField'=>'primary_id','conditions'=>array('user_email_id IS'=>$this->Session->read('username'))))->toArray();
@@ -1257,8 +1257,8 @@
 			$user_access = $this->DmiUserRoles->find('all',array('conditions'=>array('old_appln_data_entry'=>'yes','user_email_id IS'=>$this->Session->read('username'))))->first();
 			
 			if (empty($user_access)) {
-				echo "Sorry.. You don't have permission to view this page";
-				exit();
+				echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+				exit;
 			}
 
 			$firm_table_id = $this->Session->read('firm_table_id');

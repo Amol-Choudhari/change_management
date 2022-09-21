@@ -26,7 +26,6 @@
 			echo $this->Html->css('jquery-confirm.min');
 			#echo $this->Html->css('../dashboard/css/styles');
 			echo $this->Html->css('custom-style');
-			#echo $this->Html->css('forms-style');
 			
 			//FETCH
 			echo $this->fetch('meta');
@@ -34,7 +33,7 @@
 			echo $this->fetch('script');
 
 			//LOAD SCRIPTS
-			echo $this->Html->script('jquery-3.5.1.min');
+			echo $this->Html->script('jquery_main.min');
 			#echo $this->Html->script('../dashboard/js/lumino.glyphs');
 			echo $this->Html->script('no_back');	 
 			echo $this->Html->script('cwdialog');

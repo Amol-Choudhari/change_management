@@ -1296,7 +1296,7 @@
 					
 					$check_payment_submitted_list = array();
 					if(!empty($list_customer_id)){
-						$check_payment_submitted_list = $payment_details_table->find('all', array('fields'=>array('id','customer_id','modified'),'conditions' => array('id IN'=>$list_customer_id,'payment_confirmation IS'=>$for_status)))->toArray();
+						$check_payment_submitted_list = $payment_details_table->find('all', array('fields'=>array('id','customer_id','modified'),'conditions' => array($rej_appl_cond,'id IN'=>$list_customer_id,'payment_confirmation IS'=>$for_status)))->toArray();
 					}
 					
 					foreach($check_payment_submitted_list as $customer_is_list){
@@ -1453,6 +1453,7 @@
 					$DmiRejectedApplLogs = TableRegistry::getTableLocator()->get('DmiRejectedApplLogs');	
 
 					if($for_status == 'rejected'){
+					/* //commented below code on 07-09-2022 for rejected option, now available on left menu																		
 						
 						//get last rejected records from each appl type from reject log table
 						$resultIds = $DmiRejectedApplLogs->find('list',array('fields'=>array('customer_id','id'=>'max(id)'),
@@ -1489,7 +1490,7 @@
 							
 						$i=$i+1;
 						}
-						
+						*/
 					}else{
 					
 						//applications from/to applicant

@@ -32,7 +32,7 @@
 
 
 					//JS Files
-					echo $this->Html->script('jquery-3.5.1.min');
+					echo $this->Html->script('jquery_main.min');
 					echo $this->Html->script('sha512.min');
 					echo $this->Html->script('primary_forms_validations');
 					echo $this->Html->script('no_back');

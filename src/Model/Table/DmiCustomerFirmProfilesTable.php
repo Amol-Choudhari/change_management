@@ -129,7 +129,7 @@
 											   'firm_mobile_no' => "", 'firm_fax_no' => "", 'authorised_for_bevo' => "no", 'authorised_bevo_docs' => "", 'bank_references' => "", 'quantity_per_month' =>"", 
 											   'mo_comment' =>"", 'mo_comment_date' => "", 'ro_reply_comment' =>"", 'ro_reply_comment_date' =>"", 'delete_mo_comment' =>"", 'delete_ro_reply' => "",
 											   'delete_ro_referred_back' => "", 'delete_customer_reply' => "", 'ro_current_comment_to' => "", 'oil_manu_affidavit_docs' => "", 'bank_references_docs' =>"", 'state' => "",
-											   'rb_comment_ul'=>"",'mo_comment_ul'=>"",'rr_comment_ul'=>"",'cr_comment_ul'=>""); 
+											   'rb_comment_ul'=>"",'mo_comment_ul'=>"",'rr_comment_ul'=>"",'cr_comment_ul'=>"",'apeda_docs'=>"",'iec_code'=>"",'iec_code_docs'=>""); 
 				
 			}
 			
@@ -299,42 +299,6 @@
 				
 				} 
 				
-				//This below code block is added for the CA EXPORT form F chaneges given by DMI - Akash [07-09-2022]
-				if ($form_type == 'F') {
-
-					$iec_code = htmlentities($forms_data['iec_code'], ENT_QUOTES);
-
-					//file uploading
-					if(!empty($forms_data['apeda_docs']->getClientFilename())){
-						
-						$file_name = $forms_data['apeda_docs']->getClientFilename();
-						$file_size = $forms_data['apeda_docs']->getSize();
-						$file_type = $forms_data['apeda_docs']->getClientMediaType();
-						$file_local_path = $forms_data['apeda_docs']->getStream()->getMetadata('uri');
-						
-						$apeda_docs = $CustomersController->Customfunctions->fileUploadLib($file_name,$file_size,$file_type,$file_local_path); // calling file uploading function
-					
-					}else{ $apeda_docs = $section_form_details[0]['apeda_docs']; }
-
-					//file uploading
-					if(!empty($forms_data['iec_code_docs']->getClientFilename())){
-						
-						$file_name = $forms_data['iec_code_docs']->getClientFilename();
-						$file_size = $forms_data['iec_code_docs']->getSize();
-						$file_type = $forms_data['iec_code_docs']->getClientMediaType();
-						$file_local_path = $forms_data['iec_code_docs']->getStream()->getMetadata('uri');
-						
-						$iec_code_docs = $CustomersController->Customfunctions->fileUploadLib($file_name,$file_size,$file_type,$file_local_path); // calling file uploading function
-					
-					}else{ $iec_code_docs = $section_form_details[0]['iec_code_docs']; }
-
-				} else {
-					
-					$apeda_docs = null;
-					$iec_code = null;
-					$iec_code_docs = null;
-				}
-				
 				
 				$table = 'DmiBusinessTypes';
 				$post_input_request = $forms_data['business_type'];
@@ -372,15 +336,54 @@
 					}else{ $cr_comment_ul = null; }
 						
 				}else{ 			
-						$htmlencoded_reply = ''; 
-						$max_id = ''; 
-						$customer_reply_date = '';
-						$cr_comment_ul = null;	
+					$htmlencoded_reply = ''; 
+					$max_id = ''; 
+					$customer_reply_date = '';
+					$cr_comment_ul = null;	
 				}
+
 
 				if(empty($section_form_details[0]['created'])){  $created = date('Y-m-d H:i:s'); }
 				//added date function on 31-05-2021 by Amol to convert date format, as saving null
 				else{ $created = $CustomersController->Customfunctions->changeDateFormat($section_form_details[0]['created']); }
+
+
+				//This below code block is added for the CA EXPORT form F chaneges given by DMI - Akash [07-09-2022]
+				if ($form_type == 'F') {
+
+					$iec_code = htmlentities($forms_data['iec_code'], ENT_QUOTES);
+
+					//file uploading
+					if(!empty($forms_data['apeda_docs']->getClientFilename())){
+						
+						$file_name = $forms_data['apeda_docs']->getClientFilename();
+						$file_size = $forms_data['apeda_docs']->getSize();
+						$file_type = $forms_data['apeda_docs']->getClientMediaType();
+						$file_local_path = $forms_data['apeda_docs']->getStream()->getMetadata('uri');
+						
+						$apeda_docs = $CustomersController->Customfunctions->fileUploadLib($file_name,$file_size,$file_type,$file_local_path); // calling file uploading function
+					
+					}else{ $apeda_docs = $section_form_details[0]['apeda_docs']; }
+
+					//file uploading
+					if(!empty($forms_data['iec_code_docs']->getClientFilename())){
+						
+						$file_name = $forms_data['iec_code_docs']->getClientFilename();
+						$file_size = $forms_data['iec_code_docs']->getSize();
+						$file_type = $forms_data['iec_code_docs']->getClientMediaType();
+						$file_local_path = $forms_data['iec_code_docs']->getStream()->getMetadata('uri');
+						
+						$iec_code_docs = $CustomersController->Customfunctions->fileUploadLib($file_name,$file_size,$file_type,$file_local_path); // calling file uploading function
+					
+					}else{ $iec_code_docs = $section_form_details[0]['iec_code_docs']; }
+
+				} else {
+					
+					$apeda_docs = null;
+					$iec_code = null;
+					$iec_code_docs = null;
+				}
+
 				
 				$newEntity = $this->newEntity(array(
 				
@@ -416,9 +419,9 @@
 					'cr_comment_ul'=>$cr_comment_ul,
 					'created'=>$created,
 					'modified'=>date('Y-m-d H:i:s'),
-					'apeda_docs'=>$apeda_docs, #this new fields are added for the CA EXPORT form F by Akash [07-09-2022]
-					'iec_code'=>$iec_code, #this new fields are added for the CA EXPORT form F by Akash [07-09-2022]
-					'iec_code_docs'=>$iec_code_docs #this new fields are added for the CA EXPORT form F by Akash [07-09-2022]
+					'apeda_docs'=>$apeda_docs, 			#this new fields are added for the CA EXPORT form F by Akash [07-09-2022]
+					'iec_code'=>$iec_code, 				#this new fields are added for the CA EXPORT form F by Akash [07-09-2022]
+					'iec_code_docs'=>$iec_code_docs 	#this new fields are added for the CA EXPORT form F by Akash [07-09-2022]
 				));
 				
 				if ($this->save($newEntity)){ 			
@@ -573,9 +576,9 @@
 				'ro_reply_comment'=>$ro_reply_comment,
 				'ro_reply_comment_date'=>$ro_reply_comment_date,
 				'rr_comment_ul'=>$rr_comment_ul,
-				'apeda_docs'=>$forms_data['apeda_docs'], #this new fields are added for the CA EXPORT form F by Akash [07-09-2022]
-				'iec_code'=>$forms_data['iec_code'], #this new fields are added for the CA EXPORT form F by Akash [07-09-2022]
-				'iec_code_docs'=>$forms_data['iec_code_docs'] #this new fields are added for the CA EXPORT form F by Akash [07-09-2022]
+				'apeda_docs'=>$forms_data['apeda_docs'], 		#this new fields are added for the CA EXPORT form F by Akash [07-09-2022]
+				'iec_code'=>$forms_data['iec_code'], 			#this new fields are added for the CA EXPORT form F by Akash [07-09-2022]
+				'iec_code_docs'=>$forms_data['iec_code_docs'] 	#this new fields are added for the CA EXPORT form F by Akash [07-09-2022]
 				
 			));
 			

@@ -327,7 +327,7 @@
 						if ($_SESSION['application_type'] == 4) {
 							//$Dmi_sms_email_template->sendMessage(71,$customer_id);
 						} else { 
-							$Dmi_sms_email_template->sendMessage(7,$customer_id);
+							#$Dmi_sms_email_template->sendMessage(7,$customer_id);
 						}
 
 

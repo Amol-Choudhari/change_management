@@ -11,6 +11,8 @@
 			
 		var primary_id=$("#primary_id").val();
 		//taking values from form fields
+		var certification_no = $("#certification_no").val();
+		var grant_date = $("#grant_date").val();
 		var certification_type=$("#certification_type").val();
 		//var export_unit=$("#export_unit").val();
 		var firm_name=$("#firm_name").val();
@@ -102,8 +104,18 @@
 				$("#certification_type").click(function(){$("#error_certification_type").hide().text;$("#certification_type").removeClass("is-invalid");});
 				value_return = 'false';
 			}
-
-
+			if(certification_no == ""){ // Added by shankhpal shende on 12/09/2022
+				$("#error_certificate_no").show().text("Please Enter Certificate No.");
+				$("#certification_no").addClass("is-invalid");
+				$("#certification_no").click(function(){$("#error_certificate_no").hide().text;$("#certification_no").removeClass("is-invalid");});
+				value_return = 'false';
+			}
+            if(grant_date == ""){ // added by shankhpal shende on 13/09/2022
+				$("#error_grant_date").show().text("Please Select grant date.");
+				$("#grant_date").addClass("is-invalid");
+				$("#grant_date").click(function(){$("#error_grant_date").hide().text;$("#grant_date").removeClass("is-invalid");});
+				value_return = 'false';
+			}
 			/*
 			if(export_unit==""){
 			

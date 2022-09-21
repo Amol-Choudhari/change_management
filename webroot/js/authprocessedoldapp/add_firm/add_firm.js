@@ -106,8 +106,8 @@
 			url: "../AjaxFunctions/show_charge",
 			data: form_data,
 			beforeSend: function (xhr) { // Add this line
-						xhr.setRequestHeader('X-CSRF-Token', $('[name="_csrfToken"]').val());
-				},
+					xhr.setRequestHeader('X-CSRF-Token', $('[name="_csrfToken"]').val());
+			},
 			success: function(response){
 				$(".show_charge").html(response);
 
@@ -175,19 +175,26 @@
 				//updated on 08-08-2017 By Amol to disable/enable BEVO/Non BEVO options on select sub commodity
 				if($('#certification_type option:selected').val()=='1'){
 
-					if($('#commodity option:selected').val()=='172' || $('#commodity option:selected').val()=='173'){
+					//id 79,80,81 added on 05-09-2022 for Fat Spread updates after UAT
+					if($('#commodity option:selected').val()=='172'
+						|| $('#commodity option:selected').val()=='173'
+						|| $('#commodity option:selected').val()=='79'
+						|| $('#commodity option:selected').val()=='80'
+						|| $('#commodity option:selected').val()=='81'){
 						
 						$("#commodity_category option[value!='106']").prop('disabled', true);
+						$("#commodity_category option[value='11']").prop('disabled', false);//added on 05-09-2022 for Fat Spread updates after UAT
 						$("#selected_commodity").append($('#commodity option:selected'));
-						$("#selected_bevo_nonbevo_msg").show().text("Form E commodity selected, Form A commodities cannot be selected");
-						$("#selected_bevo_nonbevo_msg").css({"color":"red","font-size":"12px","font-weight":"500","text-align":"right"});
+						$("#selected_bevo_nonbevo_msg").show().text("Please note You have selected Form E commodities");
+						$("#selected_bevo_nonbevo_msg").css({"color":"blue","font-size":"12px","font-weight":"500","text-align":"right"});
 						
 					}else{
 						
 						$("#commodity_category option[value='106']").prop('disabled', true);
+						$("#commodity_category option[value='11']").prop('disabled', true);//added on 05-09-2022 for Fat Spread updates after UAT
 						$("#selected_commodity").append($('#commodity option:selected'));
-						$("#selected_bevo_nonbevo_msg").show().text("Form A commodity selected, Form E commodities cannot be selected");
-						$("#selected_bevo_nonbevo_msg").css({"color":"red","font-size":"12px","font-weight":"500","text-align":"right"});
+						$("#selected_bevo_nonbevo_msg").show().text("Please note You have selected Form A commodities");
+						$("#selected_bevo_nonbevo_msg").css({"color":"blue","font-size":"12px","font-weight":"500","text-align":"right"});
 					}
 					
 				}else{
@@ -685,16 +692,28 @@
 		});
 
 
-
+		//updated on 06-09-2022 by Amol
 		$('#export_unit').change(function(){
+			
+			if ($('#radioSuccess1').is(":checked")) {
 
-			$.alert({
-				title: 'Note',
-				content: 'If you are applying for export unit, then select <b><i>Yes</i></b> option, else select <b><i>No</i></b> option.',
-				columnClass: 'medium'
-			});			
+				$.confirm({
+					title: 'Note:',
+					content: 'You Have Selected the Export Unit. If You Want to  Proceed click on the <b>Proceed</b> or click on the <b>Cancel</b>.',
+					columnClass: 'medium',
+					type: 'dark',
+					theme: 'modern',
+					buttons: {
+						proceed: function () {
+							
+						},
+						cancel: function () {
+							$("#radioSuccess2").prop("checked",true);
+						}
+					}
+				});
+			}
 		});
 
-		
 	});        
         

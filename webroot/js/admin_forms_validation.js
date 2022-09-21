@@ -1078,7 +1078,7 @@
 
 			if(minimum_quantity == ''){
 
-				$("#error_min_qty").show().text("Please enter Charges");
+				$("#error_min_qty").show().text("Please enter Quantity");
                 $("#min_qty").addClass("is-invalid");
                 $("#min_qty").click(function(){$("#error_min_qty").hide().text;$("#min_qty").removeClass("is-invalid");});
 				value_return = 'false';

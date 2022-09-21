@@ -42,8 +42,8 @@
 
 			if ($customer_id == null) {
 
-				echo "Sorry You are not authorized to view this page..'<a href='../'>'Please login'</a>'";
-				exit();
+				echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+				exit;
 
 			} else { //this else portion added on 10-07-2017 by Amol to allow only logged in Applicant
 
@@ -56,13 +56,13 @@
 
 					if (empty($paouser)) {
 
-						echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot');?>">Please Login</a><?php
-						exit();
+						echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+						exit;
 					}
 
 				}else{
-					echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot');?>">Please Login</a><?php
-					exit();
+					echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+					exit;
 				}
 			}
 

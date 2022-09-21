@@ -49,5 +49,6 @@
 		<div class="col-md-1 mt-3">
 			<?php echo $this->element('masters_management_elements/add_submit_common_btn'); ?>
 		</div>
-
+<!-- Added by shankhpal shende fir input validation on 08/09/2022  -->
+<?php echo $this->Html->Script('input_validation'); ?>
 <?php echo $this->Html->script('element/masters_management_elements/add_replica_charges'); ?>

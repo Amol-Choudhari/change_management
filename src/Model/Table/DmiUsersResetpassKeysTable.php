@@ -13,7 +13,7 @@ class DmiUsersResetpassKeysTable extends Table{
 	public function saveKeyDetails($user_id,$key_id){
 		
 		$saveEntity = $this->newEntity(array(
-			'user_id'=>$user_id,
+			'user_id'=>base64_encode($user_id),
 			'key'=>$key_id,
 			'created_on'=>date('Y-m-d H:i:s')
 		));

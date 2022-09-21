@@ -47,13 +47,13 @@ use PHPUnit\TextUI\XmlConfiguration\CodeCoverage\Report\Html;
 
 		//echo $this->Html->script('jquery.min');
 
-		echo $this->Html->script('jquery-3.5.1.min'); //newly added on 24-08-2020 updated js
+		echo $this->Html->script('jquery_main.min');
 		// echo $this->Html->script('bootstrap.min');
 		//echo $this->Html->script('md5');
 		// echo $this->Html->script('validation');
 		echo $this->Html->script('primary_forms_validations');
 		// echo $this->Html->script('jssor.slider-21.1.6.min');
-		// echo $this->Html->script('no_back');
+		echo $this->Html->script('no_back');
 		// echo $this->Html->script('cwdialog');
 
 		echo $this->Html->script('sha512.min');

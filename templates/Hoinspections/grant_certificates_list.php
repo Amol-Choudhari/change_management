@@ -35,8 +35,8 @@
 
 						<!-- added condition on 16-09-2021, as per new order -->
 						<?php if ($appl_type != 'Renewal') { ?>
-							<th>Appl. Pdf</th>
-							<th>Report. Pdf</th>
+							<th>Appl. | Pdf</th>
+							<th>Report. | Pdf</th>
 						<?php } else { ?>
 							<th>Action</th>
 						<?php } ?>
@@ -67,7 +67,7 @@
 											$appl_pdf_name = $appl_pdf_path[count($appl_pdf_path) - 1]; ?>
 
 										<a target="_blank" href="<?php echo $each['appl_form']; ?>">
-											<?php echo 'Application'; ?>
+											<?php echo 'View'; ?>
 										</a>
 										|
 										<a target="_blank" href="<?php echo $each['appl_pdf']; ?>">
@@ -79,7 +79,7 @@
 											$report_pdf_name = $report_pdf_path[count($report_pdf_path) - 1]; ?>
 
 										<a target="_blank" href="<?php echo $each['report_form']; ?>">
-											<?php echo 'Report'; ?>
+											<?php echo 'View'; ?>
 										</a>
 										|
 										<a target="_blank" href="<?php echo $each['report_pdf']; ?>">

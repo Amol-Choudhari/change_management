@@ -19,7 +19,7 @@
 			<div class="row">
 				<div class="col-md-6 align-center mx-auto">
 					<div class="card img-thumbnail shadow">
-						<?php echo $this->Form->create(null, array('type'=>'file', 'id'=>'reset_password')); ?>
+						<?php echo $this->Form->create(null, array('autocomplete'=>'off','type'=>'file', 'id'=>'reset_password')); ?>
 						<div class="card-body register-card-body">
 				      		<p class="login-box-msg">Personal</p>
 							<p class="login-box-msg">User Id</p>
@@ -38,6 +38,7 @@
 									<?php echo $this->Form->control('salt_value', array('label'=>'', 'id'=>'hiddenSaltvalue', 'type'=>'hidden', 'value'=>$salt_server)); ?>
 								</div>
 
+								<p id="password_msg" class="cNavytar">Note:- Password length should be min. 8 char, min. 1 number, min. 1 Special char. and min. 1 Capital Letter.</p>
 
 								<div id="error_confpass" class="text-red text-sm"></div>
 						        <div class="input-group mb-3">
@@ -56,7 +57,7 @@
 						          	<?php echo $this->Html->image(array('controller'=>'customers','action'=>'create_captcha'), array('class'=>'rounded')); ?>
 						          </span>
 						          <div class="col-2 btn m-0 p-0">
-							          <img class="img-responsive img-thumbnail border-0 shadow-none" id="new_captcha" src="<?php echo $this->request->getAttribute('webroot');?>img/refresh.png" />
+									<img class="img-responsive img-thumbnail border-0 shadow-none" id="new_captcha_resetPass" src="<?php echo $this->request->getAttribute('webroot');?>img/refresh.png" />
 							      </div>
 
 						          <?php echo $this->Form->control('captcha', array('label'=>false, 'id'=>'captchacode', 'type'=>'text', 'placeholder'=>'Enter captcha', 'class'=>'form-control col-5')); ?>
@@ -66,6 +67,7 @@
 						            </div>
 						          </div>
 						        </div>
+								<p id="comfirm_pass_msg" class="text-red text-sm"><?php if(!empty($incorrect_captcha_msg)){ echo $incorrect_captcha_msg;}?></p>
 								<div class="row">
 						          <div class="col-8">
 						          </div>

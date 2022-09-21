@@ -36,10 +36,10 @@ use App\Network\Response\Response;
 				//checkif user have HO level roles
 				$this->loadModel('DmiUserRoles');
 				$user_access = $this->DmiUserRoles->find('all',array('conditions'=>array('OR'=>array('ro_inspection'=>'yes','so_inspection'=>'yes','dy_ama'=>'yes','ho_mo_smo'=>'yes','jt_ama'=>'yes',
-																								'ama'=>'yes','super_admin'=>'yes'),'user_email_id'=>$this->Session->read('username'))))->first();
+																								'ama'=>'yes','super_admin'=>'yes','pao'=>'yes'),'user_email_id'=>$this->Session->read('username'))))->first();
 				if(empty($user_access)){
-					echo "Sorry.. You don't have permission to view this page";
-					exit();
+					echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+					exit;
 				}
 			}
 
@@ -307,7 +307,6 @@ use App\Network\Response\Response;
 							$message = 'Sorry... Please allocate this application to MO/SMO first';
 							$message_theme = 'warning';
 							$redirect_to = '../hoinspections/ho-inspection';
-							//$this->view = '/Element/message_boxes';
 						}
 
 					}
@@ -326,7 +325,6 @@ use App\Network\Response\Response;
 							$message = 'Sorry... Please allocate this application to JT AMA first';
 							$message_theme = 'warning';
 							$redirect_to = '../hoinspections/ho-inspection';
-							//$this->view = '/Element/message_boxes';
 						}
 
 
@@ -344,7 +342,6 @@ use App\Network\Response\Response;
 							$message = 'Sorry... Please allocate this application to AMA';
 							$message_theme = 'warning';
 							$redirect_to = '../hoinspections/ho-inspection';
-							//$this->view = '/Element/message_boxes';
 						}
 					}
 
@@ -437,7 +434,6 @@ use App\Network\Response\Response;
 								$message = 'Your Comment is successfully sent';
 								$message_theme = 'success';
 								$redirect_to = $redirect_to_ul;
-								//$this->view = '/Element/message_boxes';
 						}
 					}
 
@@ -447,7 +443,6 @@ use App\Network\Response\Response;
 					$message = 'Sorry.. User not selected or Comment box is blank';
 					$message_theme = 'failed';
 					$redirect_to = '../hoinspections/ho-inspection';
-					//$this->view = '/Element/message_boxes';
 				}
 
 			}
@@ -938,6 +933,100 @@ use App\Network\Response\Response;
 				}
 					
 			}
+		}
+		
+		
+		public function rejectedApplList(){
+			
+			$this->loadModel('DmiRejectedApplLogs');
+			$this->loadModel('DmiApplicationTypes');
+			$this->loadModel('DmiFirms');
+			$username = $this->Session->read('username');
+			$this->loadModel('DmiUserRoles');
+			$roles = $this->DmiUserRoles->find('all',array('conditions'=>array('user_email_id'=>$username)))->first();
+			
+			//get last rejected records from each appl type from reject log table
+			$get_rejected = $this->DmiRejectedApplLogs->find('all',array('order'=>array('id DESC')))->toArray();
+
+			$appl_array = array();
+			$i=0;
+			foreach($get_rejected as $each){	
+					
+				$customer_id = $each['customer_id'];
+				$appl_type_id = $each['appl_type'];
+				
+				
+				$office_email_id = '';
+				$ro_incharge = '';
+				$paoEmailId = '';
+				
+				if($roles['super_admin']=='yes' || $roles['dy_ama']=='yes' || $roles['jt_ama']=='yes' || $roles['ama']=='yes'){					
+					//no conditions
+					$office_email_id = $username;
+					
+				}elseif($roles['ro_inspection']=='yes' || $roles['so_inspection']=='yes'){
+					
+					//check application wise RO/SO office
+					$this->loadModel('DmiApplWithRoMappings');
+					$find_office_id = $this->DmiApplWithRoMappings->getOfficeDetails($customer_id);
+					$office_email_id = $find_office_id['ro_email_id'];
+
+					//get RO in-charge id to display all SO applications to RO
+					$ro_incharge = $this->Customfunctions->getApplRegOfficeId($customer_id,$appl_type_id);
+					
+				} elseif ($roles['pao']=='yes') {
+					
+					//get flow wise payment details table
+					$this->loadModel('DmiFlowWiseTablesLists');
+					$paymentDetailsTable = $this->DmiFlowWiseTablesLists->getFlowWiseTableDetails($appl_type_id,'payment');
+										
+					//get pao id from payment details 
+					$this->loadModel($paymentDetailsTable);
+					$checkpaoId = $this->$paymentDetailsTable->find('all',array('fields'=>'pao_id','conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->first();
+				
+					if (!empty($checkpaoId)) {
+						//get user id from PAO details table
+						$this->loadModel('DmiPaoDetails');
+						$checkuserId = $this->DmiPaoDetails->find('all',array('fields'=>'pao_user_id','conditions'=>array('id IS'=>$checkpaoId['pao_id'])))->first();
+						
+						if (!empty($checkuserId)) {
+							//get user email id from user details table
+							$this->loadModel('DmiUsers');
+							$checkuserEmail = $this->DmiUsers->find('all',array('fields'=>'email','conditions'=>array('id IS'=>$checkuserId['pao_user_id'])))->first();
+						
+							$paoEmailId = $checkuserEmail['email'];
+						}
+					}
+					
+				}
+				
+				if($office_email_id==$username || $ro_incharge==$username || $paoEmailId==$username){
+					
+					$by_user = base64_decode($each['by_user']);			
+					$get_appl_type = $this->DmiApplicationTypes->find('all',array('conditions'=>array('id IS'=>$appl_type_id)))->first();
+					$appl_type = $get_appl_type['application_type'];
+					
+					$form_type = $this->Customfunctions->checkApplicantFormType($customer_id);
+					//get firm details
+					$firm_details = $this->DmiFirms->firmDetails($customer_id);
+					$firm_name = $firm_details['firm_name'];					
+					$firm_table_id = $firm_details['id'];
+		
+					$appl_view_link = '../scrutiny/form_scrutiny_fetch_id/'.$firm_table_id.'/view/'.$appl_type_id;
+					$appl_edit_link = '';
+
+					$appl_array[$i]['appl_type'] = $appl_type;
+					$appl_array[$i]['customer_id'] = $customer_id.'-'.$form_type;
+					$appl_array[$i]['firm_name'] = $firm_name;
+					$appl_array[$i]['by_user'] = $by_user;
+					$appl_array[$i]['on_date'] = $each['created'];
+					$appl_array[$i]['appl_view_link'] = $appl_view_link;
+					
+					$i=$i+1;
+				}
+			}
+			
+			$this->set('appl_array',$appl_array);
 		}
 
 

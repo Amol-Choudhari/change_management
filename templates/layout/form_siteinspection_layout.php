@@ -34,7 +34,7 @@
 		echo $this->Html->css('jquery-confirm.min');
 
 		//Custom JS Files
-		echo $this->Html->script('jquery-3.5.1.min');
+		echo $this->Html->script('jquery_main.min');
 		echo $this->Html->script('cwdialog');
 		echo $this->Html->script('validation');
 		echo $this->Html->script('printing_forms_validations_new');
@@ -80,7 +80,7 @@
 
 			<?php echo $this->Flash->render(); ?>
 			<?php echo $this->fetch('content'); ?>
-	  	<?php echo $this->element('footer_section'); ?>
+	  		<?php echo $this->element('footer_section'); ?>
 
 			<?php 
 					//Call For JS Files For DATATABLES

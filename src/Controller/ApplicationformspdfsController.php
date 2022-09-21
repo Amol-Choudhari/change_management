@@ -669,12 +669,13 @@ class ApplicationformspdfsController extends AppController{
 		// data from TBL profile form	
 		if (trim($form_type) !='F') {
 
-			// data from laboratory profile form	
+			// data from laboratory profile form
 			$fetch_laboratory_last_id = $this->DmiCustomerLaboratoryDetails->find('list',array('valueField'=>'id','conditions'=>array('customer_id IS'=>$customer_id)))->toArray();
 			$fetch_laboratory_detail_data = $this->DmiCustomerLaboratoryDetails->find('all',array('conditions'=>array('id'=>max($fetch_laboratory_last_id))))->first();
 			$laboratory_data = $fetch_laboratory_detail_data;
 			$this->set('laboratory_data',$laboratory_data);
-
+			
+			// data from TBL profile form	
 			$fetch_tbl_last_id = $this->DmiCustomerTblDetails->find('list',array('valueField'=>'id','conditions'=>array('customer_id IS'=>$customer_id)))->toArray();
 			$fetch_tbl_detail_data = $this->DmiCustomerTblDetails->find('all',array('conditions'=>array('id'=>max($fetch_tbl_last_id))))->first();
 			$tbl_data = $fetch_tbl_detail_data;
@@ -682,7 +683,7 @@ class ApplicationformspdfsController extends AppController{
 		
 		
 			$all_tbls_details = $this->DmiAllTblsDetails->find('all',array('conditions'=>array('customer_id IS'=>$customer_id, 'OR'=>array('delete_status IS NULL','delete_status ='=>'no'))))->toArray();
-			$this->set('all_tbls_details',$all_tbls_details);		
+			$this->set('all_tbls_details',$all_tbls_details);
 		}
 	
 		
@@ -738,9 +739,7 @@ class ApplicationformspdfsController extends AppController{
 			$crushed_refined_period = $get_crushed_refined_period['crushing_refining_periods'];
 			$this->set('crushed_refined_period',$crushed_refined_period);
 		}
-			
-		//This below line is added for the QR Code genration on Shankhpal [16-08-2022]	
-		$result_for_qr = $this->Customfunctions->getQrCode($premises_district_name);
+		
 		
 		$this->generateApplicationPdf('/Applicationformspdfs/caFormsPdf');	
 		

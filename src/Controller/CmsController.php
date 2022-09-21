@@ -47,8 +47,8 @@ class CmsController extends AppController{
 		if (!empty($user_access)) {
 			//proceed
 		} else {
-			echo "Sorry.. You don't have permission to view this page";
-			exit();
+			echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+			exit;
 		}
 	}
 
@@ -274,8 +274,8 @@ class CmsController extends AppController{
 		if (!empty($user_access)) {
 			//proceed
 		} else {
-			echo "Sorry.. You don't have permission to view this page";
-			exit();
+			echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+			exit;
 		}
 
 	}
@@ -458,8 +458,8 @@ class CmsController extends AppController{
 		if (!empty($user_access)) {
 			//proceed
 		} else {
-			echo "Sorry.. You don't have permission to view this page";
-			exit();
+			echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+			exit;
 		}
 
 	}

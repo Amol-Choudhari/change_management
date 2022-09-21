@@ -61,7 +61,7 @@ class DmiApplicantsResetpassKeysTable extends Table{
 	public function updateKeySuccess($user_id,$key_id){
 		
 		//check record is available
-		$get_record = $this->find('all',array('conditions'=>array('applicant_id IS'=>$user_id,'key IS'=>$key_id,'status'=>null)))->toArray();		
+		$get_record = $this->find('all',array('conditions'=>array('applicant_id IS'=>$user_id,'key IS'=>$key_id,'status IS NULL'),'order'=>'id desc'))->first();		
 		if(!empty($get_record)){
 			
 			//update status to 1, link successfully used

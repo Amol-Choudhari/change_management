@@ -36,7 +36,7 @@
 		echo $this->Html->css('jquery-confirm.min');
 
         //Load Scripts
-		echo $this->Html->script('jquery-3.5.1.min');
+		echo $this->Html->script('jquery_main.min');
 		echo $this->Html->script('bootstrap.min');
 		echo $this->Html->script('validation');
 		echo $this->Html->script('jssor.slider-21.1.6.min');

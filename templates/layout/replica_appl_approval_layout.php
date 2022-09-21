@@ -25,13 +25,14 @@
 					echo $this->Html->css('jquery-confirm.min');
 
 					//SCRIPTS
-					echo $this->Html->script('jquery-3.5.1.min');
+					echo $this->Html->script('jquery_main.min');
+
 					// echo $this->Html->script('bootstrap.min');
 					//echo $this->Html->script('md5');
 					// echo $this->Html->script('validation');
 					echo $this->Html->script('primary_forms_validations');
 					// echo $this->Html->script('jssor.slider-21.1.6.min');
-					// echo $this->Html->script('no_back');
+					echo $this->Html->script('no_back');
 					// echo $this->Html->script('cwdialog');
 
 					echo $this->fetch('meta');

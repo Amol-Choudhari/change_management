@@ -35,7 +35,7 @@ class RandomfunctionsComponent extends Component {
 		$MCommodityCategory = TableRegistry::getTableLocator()->get('MCommodityCategory');
 		$DmiStates = TableRegistry::getTableLocator()->get('DmiStates');
 		$DmiDistricts = TableRegistry::getTableLocator()->get('DmiDistricts');
-		$DmiUsers =  TableRegistry::getTableLocator()->get('DmiUsers');														 
+		$DmiUsers =  TableRegistry::getTableLocator()->get('DmiUsers');
 
 		$username = $this->Session->read('username');
 		$_SESSION['current_level']=null;//because used in element ctp file by from other flow.

@@ -106,16 +106,17 @@
 			$application_dashboard = $this->Session->read('application_dashboard');
 
 			if ($this->Session->read('username') == null) {
-				echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot');?>">Please Login</a><?php
-				exit();
+				
+				echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+				exit;
 			} else {
 
 				if ($application_dashboard == 'packer') {
 					//checking applicant id pattern ex.102/1/PUN/006
 					if (preg_match("/^[0-9]+\/[0-9]+\/[A-Z]+\/[0-9]+$/", $this->Session->read('username'),$matches) !=1) {
 
-						echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot');?>">Please Login</a><?php
-						exit();
+						echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+						exit;
 					}
 				}
 			}
@@ -513,8 +514,8 @@
 
 			if (empty($_GET['$key']) || empty($_GET['$id'])) {
 
-				echo "Sorry You are not authorized to view this page..'<a href='../'>'Please login'</a>'";
-				exit();
+				echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+				exit;
 
 			} else {
 
@@ -522,15 +523,15 @@
 				// Added the urldecode funtion to fix the issue of +,<,# etc issue in gettin through get parameter
 				// added on 26/11/2018
 
-				$user_id = $this->decrypt($_GET['$id']);
+				$user_id = $this->Authentication->decrypt($_GET['$id']);
 				$this->set('user_id',$user_id);
 
 				$countspecialchar = substr_count($user_id ,"/");
 
 				if ($countspecialchar != 2) {
 
-					echo "Sorry You are not authorized to view this page..'<a href='../'>'Please login'</a>'";
-					exit();
+					echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+					exit;
 				}
 
 				//fetch applicant details
@@ -546,7 +547,7 @@
 
 						$randsalt = $this->Session->read('randSalt');
 						$captchacode1 = $this->Session->read('code');
-						$changepassdata = $this->request->getData();
+						$postData = $this->request->getData();
 						$username = $this->request->getData('chemist_id');
 						$countspecialchar = substr_count($username ,"/");
 
@@ -554,47 +555,47 @@
 
 							$user_id_not_valid_msg = 'This User Id is not valid';
 							$this->set('user_id_not_valid_msg',$user_id_not_valid_msg);
-							return false;
+							return null;
 							exit;
 						}
 
 						$newpassdata = $this->request->getData('new_password');
 						$confpassdata = $this->request->getData('confirm_password');
 
-						$reset_pass_result = $this->Authentication->resetPasswordLib('DmiChemistRegistrations',$username,$newpassdata,$randsalt);
+						$reset_pass_result = $this->Authentication->resetPasswordLib('DmiChemistRegistrations',$username,$newpassdata,$randsalt,$postData);
 
 						if ($reset_pass_result == 1) {
 
 							$email_id_not_matched_msg = 'Email id & User Id not Matched.';
 							$this->set('email_id_not_matched_msg',$email_id_not_matched_msg);
-							return false;
+							return null;
 							exit;
 
 						} elseif ($reset_pass_result == 2) {
 
 							$incorrect_captcha_msg = 'Incorrect Captcha code entered.';
 							$this->set('incorrect_captcha_msg',$incorrect_captcha_msg);
-							return false;
+							return null;
 							exit;
 
 						} elseif ($reset_pass_result == 3) {
 
 							$comfirm_pass_msg = 'Confirm password not matched';
 							$this->set('comfirm_pass_msg',$comfirm_pass_msg);
-							return false;
+							return null;
 							exit;
 
 						} elseif ($reset_pass_result == 4) {
 
 							$comfirm_pass_msg = 'This password matched with your last three passwords, Please enter different password';
 							$this->set('comfirm_pass_msg',$comfirm_pass_msg);
-							return false;
+							return null;
 							exit;
 
 						} else {
 
 							//update link key table status to 1 for successfully
-							$this->DmiApplicantsResetpassKeys->updateKeySuccess($user_id,$key_id);
+							$this->DmiChemistsResetpassKeys->updateKeySuccess($user_id,$key_id);
 							$message = 'Password Changed Successfully';
 							$message_theme = 'success';
 							$redirect_to = '../../chemist/chemist_login';
@@ -691,8 +692,8 @@
 
 			} else {
 
-				echo "Sorry You are not authorized to view this page..'<a href='../'>'Please login'</a>'";
-				exit();
+				echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+				exit;
 			}
 
 		}

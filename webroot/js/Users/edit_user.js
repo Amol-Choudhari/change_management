@@ -15,11 +15,11 @@ $(".update_btn").click(function(e){
 });
 
 
-var return_error_msg = $('#return_error_msg').val();
+    var return_error_msg = $('#return_error_msg').val();
 
-if(return_error_msg != ''){
-		$.alert(return_error_msg);
-}
+    if(return_error_msg != ''){
+        $.alert(return_error_msg);
+    }
 
     $(document).ready(function(){
 

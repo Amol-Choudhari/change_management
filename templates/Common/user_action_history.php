@@ -75,4 +75,4 @@
 			</div>
 		</section>
 	</div>
-	<?php echo $this->Html->script('common_modules/user_action_history'); ?>
+	<?php echo $this->Html->script('Common/user_action_history'); ?>

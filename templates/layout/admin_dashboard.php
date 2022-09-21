@@ -42,7 +42,7 @@
 					echo $this->Html->css('jquery-confirm.min');
 
 					//Load JS Files
-					echo $this->Html->script('jquery-3.5.1.min');
+					echo $this->Html->script('jquery_main.min');
 					echo $this->Html->script('sha512.min');
 					echo $this->Html->script('no_back');
 					echo $this->Html->script('cwdialog');

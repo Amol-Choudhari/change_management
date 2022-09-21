@@ -23,7 +23,7 @@ $(document).ready(function(){
             type: "POST",
             async:false,
             url:"../dashboard/common_count_fetch",
-			data:{fetchStatus:fetchStatus},					  
+			data:{fetchStatus:fetchStatus},							 
             beforeSend: function (xhr) {
 				$(".loader").show();$(".loadermsg").show();
                 xhr.setRequestHeader('X-CSRF-Token', $('[name="_csrfToken"]').val());
@@ -68,8 +68,7 @@ $("#pending_count_box").click(function(){
 	$("#all_applications_list").hide();	
 	maintabid = 'pending';
 	
-	getStatusWiseCount('pending');//applied on 03-06-2022 by Amol
-	
+	getStatusWiseCount('pending');//applied on 03-06-2022 by Amol														  
 	$.ajax({
 		type: "POST",
 		async:true,
@@ -106,8 +105,7 @@ $("#reports_filed_count_box").click(function(){
 	$("#all_applications_list").hide();
 	maintabid = 'reports_filed';
 	
-	getStatusWiseCount('reports_filed');//applied on 03-06-2022 by Amol
-	
+	getStatusWiseCount('reports_filed');//applied on 03-06-2022 by Amol																
 	$.ajax({
 		type: "POST",
 		async:true,
@@ -134,8 +132,7 @@ $("#ref_back_count_box").click(function(){
 	$("#all_applications_list").hide();
 	maintabid = 'ref_back';
 	
-	getStatusWiseCount('ref_back');//applied on 03-06-2022 by Amol
-	
+	getStatusWiseCount('ref_back');//applied on 03-06-2022 by Amol														   
 	$.ajax({
 		type: "POST",
 		async:true,
@@ -162,8 +159,7 @@ $("#replied_count_box").click(function(){
 	$("#all_applications_list").hide();
 	maintabid = 'replied';
 	
-	getStatusWiseCount('replied');//applied on 03-06-2022 by Amol
-	
+	getStatusWiseCount('replied');//applied on 03-06-2022 by Amol														  
 	$.ajax({
 		type: "POST",
 		async:true,
@@ -190,8 +186,7 @@ $("#approved_count_box").click(function(){
 	$("#all_applications_list").hide();
 	maintabid = 'approved';
 	
-	getStatusWiseCount('approved');//applied on 03-06-2022 by Amol
-	
+	getStatusWiseCount('approved');//applied on 03-06-2022 by Amol														   
 	$.ajax({
 		type: "POST",
 		async:true,
@@ -218,8 +213,7 @@ $("#rejected_count_box").click(function(){
 	$("#all_applications_list").hide();
 	maintabid = 'rejected';
 	
-	getStatusWiseCount('rejected');//applied on 03-06-2022 by Amol
-	
+	getStatusWiseCount('rejected');//applied on 03-06-2022 by Amol														   
 	$.ajax({
 		type: "POST",
 		async:true,
@@ -246,8 +240,7 @@ $("#allocations_count_box").click(function(){
 	$("#common_applications_list").hide();
 	$("#all_applications_list").hide();
 	
-	getStatusWiseCount('allocation');//applied on 03-06-2022 by Amol
-	
+	getStatusWiseCount('allocation');//applied on 03-06-2022 by Amol															 
 	$.ajax({
 		type: "POST",
 		async:true,
@@ -341,7 +334,8 @@ $("#all_count_box").click(function(){
 		var current_level_script_id = $("#current_level_script_id").val();
 			
 
-		if(current_level_script_id=='level_2' || current_level_script_id=='level_3' || current_level_script_id=='level_4'){
+			//added pao in this condition on 07-09-2022 for rejection option script
+		if(current_level_script_id=='level_2' || current_level_script_id=='level_3' || current_level_script_id=='level_4' || current_level_script_id=='pao'){
 			
 			var i=1;
 			var limit = $("#i-value").val();
@@ -957,7 +951,8 @@ $("#all_count_box").click(function(){
 			});
 		});
 
-		subTabsClicksEvents();				
+		subTabsClicksEvents();
+
 	}
 
 //for scrutiny allocation popup view scripts
@@ -974,8 +969,7 @@ $("#all_count_box").click(function(){
 			var customer_id = $("#alloc_customer_id").val();
 			var mo_user_id = $("#mo_users_list").val();
 			
-			if (appl_type != '' && customer_id !='' && mo_user_id !=null) {
-				
+			if (appl_type != '' && customer_id !='' && mo_user_id !=null) {													  
 				$.ajax({
 						type: "POST",
 						async:true,
@@ -1001,19 +995,15 @@ $("#all_count_box").click(function(){
 								}
 						}
 				});
-			
-			} else {
+		   } else {
 				$.alert('Please Select All Details. It can not be blank');
 				return false;
-			}	
+			}
 		});	
 	}
 
-	
 
-	
-	
-	//for scrutiny allocation popup view scripts
+//for scrutiny allocation popup view scripts
 	function inspection_alloc_js_call(){
 
 		$(".close").click(function(){		
@@ -1039,7 +1029,7 @@ $("#all_count_box").click(function(){
 			
 			if (appl_type != '' && io_user_id != null && customer_id != '' && customer_id != '')
 			{
-
+			
 				$.ajax({
 						type: "POST",
 						async:true,

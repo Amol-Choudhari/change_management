@@ -266,7 +266,7 @@
 		
 
 		//for CA export new validations and points given by the DMI done by Akash [07-09-2022] 
-		if (form_type != 'F') {
+		if (form_type == 'F') {
 			
 			//this validation is added for the new field is added on the ca_profile template for the APEDA documents.
 			if($('#apeda_docs_value').text() == ""){
@@ -276,30 +276,28 @@
 					$("#error_apeda_docs").show().text(check_file_upload_validation(apeda_docs).error_message);
 					$("#apeda_docs").addClass("is-invalid");
 					$("#apeda_docs").click(function(){$("#error_apeda_docs").hide().text; $("#apeda_docs").removeClass("is-invalid");});
-					
 					value_return = 'false';
 				}
 			}
 
 			//this validation is added for the new field is added on the ca_profile template for the IEC Code.
-			if($("#const_oils_table tr td:first").text() == ''){
+			if(iec_code == ''){
 				
-				$("#error_const_oil").show().text("Sorry. There should be minimum 1 constituent oil mill details added.");
-				$("#const_oils_table").addClass("is-invalid");
-				$("#const_oils_table").click(function(){$("#error_const_oil").hide().text; $("#const_oils_table").removeClass("is-invalid");});
+				$("#error_iec_code").show().text("Please enter the IEC code.");
+				$("#iec_code").addClass("is-invalid");
+				$("#iec_code").click(function(){$("#error_iec_code").hide().text; $("#iec_code").removeClass("is-invalid");});
 				value_return = 'false';
 			}
 
 			
 			//this validation is added for the new field is added on the ca_profile template for the IEC documents.
-			if($('#old_certification_pdf_value').text() == ""){
+			if($('#iec_code_docs_value').text() == ""){
 				
-				if(check_file_upload_validation(old_certification_pdf).result == false){	
+				if(check_file_upload_validation(iec_code_docs).result == false){	
 					
-					$("#error_old_certification_pdf").show().text(check_file_upload_validation(old_certification_pdf).error_message);
-					$("#old_certification_pdf").addClass("is-invalid");
-					$("#old_certification_pdf").click(function(){$("#error_old_certification_pdf").hide().text; $("#old_certification_pdf").removeClass("is-invalid");});
-					
+					$("#error_iec_code_docs").show().text(check_file_upload_validation(iec_code_docs).error_message);
+					$("#iec_code_docs").addClass("is-invalid");
+					$("#iec_code_docs").click(function(){$("#error_iec_code_docs").hide().text; $("#iec_code_docs").removeClass("is-invalid");});
 					value_return = 'false';
 				}
 			}
@@ -933,39 +931,39 @@
 		//condition to work validations for BEVO fields
 		if(ca_bevo_applicant == 'yes'){
 
-				// Change Condition for validation and error message by pravin 11-07-2017	
-				if(check_radio_button_validation('is_lab_equipped').result == false){
+			// Change Condition for validation and error message by pravin 11-07-2017	
+			if(check_radio_button_validation('is_lab_equipped').result == false){
+			
+				$("#error_is_lab_equipped").show().text(check_radio_button_validation('is_lab_equipped').error_message);
+				$("#is_lab_equippedYes").addClass("is-invalid");
+				$("#is_lab_equippedYes").click(function(){$("#error_is_lab_equipped").hide().text; $("#is_lab_equippedYes").removeClass("is-invalid");});
+				value_return = 'false';
+			}
+			
+			if($("#lab_equipped_docs_value").text() == ''){
 				
-					$("#error_is_lab_equipped").show().text(check_radio_button_validation('is_lab_equipped').error_message);
-					$("#is_lab_equippedYes").addClass("is-invalid");
-					$("#is_lab_equippedYes").click(function(){$("#error_is_lab_equipped").hide().text; $("#is_lab_equippedYes").removeClass("is-invalid");});
+				// Change Condition for validation and error message by pravin 11-07-2017
+				if(check_file_upload_validation(lab_equipped_docs).result == false){	
+					
+					$("#error_lab_equipped_docs").show().text(check_file_upload_validation(lab_equipped_docs).error_message);
+					$("#lab_equipped_docs").addClass("is-invalid");
+					$("#lab_equipped_docs").click(function(){$("#error_lab_equipped_docs").hide().text; $("#lab_equipped_docs").removeClass("is-invalid");});
 					value_return = 'false';
 				}
-				
-				if($("#lab_equipped_docs_value").text() == ''){
+			}
+			
+			// Add new field validation by pravin 22-07-2017
+			if($("#chemist_detail_docs_value").text() == ''){
 					
-					// Change Condition for validation and error message by pravin 11-07-2017
-					if(check_file_upload_validation(lab_equipped_docs).result == false){	
-						
-						$("#error_lab_equipped_docs").show().text(check_file_upload_validation(lab_equipped_docs).error_message);
-						$("#lab_equipped_docs").addClass("is-invalid");
-						$("#lab_equipped_docs").click(function(){$("#error_lab_equipped_docs").hide().text; $("#lab_equipped_docs").removeClass("is-invalid");});
-						value_return = 'false';
-					}
+				// Change Condition for validation and error message by pravin 11-07-2017
+				if(check_file_upload_validation(chemist_detail_docs).result == false){
+					
+					$("#error_chemist_detail_docs").show().text(check_file_upload_validation(chemist_detail_docs).error_message);
+					$("#chemist_detail_docs").addClass("is-invalid");
+					$("#chemist_detail_docs").click(function(){$("#error_chemist_detail_docs").hide().text; $("#chemist_detail_docs").removeClass("is-invalid");});
+					value_return = 'false';
 				}
-				
-				// Add new field validation by pravin 22-07-2017
-				if($("#chemist_detail_docs_value").text() == ''){
-						
-					// Change Condition for validation and error message by pravin 11-07-2017
-					if(check_file_upload_validation(chemist_detail_docs).result == false){
-						
-						$("#error_chemist_detail_docs").show().text(check_file_upload_validation(chemist_detail_docs).error_message);
-						$("#chemist_detail_docs").addClass("is-invalid");
-						$("#chemist_detail_docs").click(function(){$("#error_chemist_detail_docs").hide().text; $("#chemist_detail_docs").removeClass("is-invalid");});
-						value_return = 'false';
-					}
-				}
+			}
 				
 		}
 		
@@ -2350,7 +2348,10 @@
 		{
 			var error_message = 'Please select the option';		
 			
-			if($('input[name="'+field_value+'"]:checked').val() != "yes" && $('input[name="'+field_value+'"]:checked').val() != "no")
+			//added new option NA in radio options as per UAT suggestion
+    		//on 17-08-2022 
+			if($('input[name="'+field_value+'"]:checked').val() != "yes" && $('input[name="'+field_value+'"]:checked').val() != "no" 
+			&& $('input[name="'+field_value+'"]:checked').val() != "n/a")
 			{
 				
 				return {result: false, error_message: error_message};
@@ -2369,6 +2370,12 @@
 						return 'yes';			
 			}else if($('input[name="'+field_value+'"]:checked').val() == "no"){
 						return 'no';
+   
+			//added new option NA in radio options as per UAT suggestion
+    		//on 17-08-2022 
+			}else if($('input[name="'+field_value+'"]:checked').val() == "n/a"){
+				return 'n/a';
+
 			}
 			
 		}

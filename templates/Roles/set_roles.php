@@ -22,7 +22,7 @@
 				           				<div class="card-header"><h3 class="card-title-new">Set User Roles</h3></div>
 											<div class="card-body mb-3">
 												<label>Select User & Assign : </label>
-													<?php echo $this->Form->control('user_list', array('type'=>'select', 'id'=>'user_list', 'options'=>$find_available_user, 'empty'=>'Select', 'label'=>false, 'class'=>'form-control')); ?>
+												<?php echo $this->Form->control('user_list', array('type'=>'select', 'id'=>'user_list', 'options'=>$find_available_user, 'empty'=>'Select', 'label'=>false, 'class'=>'form-control select_user')); ?>  
 														<div id="user_division"></div> <!-- create div for to show selected user division on ajax call (done by pravin 16/11/2017)-->
 															<div class="clearfix"></div>
 																<div class="alert alert-primary" id="dmi_user_roles_list_box">

@@ -36,7 +36,7 @@
 		// new template css end
 
 
-		echo $this->Html->script('jquery-3.5.1.min');
+		echo $this->Html->script('jquery_main.min');
 		echo $this->Html->script('primary_forms_validations');
 		echo $this->Html->script('cwdialog');
 
@@ -77,8 +77,8 @@
 		echo $this->Html->script('chemist_module_validations');
 		echo $this->Html->script('add_more_row');
 		echo $this->Html->script('jquery-confirm.min');
-		echo $this->Html->script('custom.validation.v.5');																		
-
+		echo $this->Html->script('custom.validation.v.5');
+		echo $this->Html->script('no_back');
 		
 	?>
 	

@@ -953,33 +953,51 @@
 				
 			//New Password Encryption
 
-				var NewpasswordValue = document.getElementById('Newpassword').value;
+			//var NewpasswordValue = document.getElementById('Newpassword').value;
+			
+			if(newpass.match(/^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[a-zA-Z])[a-zA-Z0-9!@#$%^&*]{7,15}$/g) &&
+				confpass.match(/^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[a-zA-Z])[a-zA-Z0-9!@#$%^&*]{7,15}$/g)){ 
 				
-				if(NewpasswordValue.match(/^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[a-zA-Z])[a-zA-Z0-9!@#$%^&*]{7,15}$/g)){ 
-					
-				}else{
+			}else{
 
-					var msg = "Password length should be min. 8 char, min. 1 number, min. 1 Special char. and min. 1 Capital Letter.";
-					renderToast('error', msg);
-					return false;	
-				}
-				
-				
-				var SaltValue = document.getElementById('hiddenSaltvalue').value;
+				var msg = "Password length should be min. 8 char, min. 1 number, min. 1 Special char. and min. 1 Capital Letter.";
+				renderToast('error', msg);
+				return false;	
+			}
+			
+			
+			var SaltValue = document.getElementById('hiddenSaltvalue').value;
+			var EncryptPass = sha512(newpass);
+			var SaltedPass = SaltValue.concat(EncryptPass);
+			//var Saltedsha512pass = sha512(SaltedPass);
+		
+			document.getElementById('Newpassword').value = SaltedPass;
+			//document.getElementById('hiddenSaltvalue').value = '';
+			
+			
+			/*	var SaltValue = document.getElementById('hiddenSaltvalue').value;
 				var NewpassEncryptpass = sha512(NewpasswordValue);
 				var NewpassSaltedpass = SaltValue.concat(NewpassEncryptpass);
 				document.getElementById('Newpassword').value = NewpassSaltedpass;
-				
+			*/	
 
 			//Confirm Password Encryption
 
-				var ConfpassValue = document.getElementById('confpass').value;
-				var ConfpassEncrypt = sha512(ConfpassValue);
-				var ConfpassSalted = SaltValue.concat(ConfpassEncrypt);
-				document.getElementById('confpass').value = ConfpassSalted;
-				document.getElementById('hiddenSaltvalue').value = '';
+			var SaltValue = document.getElementById('hiddenSaltvalue').value;
+			var EncryptPass = sha512(confpass);
+			var SaltedPass = SaltValue.concat(EncryptPass);
+			//var Saltedsha512pass = sha512(SaltedPass);
+		
+			document.getElementById('confpass').value = SaltedPass;
 			
-				exit();
+			/*	var ConfpassValue = document.getElementById('confpass').value;
+			var ConfpassEncrypt = sha512(ConfpassValue);
+			var ConfpassSalted = SaltValue.concat(ConfpassEncrypt);
+			document.getElementById('confpass').value = ConfpassSalted;*/
+			
+			document.getElementById('hiddenSaltvalue').value = '';
+		
+			exit();
 				
 		}
 		

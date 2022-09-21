@@ -174,21 +174,28 @@
 			if($('#certification_type option:selected').val()=='1')
 			{
 			
-				if($('#commodity option:selected').val()=='172' || $('#commodity option:selected').val()=='173'){
+				//id 79,80,81 added on 05-09-2022 for Fat Spread updates after UAT
+				if($('#commodity option:selected').val()=='172'
+					|| $('#commodity option:selected').val()=='173'
+					|| $('#commodity option:selected').val()=='79'
+					|| $('#commodity option:selected').val()=='80'
+					|| $('#commodity option:selected').val()=='81') {
 						
 					//$("#commodity_category option[value!='106']").remove();
 					$("#commodity_category option[value!='106']").prop('disabled', true);
+					$("#commodity_category option[value='11']").prop('disabled', false);//added on 05-09-2022 for Fat Spread updates after UAT
 					$("#selected_commodity").append($('#commodity option:selected'));
-					$("#selected_bevo_nonbevo_msg").show().text("Form E commodity selected, Form A commodities cannot be selected");
-					$("#selected_bevo_nonbevo_msg").css({"color":"red","font-size":"12px","font-weight":"500","text-align":"right"});
+					$("#selected_bevo_nonbevo_msg").show().text("Please note You have selected Form E commodities");
+					$("#selected_bevo_nonbevo_msg").css({"color":"blue","font-size":"12px","font-weight":"500","text-align":"right"});
 
 				}else{
 
 					//$("#commodity_category option[value='106']").remove();
 					$("#commodity_category option[value='106']").prop('disabled', true);
+					$("#commodity_category option[value='11']").prop('disabled', true);//added on 05-09-2022 for Fat Spread updates after UAT
 					$("#selected_commodity").append($('#commodity option:selected'));
-					$("#selected_bevo_nonbevo_msg").show().text("Form A commodity selected, Form E commodities cannot be selected");
-					$("#selected_bevo_nonbevo_msg").css({"color":"red","font-size":"12px","font-weight":"500","text-align":"right"});
+					$("#selected_bevo_nonbevo_msg").show().text("Please note You have selected Form A commodities");
+					$("#selected_bevo_nonbevo_msg").css({"color":"blue","font-size":"12px","font-weight":"500","text-align":"right"});
 				}
 			}else{
 				$("#selected_commodity").append($('#commodity option:selected'));
@@ -613,19 +620,24 @@
 	//$("#state").val('');//line added on 14-07-2018	
 
 
-	$('#radioSuccess1').change(function(){
+	$('#export_unit').change(function(){
+		
+		if ($('#radioSuccess1').is(":checked")) {
 
-		$.confirm({
-			title: 'Note:',
-			content: 'You Have Selected the Export Unit. If You Want to  Proceed click on the <b>Proceed</b> or click on the <b>Cancel</b>.',
-			columnClass: 'medium',
-			type: 'dark',
-			buttons: {
-				proceed: function () {
-				},
-				cancel: function () {
-					$('#radioSuccess2').prop('checked', true);
+			$.confirm({
+				title: 'Note:',
+				content: 'You Have Selected the Export Unit. If You Want to  Proceed click on the <b>Proceed</b> or click on the <b>Cancel</b>.',
+				columnClass: 'medium',
+				type: 'dark',
+				theme: 'modern',
+				buttons: {
+					proceed: function () {
+						
+					},
+					cancel: function () {
+						$("#radioSuccess2").prop("checked",true);
+					}
 				}
-			}
-		});
+			});
+		}
 	});

@@ -64,4 +64,4 @@
 		</section>
 	</div>
 			
-<?php echo $this->Html->script('common_modules/change_password'); ?>
+<?php echo $this->Html->script('Common/change_password'); ?>

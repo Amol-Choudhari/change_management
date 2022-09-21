@@ -17,7 +17,7 @@ class PaymentverificationsController extends AppController{
 		parent::initialize();
 
 		$this->loadComponent('Customfunctions');
-
+		$this->loadModel('DmiSmsEmailTemplates');
 		$this->viewBuilder()->setHelpers(['Form','Html','Time']);
 
 		$this->Session = $this->getRequest()->getSession();
@@ -42,8 +42,8 @@ class PaymentverificationsController extends AppController{
 
 			if(empty($user_access)){
 
-				echo "Sorry.. You don't have permission to view this page";
-				exit();
+				echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+				exit;
 
 			}
 		}
@@ -223,11 +223,11 @@ class PaymentverificationsController extends AppController{
 							$this->$all_applications_current_position->currentUserUpdate($customer_id,$user_email_id,$current_level);//call to custom function from model
 						}
 
-						//Added this call to save the user action log on 17-08-2022
+						#Action
 						$this->Customfunctions->saveActionPoint('Payment Not Confirmed','Success');
 
-						$this->loadModel('DmiSmsEmailTemplates');
-						$this->DmiSmsEmailTemplates->sendMessage(49,$customer_id);
+						#SMS : Payment Not Confirmed
+						//$this->DmiSmsEmailTemplates->sendMessage(49,$customer_id);
 
 						$message = 'Payment not confirmed and Referred Back to Applicant';
 						$message_theme = 'success';
@@ -284,21 +284,32 @@ class PaymentverificationsController extends AppController{
 
 						}
 
-						$this->loadModel('DmiSmsEmailTemplates');
-						//$this->DmiSmsEmailTemplates->sendMessage(51,$customer_id);
-						//$this->DmiSmsEmailTemplates->sendMessage(52,$customer_id);
+						
+						
 						//applied condition on 16-09-2021 by Amol, as per new order for renewal
 						//for renewal this will call all grant process if payment confirmed by DDO
 						if ($appl_type==2) {
+							
+							#SMS : Renewal Payement Confirmed
+							//$this->DmiSmsEmailTemplates->sendMessage(51,$customer_id);
+							//$this->DmiSmsEmailTemplates->sendMessage(52,$customer_id);
+
+							$this->Customfunctions->saveActionPoint('Renewal Payment Confirmed','Success'); #Action
 							$message = 'As the payment confirmed, the application for renewal is granted and available RO/SO In-charge to digitally sign the certificate.';
 							$message_theme = 'info';
 							$redirect_to = '../inspections/finalGrantCall';
+
 						} else {
+
+							#SMS : Payement Confirmed
+							//$this->DmiSmsEmailTemplates->sendMessage(51,$customer_id);
+							//$this->DmiSmsEmailTemplates->sendMessage(52,$customer_id);
+
+							$this->Customfunctions->saveActionPoint('Payment Confirmed','Success'); #Action
 							$message = 'Payment Confirmed Successfully';
 							$message_theme = 'success';
 							$redirect_to = $redirect_url;
 						}
-
 					}
 				}
 			}

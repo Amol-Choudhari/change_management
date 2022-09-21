@@ -31,7 +31,7 @@
 					echo $this->fetch('script');
 
 				// SCRIPTS		
-				   echo $this->Html->script('jquery-3.5.1.min');
+				echo $this->Html->script('jquery_main.min');
 				// echo $this->Html->script('../dashboard/js/lumino.glyphs');
 				// echo $this->Html->script('md5');
 				   echo $this->Html->script('no_back');

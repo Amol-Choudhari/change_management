@@ -110,4 +110,4 @@
 		</section>
 	</div>
 	
-	<?php echo $this->Html->script('common_modules/current_user_logs'); ?>
+	<?php echo $this->Html->script('Common/current_user_logs'); ?>

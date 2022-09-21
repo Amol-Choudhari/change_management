@@ -31,24 +31,37 @@ $(document).ready(function(){
 	$('input').attr('autocomplete', 'off');
 
 	// SET MAXIMUM LENGTH FOR ALL INPUTS
-	$("input[type='text']").attr('maxlength', '150');
+	$("input[type='text']").attr('maxlength', '50');
+
 	$("#mobileno").attr('maxlength', '10');
+	$("#mobile").attr('maxlength', '10'); 	 //added on 09-09-2022 for security reasons
+	$("#mobile_no").attr('maxlength', '10'); //added on 09-09-2022 for security reasons
+	$("#mobile_no").attr('maxlength', '10'); //added on 09-09-2022 for security reasons
+	$("#firm_mobile_no").attr('maxlength', '10'); //added on 09-09-2022 for security reasons
+	$("#lab_mobile_no").attr('maxlength', '10'); //added on 09-09-2022 for security reasons
+	$("#first_rep_mobile").attr('maxlength', '10'); //added on 09-09-2022 for security reasons
+	$("#second_rep_mobile").attr('maxlength', '10'); //added on 09-09-2022 for security reasons
+	$("#email").attr('maxlength', '50'); //added on 09-09-2022 for security reasons
+
+	$("#postal_code").attr('maxlength', '6'); //added on 09-09-2022 for security reasons
+
+	
 	$("textarea").attr('maxlength', '500');
 	$("input[type='password']").attr('maxlength', '20'); // password field used in login, reset password
 	$("input[type='number']").attr({'oninput': 'javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);', 'maxlength': '20'});
 	// LOGIN FORM & FORGOT PASSSWORD FORM
-	$("input[name='data[Dmi_user][email]']").attr('maxlength', '50'); // email
-	$("input[name='data[Dmi_customer][customer_id]']").attr('maxlength', '50'); // company id / premises id
+	$("input[name='data[email]']").attr('maxlength', '50'); // email
+	$("input[name='data[customer_id]']").attr('maxlength', '50'); // company id / premises id
 	$("#captchacode").attr('maxlength', '6'); // captcha
 
 	// CLEAR INPUT FIELDS ON PAGE LOAD
 	//$("input[name='data[Dmi_user][email]']").val('');
 	$("#passwordValidation").val('');
 	$("#captchacode").val('');
-	$("input[name='data[Dmi_user][mobileno]']").val('');
+	$("input[name='data[mobileno]']").val('');
 	/* reset password DMI users, LIMS users*/
-	$("input[name='data[Dmi_user][new_password]']").val('');
-	$("input[name='data[Dmi_user][confirm_password]']").val('');
+	$("input[name='data[new_password]']").val('');
+	$("input[name='data[confirm_password]']").val('');
 
 
 	//added new common script to validate somw special characters from the input fields

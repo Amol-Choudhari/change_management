@@ -340,13 +340,14 @@
 										</div>
 
 										<?php if ($ca_bevo_applicant == 'no') { ?>
-											<div class="form-group row">
+											<!-- commented on 11-08-2022, suggested by DMI in UAT-->
+											<!--<div class="form-group row">
 												<label for="inputEmail3" class="col-sm-3 col-form-label">Period for which firm has been in business (Years) <span class="cRed">*</span></label>
 												<div class="custom-file col-sm-9">
-												<?php echo $this->Form->control('business_years', array('type'=>'select', 'id'=>'business_years', 'value'=>$section_form_details[0]['business_years'], 'options'=>$all_ca_business_year, 'label'=>false, 'class'=>'form-control')); ?>
+												<?php //echo $this->Form->control('business_years', array('type'=>'select', 'id'=>'business_years', 'value'=>$section_form_details[0]['business_years'], 'options'=>$all_ca_business_year, 'label'=>false, 'class'=>'form-control')); ?>
 												<span id="error_business_years" class="error invalid-feedback"></span>
 												</div>
-											</div>
+											</div>-->
 										<?php } ?>
 									</div>
 									<div class="col-sm-6">
@@ -430,6 +431,7 @@
 					<!-- Added new Upload Field for APEDA and IEC documents  by AKASH 01/09/2022 -->
 
 					<?php if ($form_type == 'F') { ?>
+						
 						<div class="card-header"><h3 class="card-title">Other Details</h3></div>
 						<div class="form-horizontal">
 							<div class="card-body">
@@ -437,8 +439,11 @@
 									<div class="col-sm-12"><p class="bg-info pl-2 p-1 rounded text-sm"><i class="fa fa-info-circle"></i> Please select the document name which is to be uploaded. Have a scanned copy of it ready.</p></div>
 									<div class="col-sm-6">
 										<div class="form-group row">
-											<label class="col-sm-3 col-form-label">Certificates of APEDA
-												<?php if (!empty($customer_data['apeda_docs_value'])) { ?><a  target="blank" href="<?php echo str_replace("D:/xampp/htdocs","",$section_form_details[0]['apeda_docs']); ?>">: Preview</a><?php } ?>
+											<label class="col-sm-3 col-form-label">Certificates of APEDA <span class="cRed">*</span></label>
+											<label for="inputEmail3" class="col-sm-3 col-form-label">
+												<?php if(!empty($section_form_details[0]['apeda_docs'])){?>
+													<a id="apeda_docs_value" target="blank" href="<?php echo str_replace("D:/xampp/htdocs","",$section_form_details[0]['apeda_docs']); ?>">Preview</a>
+												<?php } ?>
 											</label>
 											<div class="custom-file col-sm-9">
 												<input type="file" class="custom-file-input" id="apeda_docs" name="apeda_docs" multiple='multiple'>
@@ -449,7 +454,7 @@
 											</div>
 										</div>
 									</div>
-									<div class="col-sm-12"><p class="bg-info pl-2 p-1 rounded text-sm"><i class="fa fa-info-circle"></i> Please provide the Importer-Exporter Code (IEC) that is required for every import/export business owner in India.</p></div>
+									<div class="col-sm-12 mt-3"><p class="bg-info pl-2 p-1 rounded text-sm"><i class="fa fa-info-circle"></i> Please provide the Importer-Exporter Code (IEC) that is required for every import/export business owner in India.</p></div>
 
 									<div class="col-sm-12 d-inline-flex">
 										<div class="col-sm-6 d-inline-block">
@@ -479,7 +484,6 @@
 											<p class="lab_form_note float-right"><i class="fa fa-info-circle"></i> File type: PDF, jpg &amp; max size upto 2 MB</p>
 										</div>
 									</div>
-									
 								</div>
 							</div>
 						</div>

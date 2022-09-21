@@ -196,15 +196,19 @@ class AuthenticationComponent extends Component {
 
 		$Dmitable = TableRegistry::getTableLocator()->get($table);
 
+		//applied condition on 19-09-2022 by Amol, if chemist applied through forgot password.
+		if ($table=='DmiChemistRegistrations') {
+			$customer_id=null;
+		}
 		//added this condition on 25-10-2018 by Amol, to apply query with/without customer id condition
 
 		if (!empty($customer_id)) {
 
-			$get_record_details = $Dmitable->find('all', array('conditions'=> array('email IS' => base64_encode($emailforrecovery), 'customer_id IS'=>$customer_id)))->first();
+			$get_record_details = $Dmitable->find('all', array('conditions'=> array('email IS' => $emailforrecovery, 'customer_id IS'=>$customer_id)))->first();
 
 		} else {
 
-			$get_record_details = $Dmitable->find('all', array('conditions'=> array('email IS' => base64_encode($emailforrecovery))))->first();
+			$get_record_details = $Dmitable->find('all', array('conditions'=> array('email IS' => $emailforrecovery)))->first();
 		}
 
 		if ($get_record_details == null) {
@@ -244,7 +248,6 @@ class AuthenticationComponent extends Component {
 			$txt = 	'Hello' .
 					"<html><body><br></body></html>".'Click the below link OR copy it to browser address bar:' .
 					"<html><body><br></body></html>" .$host_path.'/DMI/'.$controller.'/reset_password/'.$url.
-					"<html><body><br></body></html>" .$host_path.'/DMI/'.$controller.'/reset_password/'.$url.
 					"<html><body><br></body></html>".'Above link will be active only for 24 hours. If expired, then try to set your password from forgot Password option on DMI portal'.
 					"<html><body><br></body></html>".'Thanks & Regards,' .
 					"<html><body><br></body></html>" .'Directorate of Marketing & Inspection,' .
@@ -266,12 +269,12 @@ class AuthenticationComponent extends Component {
 			//Added for the chemist forgot password on 09-09-2021 By Akash
 			} elseif ($table =='DmiChemistRegistrations') {
 
-				$DmiApplicantsResetpassKeys = TableRegistry::getTableLocator()->get('DmiApplicantsResetpassKeys');
+				$DmiApplicantsResetpassKeys = TableRegistry::getTableLocator()->get('DmiChemistsResetpassKeys');
 				$DmiApplicantsResetpassKeys->saveKeyDetails($get_record_details['chemist_id'],$key_id);
 
 			} elseif ($table=='DmiUsers') {
 
-				$DmiUsersResetpassKeys = TableRegistry::getTableLocator()->get('DmiApplicantsResetpassKeys');
+				$DmiUsersResetpassKeys = TableRegistry::getTableLocator()->get('DmiUsersResetpassKeys');
 				$DmiUsersResetpassKeys->saveKeyDetails($emailforrecovery,$key_id);
 			}
 
@@ -376,7 +379,7 @@ class AuthenticationComponent extends Component {
 	// #CONTRIBUTER : Akash Thakre (u) (m) / Aniket Ganvir (u)
 	// DATE : 18-04-2022
 
-	public function resetPasswordLib($table,$username,$newpassdata,$randsalt) {
+	public function resetPasswordLib($table,$username,$newpassdata,$randsalt,$postData) {
 
 		$Dmitable = TableRegistry::getTableLocator()->get($table);
 
@@ -407,15 +410,15 @@ class AuthenticationComponent extends Component {
 
 		} elseif ($table=='DmiChemistRegistrations') {
 
-			$form_name = 'DmiChemistRegistrations';
-			$log_table = 'DmiChemistLogs';
+			$form_name = TableRegistry::getTableLocator()->get('DmiChemistRegistrations');
+			$log_table = TableRegistry::getTableLocator()->get('DmiChemistLogs');
 		}
 
 		$Dmilogtable = $log_table;
 
-		if ($newpassdata == $this->request->getData('confirm_password')) {
+		if ($newpassdata == $postData['confirm_password']) {
 
-			if ($this->request->getData('captcha') !="" && $_SESSION["code"] == $this->request->getData('captcha')) {
+			if ($postData['captcha'] !="" && $_SESSION["code"] == $postData['captcha']) {
 
 				$Removesaltnewpass = substr($newpassdata,strlen($randsalt));
 
@@ -437,7 +440,7 @@ class AuthenticationComponent extends Component {
 				} elseif ($table=='DmiChemistRegistrations') {
 
 					$Dmitable_id = $Dmitable->find('all',array('fields'=>'id','conditions'=>array('chemist_id IS'=>$username),'order'=>array('id desc')))->first();
-					$log_ids = $Dmilogtable->find('all',array('fields'=>'id','conditions'=>array('chemist_id IS'=>$username),'order'=>array('id desc')))->first();
+					$log_ids = $Dmilogtable->find('all',array('fields'=>'id','conditions'=>array('customer_id IS'=>$username),'order'=>array('id desc')))->first();
 				}
 
 				if ($Dmitable_id) {
@@ -454,7 +457,7 @@ class AuthenticationComponent extends Component {
 
 						$log_id = $log_ids['id'];
 						$log_tableEntity = $log_table->newEntity(['id'=>$log_id,
-							'ip_address'=>$this->request->clientIp(),
+							'ip_address'=>$this->Controller->getRequest()->clientIp(),
 							'date'=>date('Y-m-d'),
 							'time_in'=>date('H:i:s'),
 							'remark'=>'Success',

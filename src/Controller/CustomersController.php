@@ -191,7 +191,7 @@ class CustomersController extends AppController {
 
                                 //get applicant email id and apply masking before showing in message by Amol on 25-02-2021
                                 $get_email_id = $this->DmiCustomers->find('all', array('fields' => 'email', 'conditions' => array('customer_id' => $username)))->first();
-                                $email_id = $this->Customfunctions->getMaskedValue($get_email_id['email'], 'email');
+                                $email_id = $this->Customfunctions->getMaskedValue(base64_decode($get_email_id['email']), 'email');
                                 $message = 'Your password has been expired, The link to reset password is sent on email id ' . $email_id . ', Please contact the concerned office.';
                                 $redirect_to = 'login_customer';
 
@@ -231,7 +231,7 @@ class CustomersController extends AppController {
                             } elseif ($login_result == 4) {
                                 //get applicant email id and apply masking before showing in message by Amol on 25-02-2021
                                 $get_email_id = $this->$table->find('all', array('fields' => 'email', 'conditions' => array('customer_id' => $username)))->first();
-                                $email_id = $this->Customfunctions->getMaskedValue($get_email_id['email'], 'email');
+                                $email_id = $this->Customfunctions->getMaskedValue(base64_decode($get_email_id['email']), 'email');
                                 $message = 'Your password has been expired, The link to reset password is sent on email id ' . $email_id . ', Please contact the concerned office.';
                                 $redirect_to = 'login_customer';
 
@@ -518,8 +518,8 @@ class CustomersController extends AppController {
 
         if ($this->getRequest()->getSession()->read('username') == null) {
 
-            echo "Sorry You are not authorized to view this page..'<a href='../'>'Please login'</a>'";
-            exit();
+            echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+            exit;
 
         } else {//this else portion added on 10-07-2017 by Amol to allow only logged in Applicant
 
@@ -528,9 +528,8 @@ class CustomersController extends AppController {
                 //Give Permission
             } else {
 
-                echo "Sorry You are not authorized to view this page.."; ?><a
-                href="<?php echo $this->request->getAttribute('webroot'); ?>">Please Login</a><?php
-                exit();
+                echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+				exit;
             }
         }
 
@@ -649,8 +648,8 @@ class CustomersController extends AppController {
 
         if (empty($_GET['$key']) || empty($_GET['$id'])) {
 
-            echo "Sorry You are not authorized to view this page..'<a href='../'>'Please login'</a>'";
-            exit();
+            echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+            exit;
 
         } else {
 
@@ -671,8 +670,8 @@ class CustomersController extends AppController {
 
             } else {
 
-                echo "Sorry You are not authorized to view this page..'<a href='../'>'Please login'</a>'";
-                exit();
+                echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+				exit;
             }
 
             $this->loadModel($table);
@@ -691,7 +690,7 @@ class CustomersController extends AppController {
 
                     $randsalt = $this->Session->read('randSalt');
                     $captchacode1 = $this->Session->read('code');
-                    $changepassdata = $this->request->getData();
+                    $postData = $this->request->getData();
                     $username = $this->request->getData('customer_id');
                     $countspecialchar = substr_count($username, "/");
 
@@ -710,7 +709,7 @@ class CustomersController extends AppController {
                     $confpassdata = $this->request->getData('confirm_password');
 
                     // calling reset password library function
-                    $reset_pass_result = $this->Authentication->resetPasswordLib($table, $username, $newpassdata, $randsalt);
+                    $reset_pass_result = $this->Authentication->resetPasswordLib($table, $username, $newpassdata, $randsalt,$postData);
 
                     if ($reset_pass_result == 1) {
 
@@ -730,7 +729,7 @@ class CustomersController extends AppController {
 
                         $comfirm_pass_msg = 'Confirm password not matched';
                         $this->set('comfirm_pass_msg', $comfirm_pass_msg);
-                        return false;
+                        return null;
                         exit;
 
                     } elseif ($reset_pass_result == 4) {
@@ -738,7 +737,7 @@ class CustomersController extends AppController {
                         // SHOW ERROR MESSAGE IF NEW PASSWORD FOUND UNDER LAST THREE PASSWORDS OF USER // By Aniket Ganvir dated 16th NOV 2020
                         $comfirm_pass_msg = 'This password matched with your last three passwords, Please enter different password';
                         $this->set('comfirm_pass_msg', $comfirm_pass_msg);
-                        return false;
+                        return null;
                         exit;
 
                     } else {
@@ -880,8 +879,8 @@ class CustomersController extends AppController {
 
         if ($this->getRequest()->getSession()->read('username') == null) {
 
-            echo "Sorry You are not authorized to view this page..'<a href='../'>'Please login'</a>'";
-            exit();
+            echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+            exit;
 
         } else {//this else portion added on 10-07-2017 by Amol to allow only logged in Applicant
 
@@ -890,9 +889,8 @@ class CustomersController extends AppController {
                 //Give Permission
             } else {
 
-                echo "Sorry You are not authorized to view this page.."; ?><a
-                href="<?php echo $this->request->getAttribute('webroot'); ?>">Please Login</a><?php
-                exit();
+                echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+                exit;
             }
 
         }
@@ -1186,8 +1184,8 @@ class CustomersController extends AppController {
 
         if ($customer_id == null) {
 
-            echo "Sorry You are not authorized to view this page..'<a href='../'>'Please login'</a>'";
-            exit();
+            echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+            exit;
 
         } else {//this else portion added on 10-07-2017 by Amol to allow only logged in Applicant
 
@@ -1196,9 +1194,8 @@ class CustomersController extends AppController {
                 //Give Permission
             } else {
 
-                echo "Sorry You are not authorized to view this page.."; ?><a
-                href="<?php echo $this->request->getAttribute('webroot'); ?>">Please Login</a><?php
-                exit();
+                echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+                exit;
             }
         }
 
@@ -3583,7 +3580,7 @@ class CustomersController extends AppController {
         $comm_array = [];
         $i = 0;
         foreach($form_type as $eachformtype){ 
-            $get_doc =  $this->DmiDocCheckLists->find('all')->select(['releted_document'])->where(['form_type'=>$eachformtype])->order('id ASC')->toArray();
+            $get_doc =  $this->DmiDocCheckLists->find('all')->select(['releted_document'])->where(['form_type'=>$eachformtype])->order('releted_document ASC')->toArray();
             $doc_array[$i] = $get_doc;
             $i++;
         }
@@ -3600,13 +3597,13 @@ class CustomersController extends AppController {
         
          
         
-        $commodity_cat =  $this->MCommodityCategory->find('all')->select(['category_code','category_name'])->where(['display' => 'Y'])->order('category_code ASC')->toArray();
+        $commodity_cat =  $this->MCommodityCategory->find('all')->select(['category_code','category_name'])->where(['display' => 'Y'])->order('category_name ASC')->toArray();
         $this->set('commodity_cat', $commodity_cat);
         
         $comm_array = [];
         $i = 0;
         foreach($commodity_cat as $eachcat){
-             $get_comm =  $this->MCommodity->find('all')->select(['commodity_name'])->where(['category_code'=>$eachcat['category_code'],'display' => 'Y'])->order('category_code ASC')->toArray();
+             $get_comm =  $this->MCommodity->find('all')->select(['commodity_name'])->where(['category_code'=>$eachcat['category_code'],'display' => 'Y'])->order('commodity_name ASC')->toArray();
              $comm_array[$i] = $get_comm;
              $i++;
         }
@@ -3641,7 +3638,7 @@ class CustomersController extends AppController {
 
        //list of authorized laboratory
         $lab_list = $this->DmiFirms->find('list',array('keyField'=>'id','valueField'=>'firm_name','joins'=>array(array('table' => 'dmi_grant_certificates_pdfs','alias' => 'dmigcp','type' => 'INNER','conditions' => array('dmigcp.customer_id = DmiFirms.customer_id'))),
-		'conditions'=>array('Dmifirms.customer_id like'=>'%'.'/3/'.'%','delete_status IS Null'),'order'=>array('Dmifirms.id desc')))->toArray();
+		'conditions'=>array('Dmifirms.customer_id like'=>'%'.'/3/'.'%','delete_status IS NULL'),'order'=>array('Dmifirms.firm_name asc')))->toArray();
 
         $this->set('lab_list',$lab_list);
         
@@ -3650,11 +3647,11 @@ class CustomersController extends AppController {
        
         
         $printers_list = $this->DmiFirms->find('list',array('keyField'=>'id','valueField'=>'firm_name','joins'=>array(array('table' => 'dmi_grant_certificates_pdfs','alias' => 'dmigcp','type' => 'INNER','conditions' => array('dmigcp.customer_id = DmiFirms.customer_id'))),
-		'conditions'=>array('Dmifirms.customer_id like'=>'%'.'/2/'.'%','delete_status IS Null'),'order'=>array('Dmifirms.id desc')))->toArray();
+		'conditions'=>array('Dmifirms.customer_id like'=>'%'.'/2/'.'%','delete_status IS NULL'),'order'=>array('Dmifirms.firm_name asc')))->toArray();
         $this->set('printers_list',$printers_list);
 
         $attached_list =  $this->DmiCaPpLabMapings->find('all')->select(['customer_id','pp_id','lab_id','map_type'])->where(array('customer_id IS' => $customer_id))->toArray();
-        //pr($attached_list);die;
+        
         $this->set('attached_list',$attached_list);
 
       

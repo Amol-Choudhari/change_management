@@ -10,8 +10,7 @@ use App\Network\Response\Response;
 
 class CustomerformsController extends AppController{
 		
-	var $name = 'Customerforms';		
-	//var $layout = 'customer_forms_layout';		
+	var $name = 'Customerforms';
 	
     public function initialize(): void
     {
@@ -420,7 +419,9 @@ class CustomerformsController extends AppController{
 		//$commodities = $this->Dmi_commodity->find('list',array('fields'=>'commodity_name','conditions'=>array('display'=>'Y')));
 		//$this->set('commodities',$commodities);
 		
-		$commodity_categories = $this->MCommodityCategory->find('list',array('valueField'=>'category_name','conditions'=>array('display'=>'Y')))->toArray();
+		//changes by shankhpal shende for oreder asc
+		$commodity_categories = $this->MCommodityCategory->find('list',array('valueField'=>'category_name','conditions'=>array('display'=>'Y'),'order'=>array('category_name asc')))->toArray();
+		
 		$this->set('commodity_categories',$commodity_categories);
 		
 		//$sub_commodities = $this->Dmi_sub_commodity->find('list',array('fields'=>'sub_comm_name', 'conditions'=>array('commodity_id'=>1)));
@@ -808,7 +809,7 @@ class CustomerformsController extends AppController{
 								'customer_primary_id'=>$customer_primary_id,
 								//'customer_primary_once_no'=>$this->Session->read('once_card_no'), //commented on 23-03-2018 to avoid mandatory for aadhar
 								'customer_id'=>$customer_secondary_id,
-								'password'=>'91c8559eb34ab5e1ab86f9e80d9753c59b7da0d0e025ec8e7785f19e7852ca428587cdb4f02b5c67d1220ca5bb440b5592cd76b1c13878d7f10a1e568014f4dc',//Agmark123@
+								'password'=>'91c8559eb34ab5e1ab86f9e80d9753c59b7da0d0e025ec8e7785f19e7852ca428587cdb4f02b5c67d1220ca5bb440b5592cd76b1c13878d7f10a1e568014f4dc', //Agmark123@
 							//	'password'=>'3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2',//123
 								'certification_type'=>$certification_type,
 								'firm_name'=>$htmlencoded_firm_name,

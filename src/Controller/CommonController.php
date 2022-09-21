@@ -65,8 +65,8 @@ class CommonController extends AppController {
 	public function authenticateUser(){
 
 		if ($this->Session->read('username') == null) {
-			echo "Sorry You are not authorized to view this page..'<a href='../'>'Please login'</a>'";
-			exit();
+			echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+			exit;
 
 		} else {
 
@@ -92,9 +92,8 @@ class CommonController extends AppController {
 
 			} else {
 
-				echo "Sorry You are not authorized to view this page.."; ?><a
-				href="<?php echo $this->request->getAttribute('webroot'); ?>">Please Login</a><?php
-				exit();
+				echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+				exit;
 			}
 		}
 	}
@@ -322,8 +321,8 @@ class CommonController extends AppController {
 				$this->redirect('/');
 
 			} else {
-				echo "Sorry You are not authorized to view this page..'<a href='login_user'>'Please login'</a>'";
-				exit();
+				echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+				exit;
 			}
 			
 		} else {
@@ -342,7 +341,7 @@ class CommonController extends AppController {
 	public function getSpecificTable(){
 
 		//get user type
-		$userType = $this->Customfunctions->userType($this->Session->read('username'));
+		$userType = $this->Customfunctions->getUserType($this->Session->read('username'));
 
 		if ($userType == 'Primary') {
 

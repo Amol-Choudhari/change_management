@@ -93,7 +93,8 @@
 							if(!empty($search_user_role)) {
 							?>  <span class="badge rounded-pill bg-grad1 shadow">User Roles </span>
 									<i class="fas fa-caret-right"></i>
-									<span class="badge bg-grad2 mr-3 shadow"> <?php echo $user_roles[$search_user_role]; $search_value = 'yes'; ?> </span>
+									<!-- changes done by shankhpal shende on 09/09/2022 -->
+									<span class="badge bg-grad2 mr-3 shadow"> <?php echo $search_user_role; $search_value = 'yes'; ?> </span>
 								<?php
 							}
 							if(!empty($search_office)) {

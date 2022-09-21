@@ -711,10 +711,11 @@ class DashboardController extends AppController{
 
 								if(empty($approved_status) && !($is_appl_old == 'yes' && $appl_type_id=='1') && !empty($current_pos)){
 
-									if($current_pos['current_level']=='level_3' && $current_pos['current_user_email_id']==$username){
+									//commented below condition to show allocated appls also in allocation window, on 10-08-2022
+									//if($current_pos['current_level']=='level_3' && $current_pos['current_user_email_id']==$username){
 
 										$creat_array = true;
-									}
+									//}
 
 								}
 
@@ -807,12 +808,13 @@ class DashboardController extends AppController{
 										if(empty($approved_status) && !($is_appl_old == 'yes' && $appl_type_id=='1' && !empty($current_pos))){
 
 											if(!($form_type == 'C' && ($appl_type_id=='1' || $appl_type_id=='2'))){//don't list lab export appl. with flow new & renewal
-
-												if($current_pos['current_level']=='level_3' && $current_pos['current_user_email_id']==$username){
+												
+												//commented below condition to show allocated appls also in allocation window, on 10-08-2022
+												//if($current_pos['current_level']=='level_3' && $current_pos['current_user_email_id']==$username){
 
 													$creat_array = true;
 
-												}
+												//}
 
 											}
 										}
@@ -873,11 +875,12 @@ class DashboardController extends AppController{
 
 								if(!empty($reports_submitted_status) && empty($approved_status)){
 
-									if($current_pos['current_level']=='level_4_ro' && $current_pos['current_user_email_id']==$username){
+									//commented below condition to show allocated appls also in allocation window, on 10-08-2022
+									//if($current_pos['current_level']=='level_4_ro' && $current_pos['current_user_email_id']==$username){
 
 										$creat_array = true;
 
-									}
+									//}
 								}
 
 								//creating array to list records with respect to above conditions
@@ -942,11 +945,12 @@ class DashboardController extends AppController{
 
 								if(empty($level1_approved_status) && !empty($current_pos)){
 
-									if($current_pos['current_user_email_id']==$username && $current_pos['current_level']=='level_4'){
+									//commented below condition to show allocated appls also in allocation window, on 10-08-2022
+									//if($current_pos['current_user_email_id']==$username && $current_pos['current_level']=='level_4'){
 
 										$creat_array = true;
 
-									}
+									//}
 
 								}
 
@@ -963,7 +967,7 @@ class DashboardController extends AppController{
 
 								}
 
-							$i=$i+1;
+								$i=$i+1;
 							}
 						}
 
@@ -1021,7 +1025,7 @@ class DashboardController extends AppController{
 
 			if($appl_type=='Old Appl'){
 				$appl_type_id['id'] = 1;
-				$_SESSION['application_type'] = 1;
+				//$_SESSION['application_type'] = 1;
 			}
 
 			$flow_wise_tables = $this->DmiFlowWiseTablesLists->find('all',array('conditions'=>array('application_type IS'=>$appl_type_id['id'])))->first();
@@ -1117,7 +1121,7 @@ class DashboardController extends AppController{
 
 				if($this->DmiMoAllocationLogs->save($allocation_logs_entity)){
 					$this->loadModel('DmiSmsEmailTemplates');
-					$this->DmiSmsEmailTemplates->sendMessage($msg_id,$customer_id);
+					//$this->DmiSmsEmailTemplates->sendMessage($msg_id,$customer_id);
 				}
 
 			}
@@ -1223,7 +1227,7 @@ class DashboardController extends AppController{
 
 				if($this->DmiIoAllocationLogs->save($allocation_logs_entity)){
 					$this->loadModel('DmiSmsEmailTemplates');
-					$this->DmiSmsEmailTemplates->sendMessage($msg_id,$customer_id);
+					//$this->DmiSmsEmailTemplates->sendMessage($msg_id,$customer_id);
 				}
 
 			}
@@ -1290,7 +1294,7 @@ class DashboardController extends AppController{
 
 			//call custom function from Model with message id
 			$this->loadModel('DmiSmsEmailTemplates');
-			$this->DmiSmsEmailTemplates->sendMessage(16,$customer_id);
+			//$this->DmiSmsEmailTemplates->sendMessage(16,$customer_id);
 
 		}
 
@@ -1922,7 +1926,15 @@ class DashboardController extends AppController{
 			$remark = htmlentities($_POST['remark'], ENT_QUOTES);
 			$this->loadModel('DmiApplicationTypes');
 			$this->loadModel('DmiRejectedApplLogs');
-			$appl_type_id = $this->DmiApplicationTypes->find('all',array('conditions'=>array('LOWER(application_type) IS'=>strtolower($appl_type))))->first();
+			
+			//added on 18-07-2022 by Amol
+			//for old applications
+			if ($appl_type!='Old Appl') {
+				$appl_type_id = $this->DmiApplicationTypes->find('all',array('conditions'=>array('LOWER(application_type) IS'=>strtolower($appl_type))))->first();
+			}else{
+				$appl_type_id['id']=1;
+			}
+			
 
 			//insert record in reject log table
 			$rejectlogEntity = $this->DmiRejectedApplLogs->NewEntity(array(

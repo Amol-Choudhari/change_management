@@ -867,3 +867,9 @@ border-radius: .25rem;}
 .cgfs15tal{color:green; font-size:15px;text-align:left;}
 .ligap{column-gap: 0px;}
 .ms-options-wrap > .ms-options > ul label{padding-left:23px !important;}					
+/* added by shankhpal shende on 07/25/2022 */
+.select_user{max-width: 30%;}
+#add_master_btn{width: 50px;}
+ /*
+.addmt{margin-left: 30px;}
+.inboxwidth{max-width: 30.333%;} */
