@@ -92,7 +92,7 @@
 	font-size: 14px;
 }
 
-.wd14mrminus5{width: 14%;margin-right: -5px;}
+.wd19mrminus12{width: 19%;margin-right: -12px;}
 .mt22p1{margin-top: 22px; padding: 1px;}
 
 
@@ -867,6 +867,8 @@ border-radius: .25rem;}
 .cgfs15tal{color:green; font-size:15px;text-align:left;}
 .ligap{column-gap: 0px;}
 .ms-options-wrap > .ms-options > ul label{padding-left:23px !important;}					
+.marginBottom33{margin-bottom: 33px;}
+.marginBottomMinus20{margin-bottom: -20px;}
 /* added by shankhpal shende on 07/25/2022 */
 .select_user{max-width: 30%;}
 #add_master_btn{width: 50px;}

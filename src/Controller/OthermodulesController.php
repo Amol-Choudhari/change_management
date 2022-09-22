@@ -498,8 +498,8 @@ class OthermodulesController extends AppController{
 			$this->loadModel('DmiFlowWiseTablesLists');
 			$flow_wise_tables = $this->DmiFlowWiseTablesLists->find('all',array('conditions'=>array('application_type'=>$appl_type_id),'order'=>'id ASC'))->first();
 			
-			$DmiAllocations = $each_flow['allocation'];
-			$DmiHoLevelAllocations = $each_flow['ho_level_allocation'];
+			$DmiAllocations = $flow_wise_tables['allocation'];
+			$DmiHoLevelAllocations = $flow_wise_tables['ho_level_allocation'];
 			
 			$this->loadModel($DmiAllocations);
 			$this->loadModel($DmiHoLevelAllocations);

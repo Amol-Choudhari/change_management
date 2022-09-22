@@ -1,29 +1,6 @@
+
+	var customer_id = $("#customer_flash_id").val();
 	
-	
-	// Get the modal
-	var modal = document.getElementById('declarationModal');
-
-	//$("#show_valid_upto_date").css({"color":"blue","font-size":"13px","font-weight":"500","text-align":"right","margin-bottom":"10px"});
-
-	// Get the button that opens the modal
-	var open_model = document.getElementById('show_old_cert_details');
-
-	// Get the <span> element that closes the modal
-	var close_model = document.getElementsByClassName("close")[0];
-
-
-	// When the user clicks on the button, open the modal
-	open_model.onclick = function() {
-		modal.style.display = "block";
-		return false;
-	}
-
-	// When the user clicks on <span> (x), close the modal
-	close_model.onclick = function() {
-		modal.style.display = "none";
-	}
-
-
 	$(document).ready(function () {
 
 		$('#grant_date').datepicker({
@@ -88,39 +65,57 @@
 
 				var valid_upto_date = show_valid_upto_date_func(last_grant_date);//called common function to get valid upto date
 
-				if(confirm("According to the changed dates, now Certificate is valid upto " + valid_upto_date + ". If this is proper, then press OK to update")){
 
-					if(last_ren_day_month){
-						var last_ren_date = last_ren_day_month + last_ren_year;
-					}else{
-						var last_ren_date = null;
-					}
+				$.confirm({
+			
+					icon: 'fas fa-info-circle',
+					content: "According to the changed dates, now Certificate is valid upto " + valid_upto_date + ". If this is proper, then press CONFIRM to update",
+					columnClass: 'col-md-6 col-md-offset-3',
+					buttons: {
+						confirm: { 
+							btnClass: 'btn-green',
+							action: function () {
 
-					//ajax call to update table records with dates on controller side.
-					$.ajax({
-						type: "POST",
-						url: "../AjaxFunctions/updateOldCertDates",
-						data: {grant_date:grant_date, last_ren_date:last_ren_date, reason_to_update:reason_to_update, valid_upto_date:valid_upto_date},
-						beforeSend: function (xhr) { // Add this line
-							xhr.setRequestHeader('X-CSRF-Token', $('[name="_csrfToken"]').val());
-						},
-						success: function(response){
-							response = response.match(/~([^']+)~/)[1];
-							if($.trim(response)=='done'){
-								alert("New dates are updated successfully.");
-								window.location = "";
-							}else{
-								alert('Sorry.. Dates are not updated, please try again');
-								return false;
+								if(last_ren_day_month){
+									var last_ren_date = last_ren_day_month + last_ren_year;
+								}else{
+									var last_ren_date = null;
+								}
+			
+								//ajax call to update table records with dates on controller side.
+								$.ajax({
+									type: "POST",
+									url: "../AjaxFunctions/updateOldCertDates",
+									data: {grant_date:grant_date, last_ren_date:last_ren_date, reason_to_update:reason_to_update, valid_upto_date:valid_upto_date},
+									beforeSend: function (xhr) { // Add this line
+										xhr.setRequestHeader('X-CSRF-Token', $('[name="_csrfToken"]').val());
+									},
+									success: function(response){
+										response = response.match(/~([^']+)~/)[1];
+										if($.trim(response)=='done'){
+											$.alert({
+												content:"New dates are updated successfully.",
+												onClose: function(){
+													location.reload();
+												}
+											});
+											
+										}else{
+											alert('Sorry.. Dates are not updated, please try again');
+											return false;
+										}
+									}
+								});
+								
+								//return false;
 							}
-						}
-					});
-					
-					return false;
-				
-				}else{
-					return false;
-				}
+						},
+						cancel:{
+							btnClass: 'btn-red',
+							action: function () {}
+						},
+					}
+				});
 			}
 
 			if(value_return == 'false'){
@@ -164,7 +159,6 @@
 		//common function to get valid upto date with last grant date as parameter
 		function show_valid_upto_date_func(grant_date){
 
-			var customer_id = '<?php echo $customer_id; ?>';
 			var split_customer_id = customer_id.split("/");
 			var certification_type = split_customer_id[1];
 			var split_grant_date = grant_date.split("/");

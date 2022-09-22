@@ -47,7 +47,7 @@
 					<tr>
 						<td></td>
 						<td class="mwd100"><?php echo $this->Form->control('d_name', array('type'=>'text', 'id'=>'d_name', 'escape'=>false, 'class'=>'input-field', 'label'=>false, 'placeholder'=>'max. 50 characters allowed')); ?></td>
-						<td><?php echo $this->Form->control('d_address', array('type'=>'text', 'id'=>'d_address', 'escape'=>false, 'class'=>'input-field', 'label'=>false, 'placeholder'=>'max. 180 characters allowed')); ?></td>
+						<td><?php echo $this->Form->control('d_address', array('type'=>'text', 'id'=>'d_address', 'escape'=>false, 'class'=>'input-field', 'label'=>false, 'placeholder'=>'please enter address')); ?></td>
 						<td>
 							<div class="form-buttons"><a href="#" id="add_directors_details" >Add</a></div>
 							<?php //echo $this->form->submit('Add', array('name'=>'add_directors_details', 'id'=>'add_directors_details', 'onclick'=>'validate_directors_details();return false', 'label'=>false)); ?>

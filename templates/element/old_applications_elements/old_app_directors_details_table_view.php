@@ -48,7 +48,7 @@
 							<td><?php echo $this->Form->control('d_name', array('type'=>'text', 'id'=>'d_name', 'escape'=>false, 'class'=>'form-control input-field', 'label'=>false, 'placeholder'=>'max. 50 characters allowed')); ?>
 								<span id="error_directors_details_name" class="error invalid-feedback"></span>
 							</td>
-							<td><?php echo $this->Form->control('d_address', array('type'=>'text', 'id'=>'d_address', 'escape'=>false, 'class'=>'form-control input-field', 'label'=>false, 'placeholder'=>'max. 180 characters allowed')); ?>
+							<td><?php echo $this->Form->control('d_address', array('type'=>'text', 'id'=>'d_address', 'escape'=>false, 'class'=>'form-control input-field', 'label'=>false, 'placeholder'=>'please enter address')); ?>
 								<span id="error_directors_details_address" class="error invalid-feedback"></span>
 							</td>
 							<td>
