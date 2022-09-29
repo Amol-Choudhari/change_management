@@ -1461,8 +1461,8 @@
 	function check_radio_value(field_value)
 	{
 
-		if($('input[name="'+field_value+'"]:checked').val() == "yes")
-		{
+		 if($('input[name="'+field_value+'"]:checked').val() == "yes")
+		 {
 			return 'yes';
 
 		}else if($('input[name="'+field_value+'"]:checked').val() == "no"){

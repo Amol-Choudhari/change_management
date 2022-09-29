@@ -55,7 +55,5 @@ $(document).ready(function() {
 		clearBtn: true
 	
 	});
-	
-	
 
 });

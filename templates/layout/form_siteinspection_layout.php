@@ -80,7 +80,7 @@
 
 			<?php echo $this->Flash->render(); ?>
 			<?php echo $this->fetch('content'); ?>
-	  		<?php echo $this->element('footer_section'); ?>
+	  	<?php echo $this->element('footer_section'); ?>
 
 			<?php 
 					//Call For JS Files For DATATABLES

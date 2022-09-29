@@ -7,9 +7,6 @@
 		chemist_registration_validations();
 	});
 
-
-
-
 	$("#profile_photo").change(function(){
 		
 		file_browse_onclick('profile_photo');
@@ -65,21 +62,17 @@
 		}
 
 	}
-
-
-
-
+	
+	
+	
 	$(document).ready(function () {
 		$('#dob').datepicker({
 			format: "dd/mm/yyyy",
 			autoclose: true,
-			startDate: '-50y',
-			endDate: '-20y'
+			 startDate: '-50y',
+			 endDate: '-20y'
 		});
 	});
-
-
-
 
 	function chemist_registration_validations(){
 
@@ -451,36 +444,36 @@
 		
 			if(get_file_size > 5097152){
 		
-			$("#".concat(field_id)).parent().append('<span class="err">Please select file below 5mb </span>').css('color','red');
-			$("#".concat(field_id)).addClass("is-invalid");
-			$("#".concat(field_id)).click(function(){ $("#".concat(field_id)).parent().find('.err').remove(); $("#".concat(field_id)).removeClass("is-invalid");});
-			$('#'.concat(field_id)).val('');
-			value_return = 'false';
+			  $("#".concat(field_id)).parent().append('<span class="err">Please select file below 5mb </span>').css('color','red');
+			  $("#".concat(field_id)).addClass("is-invalid");
+			  $("#".concat(field_id)).click(function(){ $("#".concat(field_id)).parent().find('.err').remove(); $("#".concat(field_id)).removeClass("is-invalid");});
+			  $('#'.concat(field_id)).val('');
+			  value_return = 'false';
 			}
 		
 			if(ext_type_array.lastIndexOf(get_file_ext) == -1){
 		
-			$("#".concat(field_id)).parent().append('<span class="err">Please select file type pdf only</span>').css('color','red');
-			$("#".concat(field_id)).addClass("is-invalid");
-			$("#".concat(field_id)).click(function(){ $("#".concat(field_id)).parent().find('.err').remove();  $("#".concat(field_id)).removeClass("is-invalid");});
-			$('#'.concat(field_id)).val('');
-			value_return = 'false';
+			  $("#".concat(field_id)).parent().append('<span class="err">Please select file type pdf only</span>').css('color','red');
+			  $("#".concat(field_id)).addClass("is-invalid");
+			  $("#".concat(field_id)).click(function(){ $("#".concat(field_id)).parent().find('.err').remove();  $("#".concat(field_id)).removeClass("is-invalid");});
+			  $('#'.concat(field_id)).val('');
+			  value_return = 'false';
 			}
 		
 			if (validExt != 1){
 		
-			$("#".concat(field_id)).parent().append('<span class="err">Invalid file uploaded</span>').css('color','red');
-			
-			$("#".concat(field_id)).addClass("is-invalid");
-			$("#".concat(field_id)).click(function(){ $("#".concat(field_id)).parent().find('.err').remove(); $("#".concat(field_id)).removeClass("is-invalid");});
-			$('#'.concat(field_id)).val('');
-			value_return = 'false';
+			  $("#".concat(field_id)).parent().append('<span class="err">Invalid file uploaded</span>').css('color','red');
+			  
+			  $("#".concat(field_id)).addClass("is-invalid");
+			  $("#".concat(field_id)).click(function(){ $("#".concat(field_id)).parent().find('.err').remove(); $("#".concat(field_id)).removeClass("is-invalid");});
+			  $('#'.concat(field_id)).val('');
+			  value_return = 'false';
 			}
 		
 			if(value_return == 'false'){
-			return false;
+			  return false;
 			}else{
-			exit();
+			  exit();
 			}
 		});
 	});

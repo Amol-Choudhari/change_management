@@ -75,8 +75,7 @@
 
 			<title>Directorate of Marketing & Inspection</title>
 		</head>
-	
-	<?php echo $this->element('common_loader'); ?>
+		<?php echo $this->element('common_loader'); ?>
 		<body class="hold-transition sidebar-mini layout-fixed">
 			<?php echo $this->element('common_side_menus/dashboard_side_menus'); ?>
 

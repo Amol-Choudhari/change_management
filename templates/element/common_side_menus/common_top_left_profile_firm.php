@@ -17,9 +17,9 @@
 	<div class="info">
 		<?php $checkUsername = explode('/',$_SESSION['username']);
 		if ($checkUsername[0] == 'CHM') { ?>
-			<a href="#" class="d-block"><?php echo $_SESSION["f_name"]." ".$_SESSION["l_name"];?></a>
+			<a class="d-block"><?php echo $_SESSION["f_name"]." ".$_SESSION["l_name"];?></a>
 	<?php } else { ?>
-			<a href="#" class="d-block"><?php echo $_SESSION["firm_name"];?></a>
+			<a class="d-block"><?php echo $_SESSION["firm_name"];?></a>
 	<?php } ?>
 
 	<span class="right badge badge-light"><?php echo $_SESSION["username"];?></span>

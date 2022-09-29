@@ -13,11 +13,15 @@ $(document).ready(function(){
 	});
 	//for dashboard side menu's dropdown sub menu
 	$('.bg-cyan p').click(function(){
+													  
 		$('.form_spinner').show('slow');
+   
 	});
 	//for dashboard right side profile menu list
 	$('.nav-link span').click(function(){
+													  
 		$('.form_spinner').show('slow');
+   
 	});
 	
 	//for dashboard side main link if not having child links under it.
@@ -26,7 +30,9 @@ $(document).ready(function(){
 		if($("ul",this).hasClass("nav")){//if have ul with nav class
 			//do nothing
 		}else{
+													   
 			$('.form_spinner').show('slow');
+	
 		}
 	});
 

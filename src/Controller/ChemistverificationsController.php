@@ -53,8 +53,8 @@ use phpDocumentor\Reflection\Types\This;
 
                 if (empty($user_access)) {
 
-                    echo "Sorry.. You don't have permission to view this page";
-                    exit();
+                    echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+				    exit;
 
                 }
             }

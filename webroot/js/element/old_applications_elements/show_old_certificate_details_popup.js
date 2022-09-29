@@ -164,7 +164,7 @@
 			var split_grant_date = grant_date.split("/");
 			var get_grant_month = split_grant_date[1];
 			var get_grant_year = split_grant_date[2];
-			
+
 			
 			//condition applied on 23-09-2022 for new order validity date as per order on "01-04-2021"
 			//now PP and Labs will also have validity of 5 years. grant after 31-03-2021

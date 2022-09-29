@@ -77,8 +77,7 @@
 					echo $this->Html->script('printing_forms_validations_new');
 				?>
 			</head>
-
-<?php echo $this->element('common_loader'); ?>
+	<?php echo $this->element('common_loader'); ?>
 			<body class="sidebar-mini layout-boxed">
 
 				<?php echo $this->element('main_site_header'); ?>

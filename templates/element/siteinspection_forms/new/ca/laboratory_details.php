@@ -65,7 +65,9 @@
 										<div class="col-sm-6">
 											<label for="field3"><span>Properly Equipped?</span></label>
 												<?php
-													$options=array('yes'=>'Yes','no'=>'No');
+													//added new option NA in radio options as per UAT suggestion
+    												//on 17-08-2022 
+													$options=array('yes'=>'Yes','no'=>'No','n/a'=>'NA');
 													$attributes=array('legend'=>false, 'id'=>'laboratory_equipped', 'value'=>$section_form_details[0]['laboratory_equipped'], 'label'=>true);
 													echo $this->form->radio('laboratory_equipped',$options,$attributes);
 												?>

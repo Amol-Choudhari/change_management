@@ -44,7 +44,8 @@
                                 <td><?php echo $commodity[$i] ?></td>
                                 <td><?php $explodeDate = explode(' ',$each['modified']); echo $explodeDate[0]; ?></td>
                                 <td><?php echo $pdf_version[$i]; ?></td>
-                                <td><a class="view_letter_btn" target="_blank" href="<?php echo $pdf_link[$i]; ?>">View Letter</a></td>
+								<td><a class="view_letter_btn" target="_blank" href="<?php echo $pdf_link[$i]; ?>">Letter</a> | 
+								<a class="view_letter_btn" target="_blank" href="<?php echo $pdf_link[$i]; ?>">Sheet</td>
                             </tr>
                             <?php $sr_no++; $i=$i+1;	} } ?>
                         </tbody>

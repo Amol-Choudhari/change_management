@@ -62,6 +62,7 @@ $current_action = $this->request->getParam('action');
 								<a title="View Payment" href="<?php echo $each['appl_view_link'];?>"><span class="glyphicon glyphicon-eye-open"></span></a>
 							<?php }else{ ?>
 								<a title="Verify Payment" href="<?php echo $each['appl_view_link'];?>"><span class="glyphicon glyphicon-edit"></span></a>
+								<a id="reject_appln<?php echo $i;?>" title="To Reject the Application" class="reject"><span class="glyphicon glyphicon-remove"></span></a>																												  
 					<?php } }else{ ?>
 						
 						<a title="View Application" href="<?php echo $each['appl_view_link'];?>"><span class="glyphicon glyphicon-eye-open"></span></a>

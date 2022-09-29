@@ -47,7 +47,7 @@ use PHPUnit\TextUI\XmlConfiguration\CodeCoverage\Report\Html;
 
 		//echo $this->Html->script('jquery.min');
 
-		echo $this->Html->script('jquery_main.min');
+		echo $this->Html->script('jquery_main.min'); //newly added on 24-08-2020 updated js
 		// echo $this->Html->script('bootstrap.min');
 		//echo $this->Html->script('md5');
 		// echo $this->Html->script('validation');

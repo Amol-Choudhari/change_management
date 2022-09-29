@@ -91,8 +91,8 @@
 
 																<tr>
 																<td><?php echo $comment_detail['comment_date']; ?></td>
-																<td><?php echo $comment_detail['comment_by']; ?></td>
-																<td><?php echo $comment_detail['comment_to']; ?></td>
+																<td><?php echo base64_decode($comment_detail['comment_by']); ?></td>
+																<td><?php echo base64_decode($comment_detail['comment_to']); ?></td>
 																<td><?php echo $comment_detail['comment']; ?></td>
 																</tr>
 

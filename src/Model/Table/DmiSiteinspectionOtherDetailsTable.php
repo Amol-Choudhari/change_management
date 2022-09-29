@@ -102,6 +102,7 @@ class DmiSiteinspectionOtherDetailsTable extends Table{
 		$CustomersController = new CustomersController;
 							
 		$ca_bevo_applicant = $CustomersController->Customfunctions->checkCaBevo($customer_id); 
+		$bevoOrFatSpread = $CustomersController->Customfunctions->checkFatSpreadOrBevo($customer_id);
 		
 		$Dmi_firm = TableRegistry::getTableLocator()->get('DmiFirms');
 		$firm_details = $Dmi_firm->firmDetails($customer_id);
@@ -188,7 +189,7 @@ class DmiSiteinspectionOtherDetailsTable extends Table{
 
 
 			//Hide and show the "Machinery details" and "Minimum Infrastructure/Facilities" box on selected sub commodity wise Done by pravin 10-01-2018
-			if(in_array('173',$firm_sub_commodity)){	
+			if($bevoOrFatSpread=='fat_spread'){ //$bevoOrFatSpread added on 05-09-2022 for Fat Spread updates after UAT
 			
 				$post_input_request = $forms_data['fat_spread_facilitities'];				
 				$fat_spread_facilitities = $CustomersController->Customfunctions->radioButtonInputCheck($post_input_request);//calling librabry function
@@ -200,7 +201,7 @@ class DmiSiteinspectionOtherDetailsTable extends Table{
 			//file uploading
 
 			//Hide and show the "Machinery details" and "Minimum Infrastructure/Facilities" box on selected sub commodity wise Done by pravin 10-01-2018
-			if(in_array('172',$firm_sub_commodity)){
+			if($bevoOrFatSpread=='bevo'){ //$bevoOrFatSpread added on 05-09-2022 for Fat Spread updates after UAT
 				
 				if(!empty($forms_data['bevo_machinery_details_docs']->getClientFilename())){
 

@@ -96,7 +96,7 @@
 		</div>
 		<div class="clear"></div>
 	</section>
-	<input type="hidden" id="tableFormData" value='<?php// echo $tableForm; ?>'>
+	
 	<?php echo $this->Form->end(); ?>
 
 

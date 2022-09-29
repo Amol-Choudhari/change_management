@@ -957,6 +957,9 @@
 
 		</table>
 
+		<?php if($form_type == 'F') { #This condition is applied for the changes on CA EXPORT - Akash [07-09-2022] ?>
+			<br pagebreak="true" />	
+		<?php } ?>	
 
 		<table>
 				<tr>

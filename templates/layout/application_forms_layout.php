@@ -10,7 +10,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<?php 
+<?php
 		echo $this->Html->meta('icon');
 		echo $this->Html->charset();
 		echo $this->Html->css('../dashboard/css/datepicker3');
@@ -35,7 +35,7 @@
 
 		// new template css end
 
-
+		
 		echo $this->Html->script('jquery_main.min');
 		echo $this->Html->script('primary_forms_validations');
 		echo $this->Html->script('cwdialog');
@@ -77,9 +77,9 @@
 		echo $this->Html->script('chemist_module_validations');
 		echo $this->Html->script('add_more_row');
 		echo $this->Html->script('jquery-confirm.min');
-		echo $this->Html->script('custom.validation.v.5');
+		echo $this->Html->script('custom.validation.v.5');																				 
+
 		echo $this->Html->script('no_back');
-		
 	?>
 	
 	<?php if ($firm_type == 1) { 
@@ -93,7 +93,6 @@
 
 <title>Directorate of Marketing & Inspection</title>
 </head>
-
 <?php echo $this->element('common_loader'); ?>
 <body class="hold-transition sidebar-mini layout-fixed">
 

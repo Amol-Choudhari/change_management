@@ -193,10 +193,10 @@
 								<br>
 								<table width="100%" border="1">
 									<tr>
-										<th style="padding:10px;" width="25%" cellspacing="50" align="left">Tank No.</th>
-										<th style="padding:10px;" width="25%" cellspacing="50" align="left">Tank Shape</th>
-										<th style="padding:10px;" width="25%" cellspacing="50" align="left">Tank Size</th>
-										<th style="padding:10px;" width="25%" cellspacing="50" align="left">Tank Capacity</th>
+										<th style="padding:10px;" width="25%" cellspacing="50" align="left">Room No./Tank No.</th><!-- Updated on 17-08-2022 as per UAT suggestion-->
+										<th style="padding:10px;" width="25%" cellspacing="50" align="left">Type/Shape</th>
+										<th style="padding:10px;" width="25%" cellspacing="50" align="left">Size</th>
+										<th style="padding:10px;" width="25%" cellspacing="50" align="left">Capacity</th>
 									</tr>
 									<?php 
 									$i=1; 

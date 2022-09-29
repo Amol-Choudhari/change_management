@@ -103,7 +103,9 @@
 
     <?php if($_SESSION['current_level']=='level_3'){ ?>
     
-            <div  class="col-lg-2">
+		<!-- Commented rejected tab to hide from top boxes, and added new menu in left side for the same.
+			on 07-09-2022 by Amol-->
+        <!--   <div  class="col-lg-2">
 			<a id="rejected_count_box" oncontextmenu="return false;" title="These Applications are Rejected for Some reason, and Stopped to Process further.">
                     <div class="count_box">
                             <div class="col-lg-12 widget-left">
@@ -116,6 +118,7 @@
                     </div>
 			 </a>
             </div>
+		-->
    
     <?php } ?>
 

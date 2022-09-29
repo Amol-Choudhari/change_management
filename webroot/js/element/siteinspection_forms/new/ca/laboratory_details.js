@@ -15,6 +15,12 @@ $(document).ready(function() {
 
         $("#hide_laboratory_equipped").hide();
         $("#hide_not_equipped").show();
+
+    //added new option NA in radio options as per UAT suggestion
+    //on 17-08-2022    
+    }else if ($('#laboratory_equipped-n-a').is(":checked")) {
+        $("#hide_laboratory_equipped").hide();
+        $("#hide_not_equipped").hide();								   
     }
 
     $('#laboratory_equipped-yes').click(function() {
@@ -28,6 +34,15 @@ $(document).ready(function() {
 
         $("#hide_laboratory_equipped").hide();
         $("#hide_not_equipped").show();
+
+    });
+
+	//added new option NA in radio options as per UAT suggestion
+    //on 17-08-2022 
+    $('#laboratory_equipped-n-a').click(function() {
+
+        $("#hide_laboratory_equipped").hide();
+        $("#hide_not_equipped").hide();
 
     });
 

@@ -32,11 +32,11 @@
 		// new template css end
 
 
-		echo $this->Html->script('jquery_main.min');
-
+		echo $this->Html->script('jquery_main.min'); //newly added on 24-08-2020 updated js
 		echo $this->Html->script('sha512.min');
 		echo $this->Html->script('bootstrap.min');
 		echo $this->Html->script('md5');
+		
 		// echo $this->Html->script('validation');
 		echo $this->Html->script('primary_forms_validations');
 		// echo $this->Html->script('jssor.slider-21.1.6.min');

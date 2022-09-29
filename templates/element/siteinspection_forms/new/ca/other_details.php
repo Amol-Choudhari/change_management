@@ -139,7 +139,7 @@
 
 				<!-- Hide and show the "Machinery details" and "Minimum Infrastructure/Facilities" box on selected sub commodity wise
 				    Done by pravin 10-01-2018 -->
-				<?php if (in_array('172',$firm_sub_commodity)) { ?>
+				<?php if ($applicant_type=='bevo') { //$applicant_type added on 05-09-2022 for Fat Spread updates after UAT ?>
 
 					<div class="card-header"><h3 class="card-title">Machinery Details</h3></div>
 						<div class="form-horizontal">
@@ -162,7 +162,7 @@
 				<?php } ?>
 
 
-				<?php if (in_array('173',$firm_sub_commodity)) { ?>
+				<?php if ($applicant_type=='fat_spread') { //$applicant_type added on 05-09-2022 for Fat Spread updates after UAT  ?>
 
 					<div class="card-header"><h3 class="card-title">Minimum Infrastructure/Facilities</h3></div>
 						<div class="form-horizontal">

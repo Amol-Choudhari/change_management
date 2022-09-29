@@ -569,7 +569,7 @@ class DashboardController extends AppController{
 			$comm_with = $_POST['comm_with'];
 			$get_customer_id = explode('-',$_POST['customer_id']);
 			$customer_id = $get_customer_id[0];
-
+		
 			$form_type = $get_customer_id[1];
 			$status = null;
 

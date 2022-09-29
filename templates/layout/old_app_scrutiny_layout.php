@@ -31,7 +31,7 @@
 					echo $this->fetch('script');
 
 				// SCRIPTS		
-				echo $this->Html->script('jquery_main.min');
+				   echo $this->Html->script('jquery_main.min');
 				// echo $this->Html->script('../dashboard/js/lumino.glyphs');
 				// echo $this->Html->script('md5');
 				   echo $this->Html->script('no_back');
@@ -60,8 +60,7 @@
 
 			<title>Directorate of Marketing & Inspection</title>
 		</head>
-		
-	<?php echo $this->element('common_loader'); ?>
+		<?php echo $this->element('common_loader'); ?>
 		<body class="hold-transition sidebar-mini layout-fixed">
 			<?php echo $this->element('common_side_menus/form_scrunity_layout_side_menus'); ?>
 				<div class="wrapper main-header">

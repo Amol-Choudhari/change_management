@@ -1,4 +1,11 @@
+	
+	$(document).ready(function(){
+		$("#customer_id").attr('maxlength', '15'); //This added on the 09-09-2022 for security audit by akash
+		$("#chemist_id").attr('maxlength', '12'); //This added on the 09-09-2022 for security audit by akash
+	});
 
+	
+	
 	function field_indication(){
 	
 		$("#userid_indication").show().text("user id ex: 210/2016 or 210/1/NGP/001 ");

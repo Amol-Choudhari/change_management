@@ -79,7 +79,7 @@ $("#press_sponsored_docs").change(function(){
 				$("#hide_fabrication_facility").show();
 
 			// add new radio button value (by pravin 31/10/2017)
-			}else if($('#fabrication_facility-na').is(":checked")){
+			}else if($('#fabrication_facility-n-a').is(":checked")){//changed "fabrication_facility-na" to "fabrication_facility-n-a" 11-08-2022
 
 				$("#hide_fabrication_facility").hide();
 			}
@@ -96,7 +96,7 @@ $("#press_sponsored_docs").change(function(){
 			});
 
 			// add new radio button value (by pravin 31/10/2017)
-			$('#fabrication_facility-na').click(function(){
+			$('#fabrication_facility-n-a').click(function(){//changed "fabrication_facility-na" to "fabrication_facility-n-a" 11-08-2022
 
 				$("#hide_fabrication_facility").hide();
 			});

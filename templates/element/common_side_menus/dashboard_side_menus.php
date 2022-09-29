@@ -274,6 +274,13 @@
 								</li>
 							</li>
 
+							<!-- below li added on 07-09-2022  -->
+							<li class="nav-item">
+								<a href="<?php echo $this->request->getAttribute('webroot');?>hoinspections/rejectedApplList" class="nav-link <?php echo $menu_add_menu; ?>">
+									<i class="far fas fa-close nav-icon"></i>
+									<p>Rejected/Junked Appl.</p>
+								</a>
+							</li>
 					<?php } if ($current_user_roles['ro_inspection'] == 'yes' || $current_user_roles['so_inspection'] == 'yes' && $current_user_roles['super_admin'] != 'yes') { ?>
 
 						<!-- Added for update firm details option menu for secondary firms that is for RO / SO user on 29-12-2021 by AKASH -->
@@ -405,6 +412,14 @@
 							<a href="<?php echo $this->request->getAttribute('webroot');?>commercial/commercial_verfication" class="nav-link">
 								<i class="fas fa-money-check-alt nav-icon"></i>
 								<p class="nav-icon-p badge">Sample Payment Verification</p>
+							</a>
+						</li>
+
+						<!-- below li added on 07-09-2022  -->
+						<li class="nav-item">
+							<a href="<?php echo $this->request->getAttribute('webroot');?>hoinspections/rejectedApplList" class="nav-link <?php echo $menu_add_menu; ?>">
+								<i class="far fas fa-close nav-icon"></i>
+								<p>Rejected/Junked Appl.</p>
 							</a>
 						</li>
 

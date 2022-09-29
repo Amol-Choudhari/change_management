@@ -194,10 +194,10 @@
 										<table class="table table-bordered table-striped text-sm mb-0">
 											<tr>
 												<th>Date</th>
-												<th>Comment By</th>
-												<th>Comment</th>
+												<!--<th>Comment By</th>--><!-- commented on 16-08-2022 as per UAT suggestion -->
+												<th>Scrutiny Officer Comment</th>
 												<th>Comment Uploads</th>
-												<th>Your Reply</th>
+												<th>RO/SO Comment</th>
 												<th>Reply Uploads</th>
 												<th>Action</th>
 											</tr>
@@ -226,12 +226,12 @@
 																				}
 																			?>
 																		</td>
-																		<td><?php echo base64_decode($comment_reply['user_email_id']); ?></td>
+																		<!-- commented on 16-08-2022 as per UAT suggestion -->
+																		<!--<td><?php //echo base64_decode($comment_reply['user_email_id']); ?></td>-->
 																		<td><?php echo $comment_reply['mo_comment']; ?></td>
 																		<td><?php if ($comment_reply['mo_comment_ul'] != null) { ?><a target="blank" id="mo_comment_ul_value" href="<?php echo str_replace("D:/xampp/htdocs","",$comment_reply['mo_comment_ul']); ?>">Preview</a><?php }?></td>
 																		<!-- give id to edit comment box by pravin 13/07/2017-->
-																		<td>
-																			<?php echo $this->Form->control('edited_ro_reply', array('type'=>'textarea', 'id'=>'check_save_reply',  'value'=>$comment_reply['ro_reply_comment'], 'escape'=>false,'label'=>false)); ?>
+																		<td><?php echo $this->Form->control('edited_ro_reply', array('type'=>'textarea', 'id'=>'check_save_reply',  'value'=>$comment_reply['ro_reply_comment'], 'escape'=>false,'label'=>false)); ?>					   
 																			<span id="error_save_reply" class="error invalid-feedback"></span>
 																		</td>
 																		<td><?php if ($comment_reply['rr_comment_ul'] != null) {?>
@@ -258,7 +258,8 @@
 																			}
 																		?>
 																	</td>
-																	<td id="comment_by<?php echo $i; ?>"><?php echo base64_decode($comment_reply['user_email_id']); ?></td>
+																	 <!-- commented on 16-08-2022 as per UAT suggestion -->  
+																	 <!--<td id="comment_by<?php //echo $i; ?>"><?php //echo base64_decode($comment_reply['user_email_id']); ?></td>-->
 																	<td id="mo_commentt<?php echo $i; ?>"><?php echo $comment_reply['mo_comment']; ?></td>
 																	<td><?php if ($comment_reply['mo_comment_ul'] != null) { ?>
 																		<a target="blank" id="mo_comment_ul_value" href="<?php echo str_replace("D:/xampp/htdocs","",$comment_reply['mo_comment_ul']); ?>">Preview</a>

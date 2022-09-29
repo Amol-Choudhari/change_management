@@ -28,5 +28,6 @@
 <input type="hidden" id="show_forward_to_ho_btn" value="<?php echo $show_forward_to_ho_btn; ?>">
 <input type="hidden" id="report_edit_mode" value="<?php echo $report_edit_mode; ?>">
 <input type="hidden" id="current_level" value="<?php echo $_SESSION['current_level']; ?>">
+<input type="hidden" id="report_edit_mode" value="<?php echo $report_edit_mode; ?>">
 
 <?php echo $this->Html->script('element/siteinspection_forms/communication/buttons'); ?>

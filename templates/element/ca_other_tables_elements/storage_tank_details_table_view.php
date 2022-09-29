@@ -4,7 +4,7 @@
 	<table id="commodity_storage_tank_table" class="table m-0 table-bordered table-striped table-responsive">
 			<tr>
 				<th class="tablehead">Sr.No.</th>
-				<th class="tablehead">Tank No.</th>
+				<th class="tablehead">Room No./Tank No.</th><!-- Changed on 17-08-2022 as per UAT suggestion-->
 				<th class="tablehead">Type/shape</th>
 				<th class="tablehead">Size</th>
 				<th class="tablehead">Capacity</th>

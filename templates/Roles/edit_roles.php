@@ -545,10 +545,11 @@
 							</div>
 						</section>
 				</div>
-			
+
 			<!-- On 28-07-2022 by Amol -->
 			<!-- removed default variables from here and added in controller function-->
 			<!-- Below json_encode function applied to convert array into string value to echo -->
+			
 			<input type="hidden" id="dyama_set_role_detail" value="<?php echo $dyama_set_role_detail; ?>">
 			<input type="hidden" id="jtama_set_role_detail" value="<?php echo $jtama_set_role_detail; ?>">
 			<input type="hidden" id="ama_set_role_detail" value="<?php echo $ama_set_role_detail; ?>">

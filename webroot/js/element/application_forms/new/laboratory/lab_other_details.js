@@ -3,6 +3,7 @@
 	var chemist_details_value = $('#chemist_details_value_id').val();
 	var final_submit_status = $('#final_submit_status_id').val();
 	var export_unit_status = $('#export_unit_status_id').val();
+ 
 	//applied this script on 24-05-2022 by Amol
 	//to disable Accreditation field once scrutinized, applicant can not change
 	if(final_submit_status=='approved'){

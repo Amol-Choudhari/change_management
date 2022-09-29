@@ -26,7 +26,6 @@
 
 					//SCRIPTS
 					echo $this->Html->script('jquery_main.min');
-
 					// echo $this->Html->script('bootstrap.min');
 					//echo $this->Html->script('md5');
 					// echo $this->Html->script('validation');

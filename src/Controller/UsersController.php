@@ -13,8 +13,6 @@ use Cake\ORM\Entity;
 use Cake\View\ViewBuilder;
 use Cake\Datasource\ConnectionManager;
 use Cake\Database\Type;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-
 
 class UsersController extends AppController {
 
@@ -32,34 +30,6 @@ class UsersController extends AppController {
 		//Set Sessions
 		$this->Session = $this->getRequest()->getSession();
 
-	}
-
-	public function testa(){
-		$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
-		$spreadsheet = $reader->load("D:\customerid.xlsx");
-		$sheetData = $spreadsheet->getActiveSheet()->toArray();
-		$this->loadModel('DmiApplWithRoMappings');
-
-		$i=1;
-
-		unset($sheetData[0]);
-
-		foreach ($sheetData as $t) {
-			
-			$appl_type = $this->Customfunctions->firmType($t[0]);
-			$form_type = $this->Customfunctions->checkApplicantFormType($t[0]);
-			$customer_id = $t[0];
-			$by_user = $this->DmiApplWithRoMappings->getOfficeDetails($t[0]);
-			
-			
-			
-			print_r($i.") ".$appl_type." - ".$form_type." - ".$customer_id." - ".base64_decode($by_user['ro_email_id'])); 
-			print_r("</br>");
-
-			$i++;
-		}
-
-		 exit;
 	}
 
 

@@ -1,30 +1,11 @@
-	$(function(){
 
-		$(document).on('keyup keypress blur change','.cvcalyear',function(){
-			//this logic is used for calculate year difference beeteween two dates added by shankhpal shende on 27/09/2022
-			var id_No = this.id.split("-");//to get dynamic id of element for each row, and split to get no.
-			$("#ta-total-"+id_No).val();
-			id_No = id_No[2];
-			var date1 = $("#ta-from_dt-"+id_No).val();
-			var date2 = $("#ta-to_dt-"+id_No).val();
-			var yearsDiff =  new Date(date2).getFullYear() - new Date(date1).getFullYear();
-			$("#ta-total-"+id_No).val(yearsDiff);
-		})
-
-		$('#value1, #value2').keyup(function(){
-			var value1 = parseFloat($('#value1').val()) || 0;
-			var value2 = parseFloat($('#value2').val()) || 0;
-			$('#sum').val(value1 + value2);
-		});
-	});
-
-	$(document).ready(function(){
-		$('form').keypress(function (event) {
-			if (event.keyCode === 10 || event.keyCode === 13) {
-				event.preventDefault();
-			}
-		});
-	});
+  $(document).ready(function(){
+    $('form').keypress(function (event) {
+        if (event.keyCode === 10 || event.keyCode === 13) {
+            event.preventDefault();
+        }
+    });
+  });
   
   
   /* custom validations functions */
@@ -85,7 +66,7 @@ $(document).ready(function(){
         var errorText = getErrorText(index, inputMinMax, inputFloatVal);
         var funcStatus = funcs[index](formId, input, inputId);
         if(funcStatus == '1'){
-		      $('#'+inputId).parent().parent().find('.err_cv:first').text(errorText).css('color','red');
+          $('#'+inputId).parent().parent().find('.err_cv:first').text(errorText).css('color','red');
           disSubmitBtn(formId);
           return false;
         } else {
@@ -309,7 +290,6 @@ $(document).ready(function(){
   }
 
   function disSubmitBtn(formId){
-	
 	//console.log(formId);
     //$('#'+formId+' :submit').prop('disabled','true');
 	$(':input[type="submit"]').prop('disabled', true);
@@ -372,17 +352,15 @@ function formEmptyStatus(formId){
     for(var i=0;i<inRw;i++){
 		
         var inField = $(formId).find('input').not(':hidden,:button,.cvNotReq').not('input[disabled]').eq(i).val();
-			//alert(inField);
+		
         var inType = $(formId).find('input').not(':hidden,:button,.cvNotReq').not('input[disabled]').eq(i).attr('type');
         if(inType == 'file'){
-			//alert("1");
           var prevField = $(formId).find('input').not(':hidden,:button,.cvNotReq').not('input[disabled]').eq(i).parent().next('.hidden_doc').val();
-          prevField = 1;
+          
 		  if(prevField == '' & inField == ''){			 
             //showFieldAlrt(formId, i);
 			$(formId).find('input').not(':hidden,:button,.cvNotReq').not('input[disabled]').eq(i).parent().next('.hidden_doc').next('.err_cv').text('Required Field');
             formStatus = 'invalid';
-			//alert("2");
           }
 		  
         } else if(inType == 'radio'){
@@ -393,20 +371,17 @@ function formEmptyStatus(formId){
 			if(radioval == 0){				
 				$('input[name="'+inRadioOption+'"]').parent().find('.err_cv').text('Required Field');
 				formStatus = 'invalid';
-				//alert("3");
 			}
 			
         }else if(inField == ''){
 			
             showFieldAlrt(formId, i);
             formStatus = 'invalid';
-				//alert("4");
 			//this condition added on 06-02-2022 by Amol
-			//to bypass these 3 sections on chemist flow, as this is not allowing to save btn to submit
-			//On 08-06-2022 : The two new form id are addded to temporary by pass the profile and education sections																										   
+			//to bypass these 3 sections on chemist flow, as this is not allowing to save btn to submit 
+			//On 08-06-2022 : The two new form id are addded to temporary by pass the profile and education sections
 			if($(formId).attr('id')=='experience' || $(formId).attr('id')=='training' || $(formId).attr('id')=='other_details' || $(formId).attr('id')=='profile' || $(formId).attr('id')=='education' ){
 				formStatus = 'valid';
-				//alert("5");
 			}
         }
     }
@@ -414,7 +389,6 @@ function formEmptyStatus(formId){
     if(formStatus == 'invalid'){
         //showAlrt('Invalid data !');
     }
-	
 
     return formStatus;
 

@@ -191,7 +191,7 @@ class CustomersController extends AppController {
 
                                 //get applicant email id and apply masking before showing in message by Amol on 25-02-2021
                                 $get_email_id = $this->DmiCustomers->find('all', array('fields' => 'email', 'conditions' => array('customer_id' => $username)))->first();
-                                $email_id = $this->Customfunctions->getMaskedValue(base64_decode($get_email_id['email']), 'email');
+                                $email_id = $this->Customfunctions->getMaskedValue($get_email_id['email'], 'email');
                                 $message = 'Your password has been expired, The link to reset password is sent on email id ' . $email_id . ', Please contact the concerned office.';
                                 $redirect_to = 'login_customer';
 
@@ -231,7 +231,7 @@ class CustomersController extends AppController {
                             } elseif ($login_result == 4) {
                                 //get applicant email id and apply masking before showing in message by Amol on 25-02-2021
                                 $get_email_id = $this->$table->find('all', array('fields' => 'email', 'conditions' => array('customer_id' => $username)))->first();
-                                $email_id = $this->Customfunctions->getMaskedValue(base64_decode($get_email_id['email']), 'email');
+                                $email_id = $this->Customfunctions->getMaskedValue($get_email_id['email'], 'email');
                                 $message = 'Your password has been expired, The link to reset password is sent on email id ' . $email_id . ', Please contact the concerned office.';
                                 $redirect_to = 'login_customer';
 
@@ -690,7 +690,7 @@ class CustomersController extends AppController {
 
                     $randsalt = $this->Session->read('randSalt');
                     $captchacode1 = $this->Session->read('code');
-                    $postData = $this->request->getData();
+                    $changepassdata = $this->request->getData();
                     $username = $this->request->getData('customer_id');
                     $countspecialchar = substr_count($username, "/");
 
@@ -709,7 +709,7 @@ class CustomersController extends AppController {
                     $confpassdata = $this->request->getData('confirm_password');
 
                     // calling reset password library function
-                    $reset_pass_result = $this->Authentication->resetPasswordLib($table, $username, $newpassdata, $randsalt,$postData);
+                    $reset_pass_result = $this->Authentication->resetPasswordLib($table, $username, $newpassdata, $randsalt);
 
                     if ($reset_pass_result == 1) {
 
@@ -729,7 +729,7 @@ class CustomersController extends AppController {
 
                         $comfirm_pass_msg = 'Confirm password not matched';
                         $this->set('comfirm_pass_msg', $comfirm_pass_msg);
-                        return null;
+                        return false;
                         exit;
 
                     } elseif ($reset_pass_result == 4) {
@@ -737,7 +737,7 @@ class CustomersController extends AppController {
                         // SHOW ERROR MESSAGE IF NEW PASSWORD FOUND UNDER LAST THREE PASSWORDS OF USER // By Aniket Ganvir dated 16th NOV 2020
                         $comfirm_pass_msg = 'This password matched with your last three passwords, Please enter different password';
                         $this->set('comfirm_pass_msg', $comfirm_pass_msg);
-                        return null;
+                        return false;
                         exit;
 
                     } else {

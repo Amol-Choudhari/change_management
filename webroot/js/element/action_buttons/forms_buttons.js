@@ -13,9 +13,10 @@ var validationFunction = $('#validationFunction').val();
 
     var validationFunctionString = splitValue[0];
     var validations = window[validationFunctionString];
-		
+
 
     $('#save_btn').click(function (e) {            
+
         if(validations() == false){
             e.preventDefault();
 

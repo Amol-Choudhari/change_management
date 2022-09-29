@@ -1,4 +1,4 @@
-	////| Register Customer from the Auth Old Processed Application JS File for Validations |////
+//// Register Customer from the Auth Old Processed Application JS File for Validations 	
 	
 	$("#upload_file").change(function(){
 		file_browse_onclick('upload_file');
@@ -10,6 +10,7 @@
 	});
 
 	$("#register_btn").click(function(e){
+		
 		if(auth_primary_reg_validations() == false){
 			e.preventDefault();
 		}else{
@@ -21,14 +22,7 @@
 	return_error_msg = $("#return_error_msg").val();  
 	
 	if(return_error_msg != ''){
-
-		$.alert({
-			title: 'Alert!',
-			icon: 'fa fa-warning',
-			columnClass: 'medium',
-			content: return_error_msg
-		});
-	
+		$.alert(return_error_msg);
 		$('#add_firm_form').trigger("reset");
 	}
 
@@ -41,6 +35,7 @@
 		$('#confirm_email').bind("cut copy paste",function(e) {
 			e.preventDefault();
 		});
+
 	});
 	
 	$("#state").val('');//line added on 14-07-2018
@@ -56,12 +51,13 @@
 			url:"../AjaxFunctions/show-district-dropdown",
 			data: {state:state},
 			beforeSend: function (xhr) { // Add this line
-				xhr.setRequestHeader('X-CSRF-Token', $('[name="_csrfToken"]').val());
+					xhr.setRequestHeader('X-CSRF-Token', $('[name="_csrfToken"]').val());
 			},
 			success: function (data) {
-				$("#district").append(data);
+					$("#district").append(data);
 			}
 		});
+
 	}
 
 	function get_new_captcha(){
@@ -79,50 +75,7 @@
 		});
 	}
 	
-
-
-	//FOR CHECKING THE EMAIL ALREADY EXITS AJAX in customers table AND VALIDATION IS ADDED BY AKASH ON 22-12-2021
-    $('#email').focusout(function(){
-
-        var email = $("#email").val();
-
-        if (email != '') {
-
-            $.ajax({
-                type : 'POST',
-                url : '../AjaxFunctions/check_email_exist_in_customer_table',
-                async : true,
-                data : {email:email},
-                beforeSend: function (xhr) {
-                    xhr.setRequestHeader('X-CSRF-Token', $('[name="_csrfToken"]').val());
-                },
-                success : function(response){
-
-                    if($.trim(response)=='yes'){
-
-                        $.alert({
-                            title: "Alert!",
-							columnClass: 'medium',
-                            content: 'The Email is already used. Please verify and enter again.',
-							type: 'red',
-                            typeAnimated: true,
-                            buttons: {
-                                Retry: {
-                                    text: 'Retry',
-                                    btnClass: 'btn-red',
-                                    action: function(){
-                                        $("#email").val('');
-                                    }
-                                },
-                            }
-                        });
-                    }
-                }
-            });
-        }
-    });
-
-
+	
 	//FOR CHECKING THE EMAIL & CONFIRM EMAIL ARE SAME OR NOT ON 08-03-2022 BY AKASH
     $('#confirm_email').focusout(function(){
 

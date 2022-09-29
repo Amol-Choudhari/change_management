@@ -1,21 +1,24 @@
 
-   
-   $("#state").change(function(){
-        get_district();
-    });
+$("#state").change(function(){
 
-    $('#new_captcha').click(function (e) {
+	get_district();
+});
+
+$('#new_captcha').click(function (e) {
+    e.preventDefault();
+    get_new_captcha()
+});
+
+$('#register_btn').click(function (e) {
+    if (register_customer_validations() == false) {
         e.preventDefault();
-        get_new_captcha()
-    });
+    } else {
+      $('#login_user_form').submit();
+    }
+});
 
-    $('#register_btn').click(function (e) {
-        if (register_customer_validations() == false) {
-            e.preventDefault();
-        } else {
-            $('#login_user_form').submit();
-        }
-    });
+
+
 
 
     $(document).ready(function(){
@@ -25,14 +28,16 @@
         $(".aadhar_check").hide();
 
         $('#once_card_no').focusout(function(){
-
-            var once_card_no = $('#once_card_no').val();
+        var once_card_no = $('#once_card_no').val();
 
             if(once_card_no != ''){//applied this condition on 22-03-2018 to avoid mandatory for aadhar
 
                 if(once_card_no.match(/^(?=.*[a-zA-Z0-9])[a-zA-Z0-9]{12,72}$/g)){
+
                     $(".aadhar_check").show();
+
                 }else{
+
                     //alert("aadhar card number should be of 12 numbers only");
                     $("#error_aadhar_card_no").show().text("Please Enter Proper Aadhar/VID/Token Id.");
                     $("#error_aadhar_card_no").css({"color":"red","font-size":"14px","font-weight":"500","text-align":"right"});
@@ -42,10 +47,10 @@
             }
         });
 
-        //added on 12-08-2017 by Amol to avoid copy paste on confirm email field
-        $('#confirm_email').bind("cut copy paste",function(e) {
+            //added on 12-08-2017 by Amol to avoid copy paste on confirm email field
+            $('#confirm_email').bind("cut copy paste",function(e) {
             e.preventDefault();
-        });
+            });
 
     });
 
@@ -79,7 +84,7 @@
             async:true,
             url:"refresh_captcha_code",
             beforeSend: function (xhr) { // Add this line
-                xhr.setRequestHeader('X-CSRF-Token', $('[name="_csrfToken"]').val());
+            xhr.setRequestHeader('X-CSRF-Token', $('[name="_csrfToken"]').val());
             },
             success: function (data) {
                 $("#captcha_img").html(data);
@@ -97,7 +102,8 @@
         var email = $("#email").val();
 
         if (email != '') {
-            $.ajax({
+
+             $.ajax({
                 type : 'POST',
                 url : '../AjaxFunctions/check_email_exist_in_customer_table',
                 async : true,
@@ -106,12 +112,12 @@
                     xhr.setRequestHeader('X-CSRF-Token', $('[name="_csrfToken"]').val());
                 },
                 success : function(response){
+
                     if($.trim(response)=='yes'){
+
                         $.alert({
                             title: "Alert!",
-                            columnClass: 'medium',
                             content: 'The Email is already used. Please verify and enter again.',
-                            type: 'red',
                             typeAnimated: true,
                             buttons: {
                                 Retry: {
@@ -185,7 +191,8 @@
     });
 
 
-    var return_error_msg = $('#return_error_msg').val();
+var return_error_msg = $('#return_error_msg').val();
+        
     if(return_error_msg != ''){
         $.alert(return_error_msg);
     }

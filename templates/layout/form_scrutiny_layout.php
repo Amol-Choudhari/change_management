@@ -26,6 +26,7 @@
 			echo $this->Html->css('jquery-confirm.min');
 			#echo $this->Html->css('../dashboard/css/styles');
 			echo $this->Html->css('custom-style');
+			#echo $this->Html->css('forms-style');
 			
 			//FETCH
 			echo $this->fetch('meta');

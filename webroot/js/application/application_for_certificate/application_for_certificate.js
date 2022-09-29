@@ -14,8 +14,8 @@ $( document ).ready(function() {
             var inputId = $(this).attr('id');
             var inputtype = $(this).attr('type');
 
-            if($.inArray(inputId, changelist) == -1 && $.inArray(inputtype, buttonsArray) == -1 && $.inArray(inputId, excludeId) == -1){
-                
+            if($.inArray(inputId, changelist) == -1 && $.inArray(inputtype, buttonsArray) == -1
+                && $.inArray(inputId, excludeId) == -1){
                 $("#"+inputId).prop("readonly", true);
                 $("#"+inputId).css("pointer-events","none");
                 $("#"+inputId).css("background","#e9ecef");
