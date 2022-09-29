@@ -31,6 +31,7 @@ class DmiChemistExperienceDetailsTable extends Table{
 				$result[0]['job_description'] = '';
 				$result[0]['from_dt'] = '';
 				$result[0]['to_dt'] = '';
+				$result[0]['total'] = '';			 
 				$result[0]['monthly_remuneration'] = '';
 				$result[0]['form_status'] = '';
 				$result[0]['created'] = '';
@@ -114,7 +115,7 @@ class DmiChemistExperienceDetailsTable extends Table{
 					'rowspan' 	=> '1'
 				),
 				'2' => array(
-					'col' 		=> 'Total',
+					'col' 		=> 'Total (in Years)',
 					'colspan' 	=> '1',
 					'rowspan' 	=> '1'
 				)
@@ -167,7 +168,7 @@ class DmiChemistExperienceDetailsTable extends Table{
 					'type'		=> 'text',
 					'valid'		=> 'text',
 					'value'		=> chop($row['from_dt'],"00:00:00"), // added to trim the "H:i:s" from the date on 08-06-2022 By Akash
-					'class'		=> 'cvOn cvNotReq cvDate cvMaxLen',
+					'class'		=> 'cvOn cvNotReq cvDate cvMaxLen cvcalyear', // added class cvcalyear by shankhpal
 					'id'		=> 'from_dt'
 				),
 				'5' => array(
@@ -175,16 +176,16 @@ class DmiChemistExperienceDetailsTable extends Table{
 					'type'		=> 'text',
 					'valid'		=> 'text',
 					'value'		=> chop($row['to_dt'],"00:00:00"), // added to trim the "H:i:s" from the date on 08-06-2022 By Akash
-					'class'		=> 'cvOn cvNotReq cvDate cvMaxLen',
+					'class'		=> 'cvOn cvNotReq cvDate cvMaxLen cvcalyear', // added class cvcalyear by shankhpal
 					'id'		=> 'to_dt'
 				),
 				'6' => array(
-					'name'		=> 'to_dt',
+					'name'		=> 'total',
 					'type'		=> 'text',
 					'valid'		=> 'text',
-					'value'		=> chop($row['to_dt'],"00:00:00"), // added to trim the "H:i:s" from the date on 08-06-2022 By Akash
-					'class'		=> 'cvOn cvNotReq cvDate cvMaxLen',
-					'id'		=> 'to_dt'
+					'value'		=> $row['total'], 
+					'class'		=> 'cvOn cvNotReq tot cvcalyear', // added class cvcalyear by shankhpal
+					'id'		=> 'total'
 				),
 				'7' => array(
 					'name'		=> 'monthly_remuneration',
@@ -271,6 +272,7 @@ class DmiChemistExperienceDetailsTable extends Table{
 				$from_dt = $CustomersController->Customfunctions->changeDateFormat($forms_data['from_dt'][$i]);
 				$to_dt = $CustomersController->Customfunctions->changeDateFormat($forms_data['to_dt'][$i]);
 				$monthly_remuneration = htmlentities($forms_data['monthly_remuneration'][$i], ENT_QUOTES);
+				$total = htmlentities($forms_data['total'][$i], ENT_QUOTES);												
 
 				if($forms_data['exp_document'][$i]->getClientFilename() != null) {
 		
@@ -283,7 +285,7 @@ class DmiChemistExperienceDetailsTable extends Table{
 				}
 				else {
 					
-					$uploadedfile = $section_form_details[$i]['exp_document'];
+					$uploadedfile = $section_form_details[0]['exp_document'];
 				}
 
 
@@ -296,6 +298,7 @@ class DmiChemistExperienceDetailsTable extends Table{
 					'job_description'=>$job_description,
 					'from_dt'=>$from_dt,
 					'to_dt'=>$to_dt,
+					'total'=>$total,
 					'monthly_remuneration'=>$monthly_remuneration,
 					'form_status'=>$status,					
 					'created'=>$created,
@@ -395,6 +398,7 @@ class DmiChemistExperienceDetailsTable extends Table{
 			'job_description'=>$forms_data['job_description'],
 			'from_dt'=>$forms_data['from_dt'],
 			'to_dt'=>$forms_data['to_dt'],
+			'total'=>$forms_data['total'],				 
 			'monthly_remuneration'=>$forms_data['monthly_remuneration'],
 			'form_status'=>$forms_data['form_status'],
 			'is_latest'=>$forms_data['is_latest'],

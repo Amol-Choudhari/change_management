@@ -269,8 +269,12 @@
 
 								//Entry in all applications current position table
 								$user_email_id = $pao_user_email_id['email'];
-								$this->loadModel('DmiSmsEmailTemplates');
+
+								#SMS: Payment Not Confirmed
 								//$this->DmiSmsEmailTemplates->sendMessage(49,$customer_id);
+								//$this->DmiSmsEmailTemplates->sendMessage(49,$customer_id);
+
+								$this->Customfunctions->saveActionPoint('Payment Referred Back', 'Success');
 
 								$message = 'Payment not confirmed and Referred Back to Applicant';
 								$message_theme = 'success';
@@ -326,12 +330,12 @@
 
 								$this->loadModel('DmiSmsEmailTemplates');
 
-								#TO DDO
-								//$this->DmiSmsEmailTemplates->sendMessage(51,$customer_id);
-								#TO ROSOOIC/INWARD
-								//$this->DmiSmsEmailTemplates->sendMessage(52,$customer_id);
-								#TO RO
-								//$this->DmiSmsEmailTemplates->sendMessage(52,$customer_id);
+								#SMS: Payment Not Confirmed
+								//$this->DmiSmsEmailTemplates->sendMessage(49,$customer_id);
+								//$this->DmiSmsEmailTemplates->sendMessage(49,$customer_id);
+								//$this->DmiSmsEmailTemplates->sendMessage(49,$customer_id);
+
+								$this->Customfunctions->saveActionPoint('Payment Confirmed', 'Success'); #Action
 
 								$message = 'Payment Confirmed Successfully';
 								$message_theme = 'success';

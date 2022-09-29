@@ -1431,7 +1431,7 @@
 
 		if(check_whitespace_validation_textarea(d_address).result == false){
 
-			$("#error_directors_details_address").show().text("Enter Address with max. 180 characters");
+			$("#error_directors_details_address").show().text("Enter Address with max. 50 characters");
 			setTimeout(function(){ $("#error_directors_details_address").fadeOut();},8000);
 			$("#d_address").addClass("is-invalid");
 			$("#d_address").click(function(){$("#error_directors_details_address").hide().text; $("#d_address").removeClass("is-invalid");});

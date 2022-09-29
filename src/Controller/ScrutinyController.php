@@ -126,7 +126,9 @@ class ScrutinyController extends AppController{
 		$application_type = $this->Session->read('application_type');
 		$this->set('application_type',$application_type);
 
-
+		$document_lists = $this->Mastertablecontent->allDocumentsList();
+		$this->set('document_lists',$document_lists);
+		
 		//added conditions for chemist flow,
 		//on 30-09-2021 by Amol
 		if($application_type != 4){

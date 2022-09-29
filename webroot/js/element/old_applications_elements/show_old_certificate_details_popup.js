@@ -164,30 +164,63 @@
 			var split_grant_date = grant_date.split("/");
 			var get_grant_month = split_grant_date[1];
 			var get_grant_year = split_grant_date[2];
+			
+			
+			//condition applied on 23-09-2022 for new order validity date as per order on "01-04-2021"
+			//now PP and Labs will also have validity of 5 years. grant after 31-03-2021
+			if (get_grant_month <= 3 && get_grant_year <= 2021) {
 
-			if(certification_type == 1){
+				if(certification_type == 1){
 
-				if(get_grant_month <= 3){
-					var valid_upto_year =  parseInt(get_grant_year)+ parseInt(4);
-				}else{
-					var valid_upto_year =  parseInt(get_grant_year)+ parseInt(5);
+					if(get_grant_month <= 3){
+						var valid_upto_year =  parseInt(get_grant_year)+ parseInt(4);
+					}else{
+						var valid_upto_year =  parseInt(get_grant_year)+ parseInt(5);
+					}
+					
+					var valid_upto_date = '31/03/'+ valid_upto_year;
+
+				}else if(certification_type == 2){
+
+					var valid_upto_year =  parseInt(get_grant_year)+ parseInt(1);
+					var valid_upto_date = '31/12/'+ valid_upto_year;
+
+				}else if(certification_type == 3){
+
+					if(get_grant_month <= 6){
+						var valid_upto_year =  parseInt(get_grant_year)+ parseInt(1);
+					}else{
+						var valid_upto_year =  parseInt(get_grant_year)+ parseInt(2);
+					}
+					var valid_upto_date = '30/06/'+ valid_upto_year;
 				}
 				
-				var valid_upto_date = '31/03/'+ valid_upto_year;
+			}else{
+				
+				if(certification_type == 1){
 
-			}else if(certification_type == 2){
+					if(get_grant_month <= 3){
+						var valid_upto_year =  parseInt(get_grant_year)+ parseInt(4);
+					}else{
+						var valid_upto_year =  parseInt(get_grant_year)+ parseInt(5);
+					}
+					
+					var valid_upto_date = '31/03/'+ valid_upto_year;
 
-				var valid_upto_year =  parseInt(get_grant_year)+ parseInt(1);
-				var valid_upto_date = '31/12/'+ valid_upto_year;
+				}else if(certification_type == 2){
 
-			}else if(certification_type == 3){
+					var valid_upto_year =  parseInt(get_grant_year)+ parseInt(4);
+					var valid_upto_date = '31/12/'+ valid_upto_year;
 
-				if(get_grant_month <= 6){
-					var valid_upto_year =  parseInt(get_grant_year)+ parseInt(1);
-				}else{
-					var valid_upto_year =  parseInt(get_grant_year)+ parseInt(2);
+				}else if(certification_type == 3){
+
+					if(get_grant_month <= 6){
+						var valid_upto_year =  parseInt(get_grant_year)+ parseInt(4);
+					}else{
+						var valid_upto_year =  parseInt(get_grant_year)+ parseInt(5);
+					}
+					var valid_upto_date = '30/06/'+ valid_upto_year;
 				}
-				var valid_upto_date = '30/06/'+ valid_upto_year;
 			}
 
 			return valid_upto_date;

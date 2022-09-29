@@ -491,12 +491,12 @@ class OthermodulesController extends AppController{
 			
 			//get application type from name
 			$this->loadModel('DmiApplicationTypes');
-			$get_appl_type = $this->DmiApplicationTypes->find('all',array('fields'=>'id','conditions'=>array('application_type'=>$appl_type)))->first();
+			$get_appl_type = $this->DmiApplicationTypes->find('all',array('fields'=>'id','conditions'=>array('application_type IS'=>$appl_type)))->first();
 			$appl_type_id = $get_appl_type['id'];
 			
 			//get flow wise tables
 			$this->loadModel('DmiFlowWiseTablesLists');
-			$flow_wise_tables = $this->DmiFlowWiseTablesLists->find('all',array('conditions'=>array('application_type'=>$appl_type_id),'order'=>'id ASC'))->first();
+			$flow_wise_tables = $this->DmiFlowWiseTablesLists->find('all',array('conditions'=>array('application_type IS'=>$appl_type_id),'order'=>'id ASC'))->first();
 			
 			$DmiAllocations = $flow_wise_tables['allocation'];
 			$DmiHoLevelAllocations = $flow_wise_tables['ho_level_allocation'];

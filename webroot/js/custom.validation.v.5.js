@@ -1,11 +1,30 @@
+	$(function(){
 
-  $(document).ready(function(){
-    $('form').keypress(function (event) {
-        if (event.keyCode === 10 || event.keyCode === 13) {
-            event.preventDefault();
-        }
-    });
-  });
+		$(document).on('keyup keypress blur change','.cvcalyear',function(){
+			//this logic is used for calculate year difference beeteween two dates added by shankhpal shende on 27/09/2022
+			var id_No = this.id.split("-");//to get dynamic id of element for each row, and split to get no.
+			$("#ta-total-"+id_No).val();
+			id_No = id_No[2];
+			var date1 = $("#ta-from_dt-"+id_No).val();
+			var date2 = $("#ta-to_dt-"+id_No).val();
+			var yearsDiff =  new Date(date2).getFullYear() - new Date(date1).getFullYear();
+			$("#ta-total-"+id_No).val(yearsDiff);
+		})
+
+		$('#value1, #value2').keyup(function(){
+			var value1 = parseFloat($('#value1').val()) || 0;
+			var value2 = parseFloat($('#value2').val()) || 0;
+			$('#sum').val(value1 + value2);
+		});
+	});
+
+	$(document).ready(function(){
+		$('form').keypress(function (event) {
+			if (event.keyCode === 10 || event.keyCode === 13) {
+				event.preventDefault();
+			}
+		});
+	});
   
   
   /* custom validations functions */
@@ -66,7 +85,7 @@ $(document).ready(function(){
         var errorText = getErrorText(index, inputMinMax, inputFloatVal);
         var funcStatus = funcs[index](formId, input, inputId);
         if(funcStatus == '1'){
-		$('#'+inputId).parent().parent().find('.err_cv:first').text(errorText).css('color','red');
+		      $('#'+inputId).parent().parent().find('.err_cv:first').text(errorText).css('color','red');
           disSubmitBtn(formId);
           return false;
         } else {

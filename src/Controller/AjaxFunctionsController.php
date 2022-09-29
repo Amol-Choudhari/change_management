@@ -1429,7 +1429,7 @@ class AjaxFunctionsController extends AppController{
 		//$payment_tables_array = array('Dmi_applicant_payment_detail','Dmi_renewal_applicant_payment_detail');
 
 		//get all payment tables flow wise
-		$payment_tables_array = $this->DmiFlowWiseTablesLists->find('all',array('fields'=>'payment','conditions'=>array('payment IS NOT'=>null)))->toArray();
+		$payment_tables_array = $this->DmiFlowWiseTablesLists->find('all',array('fields'=>'payment','conditions'=>array('application_type IN'=>$this->Session->read('applTypeArray'),'payment IS NOT'=>null)))->toArray();
 
 		foreach ($payment_tables_array as $each_table) {
 

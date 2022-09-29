@@ -10,9 +10,9 @@
 	<?php echo $this->element($section_details['section_path']); ?>
 
 	<?php if ($authRegFirm == 'no' || $application_type != 1 ) { ?>
+
 		<div class="form-style-3 form-middle">
-			<?php
-				// set new communication window for chemist flow, Done by Akash Thakre, 30-09-2021
+			<?php // set new communication window for chemist flow, Done by Akash Thakre, 30-09-2021
 				if ($application_type == 4) {
 
 					echo $this->element('communications_elements/ro_chemist_communication');

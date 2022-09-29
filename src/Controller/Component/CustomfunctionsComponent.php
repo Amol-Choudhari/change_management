@@ -418,7 +418,7 @@ class CustomfunctionsComponent extends Component {
 			} else {
 
 				$check_application_type = $Dmi_firm->find('all',array('fields'=>array('commodity','export_unit'),'conditions'=>array('customer_id IS'=>$customer_id)))->first();
-
+				
 				//added id '11' on 05-09-2022 for Fat Spread updates after UAT
 				if ($check_application_type['commodity'] == 106 || $check_application_type['commodity'] == 11) {
 
@@ -458,8 +458,11 @@ class CustomfunctionsComponent extends Component {
 		}
 		
 		if ($appl_type==5) {
+
 			$form_type = 'FDC';
+
 		} elseif ($appl_type==6) {
+			
 			$form_type = 'EC';
 		}
 
@@ -2344,13 +2347,13 @@ class CustomfunctionsComponent extends Component {
 
 			// File Uploading code start
 			$filecodedName = time().uniqid().$file_name;
-			$uploadPath = $_SERVER["DOCUMENT_ROOT"].'/writereaddata/DMI/files/';
+			$uploadPath = $_SERVER["DOCUMENT_ROOT"].'/writereaddata/DMI/uploaded_docs/';
 			$uploadFile = $uploadPath.$filecodedName;
 			$uploadData = '';
 
 			if (move_uploaded_file($file_local_path,$uploadFile)) {
 
-				$uploadData = '/writereaddata/DMI/files/'.$filecodedName;
+				$uploadData = '/writereaddata/DMI/uploaded_docs/'.$filecodedName;
 
 			} else {
 
