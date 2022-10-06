@@ -32,6 +32,71 @@ class UsersController extends AppController {
 
 	}
 
+	/*
+	public function testa(){
+		$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+		$spreadsheet = $reader->load("D:\sample.xlsx");
+		$sheetData = $spreadsheet->getActiveSheet()->toArray();
+		$this->loadModel('DmiApplWithRoMappings');
+
+		$i=1;
+		$this->loadModel('DmiRejectedApplLogs');
+		unset($sheetData[0]);
+
+		foreach ($sheetData as $t) {
+			
+			$appl_type = $this->Customfunctions->firmType($t[0]);
+			$form_type = $this->Customfunctions->checkApplicantFormType($t[0]);
+			$customer_id = $t[0];
+			$by_user = $this->DmiApplWithRoMappings->getOfficeDetails($t[0]);
+			
+			
+			pr($isDone);
+
+		
+			if (!empty($isDone)) {
+				//saving the entries in Database 
+				$Entity = $this->DmiRejectedApplLogs->newEntity(array(
+
+					'appl_type' => $appl_type,
+					'form_type' => $form_type,
+					'customer_id' => $customer_id,
+					'by_user' => $by_user['ro_email_id'],
+					'remark' => 'For Phase 2',
+					'created' =>date('Y-m-d H:i:s')
+				));
+				
+				$this->DmiRejectedApplLogs->save($Entity);
+			}
+			
+
+			$i++;
+		}
+		exit;
+		
+	}
+   */
+
+	/*
+	public function testB(){
+		$this->loadModel('DmiRejectedApplLogs');
+		$this->loadModel('DmiApplWithRoMappings');
+
+		$isDone = $this->DmiRejectedApplLogs->find('all')->select(['id','customer_id'])->where(['by_user IS'=>'ZG1pcWNAbmljLmlu'])->toArray();
+		foreach ($isDone as $key => $value) {
+			$by_user = $this->DmiApplWithRoMappings->getOfficeDetails($value['customer_id']);
+
+			$Entity = $this->DmiRejectedApplLogs->newEntity(array(
+
+				'id' => $value['id'],
+				'by_user' => $by_user['ro_email_id'],
+			));
+			$this->DmiRejectedApplLogs->save($Entity);
+		}
+	
+	}
+
+	*/
 
 	// CREATE CAPTCHA
 	public function createCaptcha() {

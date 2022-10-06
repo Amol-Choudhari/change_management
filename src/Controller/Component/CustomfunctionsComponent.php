@@ -3407,7 +3407,7 @@ class CustomfunctionsComponent extends Component {
 	// Description : This will return QR code
 	// Date : 12/08/2022
 	
-	public function getQrCode($result){
+	public function getQrCode($result,$type=null){
 		
 		$customer_id = $this->Session->read('customer_id');
 		
@@ -3416,39 +3416,60 @@ class CustomfunctionsComponent extends Component {
 			$customer_id = $this->Session->read('username');
 		}
 
+		if ($type =='CHM') {
+			
+			if(!empty($result[0])){
+
+				$tableRowData = $result[0];
+				$i=0;
+				$data1 = '';
+				$data2 = '';
+				$data3 = '';
+				foreach($tableRowData as $each){ 
+					$data1 .=  $each['commodity_name'].",";
+					$data2 .= $each['tbl_name'].",";
+					$data3 .= $each['printer_name'].",";
+				} 
+			}
+		}
+
 		$DmiCertQrCodes = TableRegistry::getTableLocator()->get('DmiCertQrCodes'); //initialize model in component
 		
 		$resultdata = $DmiCertQrCodes->find('all',array('conditions'=>array('customer_id'=>$customer_id)))->toArray();
 		
-		//if(count($resultdata) == 0){
+		require_once(ROOT . DS .'vendor' . DS . 'phpqrcode' . DS . 'qrlib.php');
+		
+		if ($type == 'CHM') {
+			$data = "CA Id :".$result[2]."##"."Chemist Name :".$result[1]."##"."commodity_name :".$data1."##"."TBL Name: ".$data2."##"."Printer Name: ".$data3;
+		}elseif ($type=='FDC') {
+			$data = "Applicant Id :".$result."##"."This is the Certificate of Fifteen Digit Code".";";
+		}elseif($type=='ECode'){
+			$data = "Applicant Id :".$result[0]."##"."ECode :".$result[1].";";
+		}else{
+			$data = "MECARD:N:".'Certificate No:'.$result[0].'Grant Date:'.$result[1]." Valid up to date:".$result[2][0].";";
+		}
 
-			require_once(ROOT . DS .'vendor' . DS . 'phpqrcode' . DS . 'qrlib.php');
-	
-			$data = "MECARD:N:".'Certificate No:'.$result[0].";EMAIL:".'Grant Date:'.$result[1]." Valid up to date:".$result[2][0].";";
-			$qrimgname = rand();
-			
-			$server_imagpath = '/writereaddata/DMI/certificates/QRCodes/'.$qrimgname.".png";
-			
-			$file_path = $_SERVER["DOCUMENT_ROOT"].'/writereaddata/DMI/certificates/QRCodes/'.$qrimgname.".png";
-			
-			$file_name = $file_path;
-			
-			QRcode::png($data,$file_name);
-			
-			
-			$date = date('Y-m-d H:i:s');	
-			
-			$DmiCertificateQrAdd = $DmiCertQrCodes->newEntity(
-													['customer_id'=>$customer_id,
-													'qr_code_path'=>$server_imagpath,
-													'created'=>$date,
-													'modified'=>$date
-													]);
-			
-			$DmiCertQrCodes->save($DmiCertificateQrAdd);
-		//	}
+		$qrimgname = rand();
+		
+		$server_imagpath = '/writereaddata/DMI/certificates/QRCodes/'.$qrimgname.".png";
+		
+		$file_path = $_SERVER["DOCUMENT_ROOT"].'/writereaddata/DMI/certificates/QRCodes/'.$qrimgname.".png";
+		
+		$file_name = $file_path;
+		
+		QRcode::png($data,$file_name);
+		
+		
+		$date = date('Y-m-d H:i:s');	
+		
+		$DmiCertificateQrAdd = $DmiCertQrCodes->newEntity(['customer_id'=>$customer_id,
+														   'qr_code_path'=>$server_imagpath,
+														   'created'=>$date,
+														   'modified'=>$date]);
 
-		$qrimage = $DmiCertQrCodes->find('all',array('field'=>'qr_code_path','conditions'=>array('customer_id'=>$customer_id)))->first();
+		$DmiCertQrCodes->save($DmiCertificateQrAdd);
+
+		$qrimage = $DmiCertQrCodes->find('all',array('field'=>'qr_code_path','conditions'=>array('customer_id'=>$customer_id),'order'=>'id desc'))->first();
 		
 		return $qrimage;
 		

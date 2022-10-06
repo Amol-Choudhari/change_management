@@ -20,7 +20,7 @@
 
 <?php
 
-if (filter_var(base64_decode($this->getRequest()->getSession()->read('username')), FILTER_VALIDATE_EMAIL)) {//for email encoding
+if (filter_var(base64_decode((string) $this->getRequest()->getSession()->read('username')), FILTER_VALIDATE_EMAIL)) {//for email encoding the (String) type cast is applied to fix the PHP 8.1 Depracations - Akash [06-10-22]
 
 	if(isset($_SESSION['userloggedin']) && $_SESSION['userloggedin']=='yes'){
 

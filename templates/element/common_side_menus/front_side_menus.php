@@ -1,6 +1,10 @@
 <?php ?>
 <aside class="main-sidebar sidebar-dark-primary elevation-4 rounded">
-    <div class="sidebar">
+	<?php if (isset($_SESSION['userloggedin'])) { ?>
+		<div class="sidebar h245">
+	<?php  } else { ?>
+   		 <div class="sidebar h391">
+	<?php } ?>
       <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
         	<?php 

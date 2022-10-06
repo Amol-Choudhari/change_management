@@ -70,7 +70,7 @@ class EsignController extends AppController {
 		$pdf_file_name = $this->Session->read('pdf_file_name');	
 
 		//if response from ESP for esign request
-		if($this->request->is('post')){
+		//if($this->request->is('post')){
 			
 			//to get FORM base method response POST and convert into associative array
 			////updated on 31-05-2021 for Form Based Esign method by Amol
@@ -130,7 +130,7 @@ class EsignController extends AppController {
 				$this->redirect('https://10.153.72.52/DMI/esign/esign_issue');//updated on 31-05-2021 for Form Based Esign method by Amol
 			}
 			
-		}
+		//}
 		
 	}
 	

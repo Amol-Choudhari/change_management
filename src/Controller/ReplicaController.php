@@ -1188,8 +1188,8 @@ class ReplicaController extends AppController {
 		$this->Session->write('overall_total_chrg',$overall_charges);
 		
 		//added by shankhpal shende on 19/08/2022 for implimenting QR code for replica EsignedChemist
-		$data = [$chemist_name,$firm_details];
-		$result_for_qr = $this->Customfunctions->getQrCodeEsignedChemist($tableRowData,$chemist_name,$firm_details);
+		$data = [$tableRowData,$chemist_name,$firm_details];
+		$result_for_qr = $this->Customfunctions->getQrCode($data,'CHM');
 		
 		$this->set('result_for_qr',$result_for_qr);
 		//end for QR code

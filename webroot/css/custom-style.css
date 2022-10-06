@@ -46,7 +46,8 @@
 .h80    { height     : 80px; }
 .mH260  { min-height : 260px; }
 .mH1254 { min-height : 1254.64px; }
-
+.h245   { height :245px !important; }
+.h391 {height : 391px !important; }
 
 /*MARGINS*/
 /*MARGINS*/

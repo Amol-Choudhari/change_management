@@ -225,7 +225,7 @@ class BeforepageloadComponent extends Component {
 
 		// compare user current session id, Done by Pravin Bhakare 12-11-2020
 		$username = $this->Controller->Session->read('username');
-		$countspecialchar = substr_count($username,"/");
+		$countspecialchar = substr_count((string) $username,"/"); // added the (string) type-cast to fix the PHP8.1.4 Depractions - Akash [06-10-2022]
 		if($countspecialchar == 1){ $userType = 'dp'; $logTable = 'DmiCustomerLogs'; $conditions = array('customer_id IS' => $username);}
 		if($countspecialchar == 2){ $userType = 'ch'; $logTable = 'DmiChemistLogs'; $conditions = array('customer_id IS' => $username);}
 		if($countspecialchar == 3){ $userType = 'df'; $logTable = 'DmiCustomerLogs'; $conditions = array('customer_id IS' => $username);}
@@ -535,8 +535,8 @@ class BeforepageloadComponent extends Component {
 
 	//To show notifications on applicant dashboard, on 02-12-2021
 	public function showNotificationToApplicant(){ 
-	
-		if(preg_match("/^[0-9]+\/[0-9]+\/[A-Z]+\/[0-9]+$/", $this->Session->read('username'), $matches) == 1){
+		// added the (string) type-cast to fix the PHP8.1.4 Depractions - Akash [06-10-2022]
+		if(preg_match((string) "/^[0-9]+\/[0-9]+\/[A-Z]+\/[0-9]+$/",(string) $this->Session->read('username'), $matches) == 1){
 			
 			$customer_id = $this->Session->read('username');
 			//for notificaion module on applicant dashboard

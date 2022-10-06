@@ -2389,6 +2389,7 @@ class ReportsController extends AppController {
 		$download_report = 'no';
 
 		if (null != ($this->request->getData('search_logs')) || null != ($this->request->getData('download_report'))) {
+			
 			$search_flag = 'on'; // added by Ankur
 			//Check not empty "Download Report as Excel" button Request, if condition TRUE then set value "yes" for "Download Report as Excel" click event
 			//and pass this value to "approved_application_search_conditions" function (Done by pravin 13-03-2018)
@@ -2485,13 +2486,13 @@ class ReportsController extends AppController {
 		$approved_application_list = [];
 
 		if ($search_application_type_id != '' && $application_approved_office == '' && $search_from_date =='' && $search_to_date == '') {
-
+			
 			if ($table == 'DmiFinalSubmits') {
-				$approved_application_customer_id = $this->DmiGrantCertificatesPdfs->find()->select(['customer_id'])->group(['customer_id HAVING COUNT(customer_id) < 2'])->toArray();
+				$approved_application_customer_id = $this->DmiGrantCertificatesPdfs->find('all')->select(['customer_id'])->group(['customer_id HAVING COUNT(customer_id) < 2'])->toArray();
 			} elseif ($table == 'DmiGrantCertificatesPdfs') {
-				$approved_application_customer_id = $this->DmiGrantCertificatesPdfs->find('all',array('fields'=>'customer_id','group'=>'customer_id having count(customer_id) >= 1','having'=>array('count(customer_id) >= 1')))->toArray();
+				$approved_application_customer_id = $this->DmiGrantCertificatesPdfs->find('all')->select(['customer_id'])->group(['customer_id HAVING COUNT(customer_id) >= 1'])->toArray();
 			} else {
-				$approved_application_customer_id = $this->DmiGrantCertificatesPdfs->find('all',array('fields'=>'customer_id','group'=>'customer_id having count(customer_id) > 1','having'=>array('count(customer_id) > 1')))->toArray();
+				$approved_application_customer_id = $this->DmiGrantCertificatesPdfs->find('all')->select(['customer_id'])->group(['customer_id HAVING COUNT(customer_id) > 1'])->toArray();
 			}
 
 			$i=0;
@@ -2504,14 +2505,22 @@ class ReportsController extends AppController {
 				}
 			}
 
+			// below if-else code added by Ankur Jangid
 			if (!empty($approved_application_list)) {
-				$conditions = ['customer_id IN' => $approved_application_list, 'status' => 'approved', 'current_level' => 'level_3']; 
+
+				// THIS BELOW CONDITION IS ADDED FOR THE ALL REPORTS BY AKASH ON 16-06-2022
+				if ($table == 'DmiGrantCertificatesPdfs') {
+					$conditions = array('customer_id IN'=>$approved_application_list); 
+				} else {
+					$conditions = ['customer_id IN' => $approved_application_list, 'status' => 'approved', 'current_level' => 'level_3'];
+				}
+
 			} else {
-				$conditions = ['customer_id IS' => '', 'status' => 'approved', 'current_level' => 'level_3']; 
+				$conditions = ['customer_id IS' => '', 'status' => 'approved', 'current_level' => 'level_3'];
 			}
 
 			$approved_application_list = $this->$table->find('all')->where($conditions)->order(['id' => 'DESC'])->toArray();
-
+			pr($approved_application_list); exit;
 			$download_approved_application_list = $this->$table->find('all')->select(['customer_id'])->where($conditions)->order(['id' => 'DESC'])->toArray(); 
 		
 		} elseif ($search_application_type_id != '' && $application_approved_office != '' && $search_from_date =='' && $search_to_date == '' ) {

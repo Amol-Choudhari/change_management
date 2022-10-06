@@ -309,9 +309,6 @@ class ApplicationformspdfsController extends AppController{
 			
 		}else{
 			
-			//$this->Mpdf->Output($filename,'I');
-			//$this->Mpdf->Output($filename,'F');
-			
 			$this->callTcpdf($all_data_pdf,'I',$customer_id,'report');//on 23-01-2020 with preview mode
 			$this->callTcpdf($all_data_pdf,'F',$customer_id,'report');//on 23-01-2020 with save mode
 		}
@@ -1617,11 +1614,9 @@ class ApplicationformspdfsController extends AppController{
 			foreach($get_final_submitted_date as $each_date){
 				
 				$renewal_application_date[$i] = $each_date['created'];
-																 
-			
-			$i=$i+1;
-			}				
-			$this->set('renewal_application_date',$renewal_application_date);				
+				$i=$i+1;
+			}
+			$this->set('renewal_application_date',$renewal_application_date);
 		}
 			
 		//get all records from grant table to manage multiple renewals
@@ -1673,7 +1668,6 @@ class ApplicationformspdfsController extends AppController{
 		
 		$this->set('get_grant_details',$get_grant_details);
 		$this->set('user_full_name',$user_full_name);
-																								
 		$this->set('certificate_valid_upto',$certificate_valid_upto);
 		
 		//added this condition on 08-06-2019 by Amol
@@ -1715,6 +1709,11 @@ class ApplicationformspdfsController extends AppController{
 			$this->set('user_full_name',$user_full_name);																						   
 			$this->set('certificate_valid_upto',$certificate_valid_upto);
 
+			//This below line is added for the QR Code genration on Shankhpal [16-08-2022]	
+			$data = [$customer_id,$pdf_date,$certificate_valid_upto];
+			$result_for_qr = $this->Customfunctions->getQrCode($data);
+			$this->set('result_for_qr',$result_for_qr);
+
 			$this->generateGrantCerticateToReEsignPdf('/Applicationformspdfs/grantCaCertificatePdf'); 
 			//$this->create_grant_certificate_pdf_to_re_esign();
 			
@@ -1735,7 +1734,7 @@ class ApplicationformspdfsController extends AppController{
 				array_pop($user_full_name);
 				array_pop($certificate_valid_upto);
 
-				$this->set('user_full_name',$user_full_name);																						   
+				$this->set('user_full_name',$user_full_name);
 				$this->set('certificate_valid_upto',$certificate_valid_upto);
 			}
 			
@@ -1934,6 +1933,11 @@ class ApplicationformspdfsController extends AppController{
 			$this->set('user_full_name',$user_full_name);
 			$this->set('certificate_valid_upto',$certificate_valid_upto);
 			
+			//This below line is added for the QR Code genration on Shankhpal [16-08-2022]	
+			$data = [$customer_id,$pdf_date,$certificate_valid_upto];
+			$result_for_qr = $this->Customfunctions->getQrCode($data);
+			$this->set('result_for_qr',$result_for_qr);				
+
 			$this->generateGrantCerticateToReEsignPdf('/Applicationformspdfs/grantPrintingCertificatePdf'); 
 			//$this->create_grant_certificate_pdf_to_re_esign();
 			
@@ -2161,9 +2165,13 @@ class ApplicationformspdfsController extends AppController{
 			$this->set('get_grant_details',$get_grant_details);
 			$this->set('user_full_name',$user_full_name);
 			$this->set('certificate_valid_upto',$certificate_valid_upto);
-			
+
+			//This below line is added for the QR Code genration on Shankhpal [16-08-2022]	
+			$data = [$customer_id,$pdf_date,$certificate_valid_upto];
+			$result_for_qr = $this->Customfunctions->getQrCode($data);
+			$this->set('result_for_qr',$result_for_qr);
+
 			$this->generateGrantCerticateToReEsignPdf('/Applicationformspdfs/grantLaboratoryCertificatePdf'); 
-			//$this->create_grant_certificate_pdf_to_re_esign();
 			
 		}else{
 			
@@ -2192,7 +2200,6 @@ class ApplicationformspdfsController extends AppController{
 			$this->set('result_for_qr',$result_for_qr);				
 			
 			$this->generateGrantCerticatePdf('/Applicationformspdfs/grantLaboratoryCertificatePdf'); 
-			//$this->create_grant_certificate_pdf();				
 		}
 			
 		$split_customer_id = explode('/',$customer_id);				
@@ -2516,7 +2523,7 @@ class ApplicationformspdfsController extends AppController{
 	}
 
 
-//grant certificate for 15 digit code application
+	//grant certificate for 15 digit code application
 	public function grant15DigitCertificate(){
 				
 		$this->loadModel('DmiFirms');		
@@ -2569,8 +2576,7 @@ class ApplicationformspdfsController extends AppController{
 		$this->set('commodity_names',$commodity_names);
 		
 		//This below line is added for the QR Code genration on Shankhpal [16-08-2022]	
-		$data = [$customer_id,$pdf_date,$certificate_valid_upto];
-		$result_for_qr = $this->Customfunctions->getQrCode($data);
+		$result_for_qr = $this->Customfunctions->getQrCode($customer_id,'FDC');
 		$this->set('result_for_qr',$result_for_qr);
 		
 		$this->generateGrantCerticatePdf('/Applicationformspdfs/grant15DigitCertificate'); 
@@ -2581,7 +2587,7 @@ class ApplicationformspdfsController extends AppController{
 	
 	
 	
-//application pdf for approval to use E-code
+	//application pdf for approval to use E-code
 	public function applPdfECode(){ 
 		
 		$this->loadModel('DmiFirms');
@@ -2644,7 +2650,7 @@ class ApplicationformspdfsController extends AppController{
 		
 	}
 	
-//Report pdf for approval to use E-code
+	//Report pdf for approval to use E-code
 	public function reportPdfECode(){
 		
 		$this->loadModel('DmiFirms');
@@ -2763,8 +2769,8 @@ class ApplicationformspdfsController extends AppController{
 		$this->set('eCode',$eCode);
 		
 		//This below line is added for the QR Code genration on Shankhpal [16-08-2022]	
-		$data = [$customer_id,$pdf_date,$certificate_valid_upto];
-		$result_for_qr = $this->Customfunctions->getQrCode($data);
+		$data = [$customer_id,$eCode];
+		$result_for_qr = $this->Customfunctions->getQrCode($data,'ECode');
 		$this->set('result_for_qr',$result_for_qr);
 		
 		$this->generateGrantCerticatePdf('/Applicationformspdfs/grantECodeCertificate'); 
