@@ -35,7 +35,7 @@
 
 			if ($this->Session->read('username') == null) {
 				
-				echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+				$this->customAlertPage("Sorry You are not authorized to view this page..");
 				exit;
 			}
 
@@ -70,7 +70,7 @@
 			$user_access = $this->DmiUserRoles->find('all',array('conditions'=>array('old_appln_data_entry'=>'yes','user_email_id IS'=>$this->Session->read('username'))))->first();
 			
 			if (empty($user_access)) {
-				echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+				$this->customAlertPage("Sorry You are not authorized to view this page..");
 				exit;
 			}
 			
@@ -130,7 +130,7 @@
 			//check if user have role
 			$user_access = $this->DmiUserRoles->find('all',array('conditions'=>array('old_appln_data_entry'=>'yes','user_email_id IS'=>$this->Session->read('username'))))->first();
 			if (empty($user_access)) {
-				echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+				$this->customAlertPage("Sorry You are not authorized to view this page..");
 				exit;
 			}
 
@@ -188,7 +188,7 @@
 
 							$last_customer_id = $last_customer_id_query['customer_id'];
 
-							$split = explode('/',$last_customer_id);
+							$split = explode('/',(string) $last_customer_id); #For Deprecations
 
 							$splited_id = $split[0];
 
@@ -300,7 +300,8 @@
 
 									$this->DmiAuthPrimaryRegistrations->save($DmiAuthPrimaryRegistrationsEntity);
 									
-									//$this->DmiSmsEmailTemplates->sendMessage(1, $new_customer_id);
+									#SMS: Primary Applicant Registration 
+									$this->DmiSmsEmailTemplates->sendMessage(1, $new_customer_id);
 									
 									$message = 'You have Successfully Created New Primary Id.';
 									$message_theme = 'success';
@@ -386,7 +387,7 @@
 
 			$user_access = $this->DmiUserRoles->find('all',array('conditions'=>array('old_appln_data_entry'=>'yes','user_email_id'=>$this->Session->read('username'))))->first();
 			if (empty($user_access)) {
-				echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+				$this->customAlertPage("Sorry You are not authorized to view this page..");
 				exit;
 			}
 
@@ -607,6 +608,7 @@
 
 							$this->DmiCustomersHistoryLogs->save($DmiCustomersHistoryLogsEntity);
 
+							/* Commented on 31-10-2022 - Akash [31-10-2022]
 							//update aadhar permission table to done from 'in_progress' in entry exist
 							if (!empty($once_update_permission)) {
 
@@ -622,13 +624,10 @@
 									$this->DmiPermittedOnceUpdations->save($DmiPermittedOnceUpdationsEntity);
 								}
 							}
+							*/
 
-
-
-							//added on 22-08-2017 by Pravin to send SMS/Email
-							//call custom function from Model with message id
-							$this->loadModel('DmiSmsEmailTemplates');
-							//$this->DmiSmsEmailTemplates->sendMessage(2,$customer_id);
+							#SMS: Primary Applicant edit profile
+							$this->DmiSmsEmailTemplates->sendMessage(2,$customer_id);
 						
 							//Added this call to save the user action log on 09-03-2022
 							$this->Customfunctions->saveActionPoint('Firm Edit (Auth)','Success');
@@ -700,7 +699,7 @@
 			$user_access = $this->DmiUserRoles->find('all',array('conditions'=>array('old_appln_data_entry'=>'yes','user_email_id IS'=>$this->Session->read('username'))))->first();
 			
 			if (empty($user_access)) {
-				echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+				$this->customAlertPage("Sorry You are not authorized to view this page..");
 				exit;
 			}
 
@@ -794,7 +793,7 @@
 
 							$customer_primary_id 		= 	$this->request->getData('primary_id');
 
-							$split_primary_id			= 	explode('/',$customer_primary_id);
+							$split_primary_id			= 	explode('/',(string) $customer_primary_id); #For Deprecations
 
 							$splited_primary_id_value	= 	$split_primary_id[0];
 
@@ -830,7 +829,7 @@
 
 								$fetch_last_secondary_id 		=	$max_customer_id['customer_id'];
 
-								$split_secondary_id				= 	explode('/',$fetch_last_secondary_id);
+								$split_secondary_id				= 	explode('/',(string) $fetch_last_secondary_id); #For Deprecations
 
 								$splited_secondary_id_value		= 	$split_secondary_id[3];
 							
@@ -848,7 +847,7 @@
 
 							//if certification type is printing press the no commodity
 
-							$split_new_generated_id = explode('/',$customer_secondary_id);
+							$split_new_generated_id = explode('/',(string) $customer_secondary_id); #For Deprecations
 
 							if ($split_new_generated_id[1] != 2) {
 
@@ -1184,9 +1183,8 @@
 								$message_theme = 'success';
 								$redirect_to = 'home';
 								
-								//added on 22-08-2017 by Pravin to send SMS/Email
-								//call custom function from Model with message id
-								//$this->DmiSmsEmailTemplates->sendMessage(3,$customer_secondary_id);
+								#SMS: Secondary applicant registration
+								$this->DmiSmsEmailTemplates->sendMessage(3,$customer_secondary_id);
 
 							} else {
 
@@ -1257,7 +1255,7 @@
 			$user_access = $this->DmiUserRoles->find('all',array('conditions'=>array('old_appln_data_entry'=>'yes','user_email_id IS'=>$this->Session->read('username'))))->first();
 			
 			if (empty($user_access)) {
-				echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+				$this->customAlertPage("Sorry You are not authorized to view this page..");
 				exit;
 			}
 
@@ -1288,13 +1286,13 @@
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 			//taking id of multiple sub commodities	to show names in list
-			$sub_comm_id = explode(',',$added_firm_field['sub_commodity']);
+			$sub_comm_id = explode(',',(string) $added_firm_field['sub_commodity']); #For Deprecations
 			$sub_commodity_value = $this->MCommodity->find('list',array('keyField'=>'commodity_code','valueField'=>'commodity_name', 'conditions'=>array('commodity_code IN'=>$sub_comm_id)))->toArray();
 			$this->set('sub_commodity_value',$sub_commodity_value);
 
 
 			//taking id of multiple Packaging Materials types to show names in list
-			$packaging_type_id = explode(',',$added_firm_field['packaging_materials']);
+			$packaging_type_id = explode(',',(string) $added_firm_field['packaging_materials']); #For Deprecations
 			$packaging_materials_value = $this->DmiPackingTypes->find('list',array('valueField'=>'packing_type', 'conditions'=>array('id IN'=>$packaging_type_id)))->toArray();
 			$this->set('packaging_materials_value',$packaging_materials_value);
 

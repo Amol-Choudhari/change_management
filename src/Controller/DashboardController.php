@@ -38,7 +38,7 @@ class DashboardController extends AppController{
 			$username = $this->getRequest()->getSession()->read('username');
 
 			if($username == null){
-				echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->getRequest()->getAttribute('webroot');?>users/login_user">Please Login</a><?php
+				$this->customAlertPage("Sorry You are not authorized to view this page..");
 				exit();
 			}
 			else{
@@ -47,7 +47,7 @@ class DashboardController extends AppController{
 				$check_user = $this->DmiUsers->find('all',array('conditions'=>array('email'=>$this->Session->read('username'))))->first();
 
 				if(empty($check_user)){
-					echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->getRequest()->getAttribute('webroot');?>users/login_user">Please Login</a><?php
+					$this->customAlertPage("Sorry You are not authorized to view this page..");
 					exit();
 				}
 			}
@@ -538,7 +538,7 @@ class DashboardController extends AppController{
 
 			$appl_type = $_POST['appl_type'];
 			$comm_with = $_POST['comm_with'];
-			$get_customer_id = explode('-',$_POST['customer_id']);
+			$get_customer_id = explode('-',(string) $_POST['customer_id']); #For Deprecations
 			$customer_id = $get_customer_id[0];
 
 			$form_type = $get_customer_id[1];
@@ -567,7 +567,7 @@ class DashboardController extends AppController{
 
 			$appl_type = $_POST['appl_type'];
 			$comm_with = $_POST['comm_with'];
-			$get_customer_id = explode('-',$_POST['customer_id']);
+			$get_customer_id = explode('-',(string) $_POST['customer_id']); #For Deprecations
 			$customer_id = $get_customer_id[0];
 		
 			$form_type = $get_customer_id[1];
@@ -631,8 +631,9 @@ class DashboardController extends AppController{
 				//get flow wise tables
 				$this->loadModel('DmiFlowWiseTablesLists');
 				$applTypeArray = $this->Session->read('applTypeArray');
+				unset($applTypeArray['1']);//index 1, Now Renewal application will not list except DDO dashboard, any where in list. on 20-10-2022
 				unset($applTypeArray['3']);//chemist flow type id is removed, as no need for allocation (scrutiny/inspection), on 28-04-2022
-				$flow_wise_tables = $this->DmiFlowWiseTablesLists->find('all',array('conditions'=>array('application_type IN'=>$applTypeArray/*$this->Session->read('applTypeArray')*/),'order'=>'id ASC'))->toArray();
+				$flow_wise_tables = $this->DmiFlowWiseTablesLists->find('all',array('conditions'=>array('application_type IN'=>$applTypeArray),'order'=>'id ASC'))->toArray();
 
 				$i=0;
 				$appl_list_array = array();
@@ -979,7 +980,7 @@ class DashboardController extends AppController{
 					if($appl_type_id==1){
 											
 						foreach($appl_list_array as $key => $each){
-							$cId = explode('-',$each['customer_id']);
+							$cId = explode('-',(string) $each['customer_id']); #For Deprecations
 							$checkIfOld = $this->Customfunctions->isOldApplication($cId[0],$appl_type_id);
 							if($checkIfOld=='yes'){
 								$appl_list_array[$key]['appl_type']='Old Appl';
@@ -1001,7 +1002,6 @@ class DashboardController extends AppController{
 			$this->autoRender= false;
 			$get_customer_id = explode('-',htmlentities($_POST['customer_id'], ENT_QUOTES));
 			$customer_id = $get_customer_id[0];
-
 			$appl_type = htmlentities($_POST['appl_type'], ENT_QUOTES);
 			$mo_user_id = htmlentities($_POST['mo_user_id'], ENT_QUOTES);
 			$current_date = date('d-m-Y H:i:s');
@@ -1027,6 +1027,9 @@ class DashboardController extends AppController{
 				$appl_type_id['id'] = 1;
 				//$_SESSION['application_type'] = 1;
 			}
+
+			//this temporary session varible is set for the SMS and Email - Akash [10-10-2022]
+			$_SESSION['application_type_temp'] = $appl_type_id['id'];
 
 			$flow_wise_tables = $this->DmiFlowWiseTablesLists->find('all',array('conditions'=>array('application_type IS'=>$appl_type_id['id'])))->first();
 			
@@ -1120,8 +1123,9 @@ class DashboardController extends AppController{
 				));
 
 				if($this->DmiMoAllocationLogs->save($allocation_logs_entity)){
-					$this->loadModel('DmiSmsEmailTemplates');
-					//$this->DmiSmsEmailTemplates->sendMessage($msg_id,$customer_id);
+					
+					#SMS: Allocation
+					$this->DmiSmsEmailTemplates->sendMessage($msg_id,$customer_id);
 				}
 
 			}
@@ -1162,6 +1166,9 @@ class DashboardController extends AppController{
 			$user_id = $get_user_id['id'];
 
 			$appl_type_id = $this->DmiApplicationTypes->find('all',array('conditions'=>array('LOWER(application_type) IS'=>strtolower($appl_type))))->first();
+
+			//this temporary session varible is set for the SMS and Email - Akash [10-10-2022]
+			$_SESSION['application_type_temp'] = $appl_type_id['id'];
 
 			$flow_wise_tables = $this->DmiFlowWiseTablesLists->find('all',array('conditions'=>array('application_type IS'=>$appl_type_id['id'])))->first();
 			$allocation_table = $flow_wise_tables['allocation'];
@@ -1226,8 +1233,9 @@ class DashboardController extends AppController{
 				));
 
 				if($this->DmiIoAllocationLogs->save($allocation_logs_entity)){
-					$this->loadModel('DmiSmsEmailTemplates');
-					//$this->DmiSmsEmailTemplates->sendMessage($msg_id,$customer_id);
+					
+					#SMS: Inspection
+					$this->DmiSmsEmailTemplates->sendMessage($msg_id,$customer_id);
 				}
 
 			}
@@ -1290,11 +1298,10 @@ class DashboardController extends AppController{
 												//added new field on 12-05-2021 by Amol
 			$this->$allocation_table->updateAll(array('io_scheduled_date'=>"$io_scheduled_date",'io_sched_date_comment'=>"$io_sched_date_comment"),array('id'=>$record_id));
 
+			#SMS: IO Rescheduled site inspection date
+			$this->DmiSmsEmailTemplates->sendMessage(16,$customer_id);
+			
 			exit;
-
-			//call custom function from Model with message id
-			$this->loadModel('DmiSmsEmailTemplates');
-			//$this->DmiSmsEmailTemplates->sendMessage(16,$customer_id);
 
 		}
 
@@ -2226,7 +2233,7 @@ class DashboardController extends AppController{
 			foreach($fetch_all_granted_pdf as $each_pdf){
 
 				$customer_id = $each_pdf['customer_id'];
-				$split_customer_id = explode('/',$customer_id);
+				$split_customer_id = explode('/',(string) $customer_id); #For Deprecations
 				$form_type = $this->Customfunctions->checkApplicantFormType($customer_id);
 				//check current Nodal officer for specific district
 				$get_ro_details = $this->DmiApplWithRoMappings->getOfficeDetails($customer_id);

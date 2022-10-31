@@ -84,10 +84,11 @@ class ReplicaController extends AppController {
 		$attached_lab = $this->DmiCaPpLabMapings->find('list',array('keyField'=>'id','valueField'=>'lab_id','conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id asc'))->toList();
 		//get printing list
 		$attached_pp = $this->DmiCaPpLabMapings->find('list',array('keyField'=>'id','valueField'=>'pp_id','conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id asc'))->toList();
-        
+       
 		//get array
 		$attached_lab_data = $this->DmiCaPpLabMapings->find('all',array('conditions'=>array('customer_id IS'=>$customer_id, 'lab_id IS NOT NULL'),'order'=>'id asc'))->first();
 		$attached_pp_data = $this->DmiCaPpLabMapings->find('all',array('conditions'=>array('customer_id IS'=>$customer_id, 'pp_id IS NOT NULL'),'order'=>'id asc'))->first();
+
 		//first check if this packer have any chemist incharge or not, elae show alert
 		$this->loadModel('DmiChemistAllotments');
 		$this->loadModel('CommGrade');
@@ -97,16 +98,13 @@ class ReplicaController extends AppController {
 		//updated by shankhpal shende on 26/08/2022
 		if (empty($check_che_incharge) || empty($attached_pp_data) || empty($attached_lab_data)) {
 			
-			if(empty($check_che_incharge)){
-				$message_var = 'Sorry.. You do not have any registered chemist In-charge, Please register your chemist and set as in-charge';
-			} elseif (empty($attached_pp)) {
-				$message_var = 'You do not have Printing Press attatched to you. Please Attched Printing Press.';
-			} elseif (empty($attached_lab)){
-				$message_var = 'Sorry.. You do not have Laboratory attatched to you. Please Attched Laboratory.';
-			}
+			$message_var = '<b>Note: Before Replica Self Generation following must be done.</b>
+								<br>1. You need to register a Chemist from "Apply For-><b>Chemist Registration</b>" then login with Chemist id, fill forms and submit for approval, Once approved set the chemist incharge.
+								<br>2. You need to attach Printing Press and Laboratory from the menu "Apply For-><b>Attach Printing Press/Lab</b>".
+								<br>3. You need to Apply for the Advance Payment from the menu "Apply For-><b>Advance Payment</b>".';
 			
 			$message = $message_var;
-			$message_theme = 'failed';
+			$message_theme = 'info';
 			$redirect_to = '../customers/secondary_home';
 
 		} else {
@@ -136,7 +134,7 @@ class ReplicaController extends AppController {
 			
 			foreach($get_grade as $val)
 			{
-				$get_grade_desc = $this->MGradeDesc->find('all',array('fields'=>array('grade_code','grade_desc'),'conditions'=>array('grade_code IN'=>$val['grade_code']),'group'=>'grade_code'))->first();
+				$get_grade_desc = $this->MGradeDesc->find('all',array('fields'=>array('grade_code','grade_desc'),'conditions'=>array('grade_code IN'=>$val['grade_code']),'group'=>array('grade_code','grade_desc')))->first();
 				$grade_list[$get_grade_desc['grade_code']] = $get_grade_desc['grade_desc'];
 			}
 			//**************************************************************************************************/
@@ -603,15 +601,14 @@ class ReplicaController extends AppController {
 
 				if ($this->DmiReplicaAllotmentDetails->saveFormDetails($postData,$cur_rep_no_from,$cur_rep_no_upto)==true) {
 					
-					//to send sms and email
-					$this->loadModel('DmiSmsEmailTemplates');
-					//$this->DmiSmsEmailTemplates->sendmessage(55,$customer_id); //to send SMS/email to Packer
-					
 					//get chemist in-charge id to send SMS/email
 					$this->loadModel('DmiChemistAllotments');
 					$chemist_incharge = $this->DmiChemistAllotments->find('all',array('fields'=>'chemist_id','conditions'=>array('customer_id IS'=>$customer_id,'status'=>1,'incharge'=>'yes')))->first();
 					$chemist_id = $chemist_incharge['chemist_id'];
-					//$this->DmiSmsEmailTemplates->sendmessage(56,$chemist_id); //to send SMS/email to chemist
+
+					#SMS: Applicant registered for Replica Serial No.
+					$this->DmiSmsEmailTemplates->sendmessage(54,$customer_id); #Packer
+					$this->DmiSmsEmailTemplates->sendmessage(55,$chemist_id);  #Chemist
 				
 					$message = 'The application for Replica Serial Number is saved successfully. It is now available to Chemist for confirmation';
 					$redirect_to = 'replica_application';
@@ -783,7 +780,7 @@ class ReplicaController extends AppController {
 		foreach($get_grade as $val)
 		{
 			
-			$get_grade_desc = $this->MGradeDesc->find('all',array('fields'=>array('grade_code','grade_desc'),'conditions'=>array('grade_code IN'=>$val['grade_code']),'group'=>'grade_code'))->first();
+			$get_grade_desc = $this->MGradeDesc->find('all',array('fields'=>array('grade_code','grade_desc'),'conditions'=>array('grade_code IN'=>$val['grade_code']),'group'=>array('grade_code','grade_desc')))->first();
 	        $desc[$get_grade_desc['grade_code']] = $get_grade_desc['grade_desc'];
 		
 		}
@@ -1188,7 +1185,7 @@ class ReplicaController extends AppController {
 		$this->Session->write('overall_total_chrg',$overall_charges);
 		
 		//added by shankhpal shende on 19/08/2022 for implimenting QR code for replica EsignedChemist
-		$data = [$tableRowData,$chemist_name,$firm_details];
+		$data = [$chemist_name,$firm_details['firm_name']];
 		$result_for_qr = $this->Customfunctions->getQrCode($data,'CHM');
 		
 		$this->set('result_for_qr',$result_for_qr);
@@ -1336,17 +1333,16 @@ class ReplicaController extends AppController {
 		$this->Session->delete('overall_total_chrg');
 		$this->Session->delete('replica_for');
 		
-		//to send sms and email
-		$this->loadModel('DmiSmsEmailTemplates');
-		//$this->DmiSmsEmailTemplates->sendMessage(57,$customer_id); //to send SMS/email to Packer
 		
 		//get chemist in-charge id to send SMS/email
 		$this->loadModel('DmiChemistAllotments');
 		$chemist_incharge = $this->DmiChemistAllotments->find('all',array('fields'=>'chemist_id','conditions'=>array('customer_id IS'=>$customer_id,'status'=>1,'incharge'=>'yes')))->first();
 		$chemist_id = $chemist_incharge['chemist_id'];
-		//$this->DmiSmsEmailTemplates->sendmessage(58,$chemist_id); //to send SMS/email to chemist
-		
-		//$this->DmiSmsEmailTemplates->sendmessage(59,$customer_id); //to send SMS/email to RO/SO
+
+		#SMS: Approve and Allotment of Replica Serial No.
+		$this->DmiSmsEmailTemplates->sendmessage(56,$customer_id); #Packer
+		$this->DmiSmsEmailTemplates->sendMessage(57,$chemist_id); #Chemist
+		$this->DmiSmsEmailTemplates->sendmessage(58,$customer_id); #RO/SO
 		
 		//get lab and printer for last allotment to send SMS/email
 		$get_allotments = $this->DmiReplicaAllotmentDetails->find('all',array('fields'=>array('authorized_printer','grading_lab'),'conditions'=>array('version IS'=>$current_pdf_version)))->toArray();
@@ -1365,7 +1361,8 @@ class ReplicaController extends AppController {
 		$lab_details = $this->DmiFirms->find('all',array('fields'=>'customer_id','conditions'=>array('id IS'=>$lab_id)))->first();
 		$lab_cust_id = $lab_details['customer_id'];
 		
-		//$this->DmiSmsEmailTemplates->sendmessage(60,$lab_cust_id); //to send SMS/email to respective Laboratory
+		#SMS: Approve and Allotment of Replica Serial No.
+		$this->DmiSmsEmailTemplates->sendmessage(59,$lab_cust_id); #Laboratory
 		
 		//check if multiple printers selected, to send SMS/email
 		$id='';
@@ -1376,7 +1373,9 @@ class ReplicaController extends AppController {
 				//get printer details
 				$printer_details = $this->DmiFirms->find('all',array('fields'=>'customer_id','conditions'=>array('id IS'=>$each)))->first();
 				$printer_cust_id = $printer_details['customer_id'];
-				//$this->DmiSmsEmailTemplates->sendmessage(61,$printer_cust_id); //to send SMS/email to respective printer
+
+				#SMS: Approve and Allotment of Replica Serial No.
+				$this->DmiSmsEmailTemplates->sendmessage(60,$printer_cust_id); #Printer
 			}
 			
 			$id = $each;

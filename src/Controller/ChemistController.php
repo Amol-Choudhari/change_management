@@ -107,7 +107,7 @@
 
 			if ($this->Session->read('username') == null) {
 				
-				echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+				$this->customAlertPage("Sorry You are not authorized to view this page..");
 				exit;
 			} else {
 
@@ -115,7 +115,7 @@
 					//checking applicant id pattern ex.102/1/PUN/006
 					if (preg_match("/^[0-9]+\/[0-9]+\/[A-Z]+\/[0-9]+$/", $this->Session->read('username'),$matches) !=1) {
 
-						echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+						$this->customAlertPage("Sorry You are not authorized to view this page..");
 						exit;
 					}
 				}
@@ -181,7 +181,7 @@
 
 						if (substr_count($this->request->getData('chemist_id') ,"/")!=0) {
 
-							$split_customer_id = explode('/',$this->request->getData('chemist_id'));
+							$split_customer_id = explode('/',(string) $this->request->getData('chemist_id')); #For Deprecations
 
 							$randsalt = $this->Session->read('randSalt');
 							$captchacode1 = $this->Session->read('code');
@@ -370,7 +370,7 @@
 								$htmlEncoded_chemistFirstname = htmlentities($this->request->getData('chemist_fname'), ENT_QUOTES);
 								$htmlEncoded_chemistLastname = htmlentities($this->request->getData('chemist_lname'), ENT_QUOTES);
 
-								$certificationType = explode('/',$username);
+								$certificationType = explode('/',(string) $username); #For Deprecations
 
 								$DmiChemistRegistrationsEntity = $this->DmiChemistRegistrations->newEntity(array(
 
@@ -433,11 +433,9 @@
 
 									$this->DmiChemistAllotments->save($DmiChemistAllotmentsEntity);
 
-									//SMS For PACKER When Registered a Chemist.
-									//$this->DmiSmsEmailTemplates->sendMessage(113,$chemist_id);
-
-									//SMS For CHEMIST When Registered a Chemist.
-									//$this->DmiSmsEmailTemplates->sendMessage(114,$chemist_id);
+									#SMS: Chemist Registration
+									$this->DmiSmsEmailTemplates->sendMessage(66,$chemist_id); #Packer
+									$this->DmiSmsEmailTemplates->sendMessage(67,$chemist_id); #Chemist
 
 									$message = 'You have registered Chemist <strong>"'.$htmlEncoded_chemistFirstname.' '.$htmlEncoded_chemistLastname.'"</strong> with chemist ID is <strong>"'.$chemist_id.'"</strong> .<br>An email has been sent to you and your chemist to set your login password. <br> <strong>Now chemist need to login and complete profile verification.';
 									$message_theme = 'success';
@@ -514,7 +512,7 @@
 
 			if (empty($_GET['$key']) || empty($_GET['$id'])) {
 
-				echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+				$this->customAlertPage("Sorry You are not authorized to view this page..");
 				exit;
 
 			} else {
@@ -530,7 +528,7 @@
 
 				if ($countspecialchar != 2) {
 
-					echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+					$this->customAlertPage("Sorry You are not authorized to view this page..");
 					exit;
 				}
 
@@ -566,6 +564,7 @@
 
 						if ($reset_pass_result == 1) {
 
+							$this->Customfunctions->saveActionPoint('Reset Password (Email Not Matched)','Failed',$user_id); #Action
 							$email_id_not_matched_msg = 'Email id & User Id not Matched.';
 							$this->set('email_id_not_matched_msg',$email_id_not_matched_msg);
 							return null;
@@ -573,6 +572,7 @@
 
 						} elseif ($reset_pass_result == 2) {
 
+							$this->Customfunctions->saveActionPoint('Reset Password (Incorrect Captcha)','Failed',$user_id); #Action
 							$incorrect_captcha_msg = 'Incorrect Captcha code entered.';
 							$this->set('incorrect_captcha_msg',$incorrect_captcha_msg);
 							return null;
@@ -580,6 +580,7 @@
 
 						} elseif ($reset_pass_result == 3) {
 
+							$this->Customfunctions->saveActionPoint('Reset Password (Password Not Macthed)','Failed',$user_id); #Action
 							$comfirm_pass_msg = 'Confirm password not matched';
 							$this->set('comfirm_pass_msg',$comfirm_pass_msg);
 							return null;
@@ -587,6 +588,7 @@
 
 						} elseif ($reset_pass_result == 4) {
 
+							$this->Customfunctions->saveActionPoint('Reset Password (Password is Same as Last)','Failed',$user_id); #Action
 							$comfirm_pass_msg = 'This password matched with your last three passwords, Please enter different password';
 							$this->set('comfirm_pass_msg',$comfirm_pass_msg);
 							return null;
@@ -594,6 +596,7 @@
 
 						} else {
 
+							$this->Customfunctions->saveActionPoint('Reset Password','Success',$user_id); #Action
 							//update link key table status to 1 for successfully
 							$this->DmiChemistsResetpassKeys->updateKeySuccess($user_id,$key_id);
 							$message = 'Password Changed Successfully';
@@ -692,7 +695,7 @@
 
 			} else {
 
-				echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+				$this->customAlertPage("Sorry You are not authorized to view this page..");
 				exit;
 			}
 

@@ -492,16 +492,6 @@
 						$message = $firm_type_text.' - Final submitted successfully ';
 						$message_theme = 'success';
 
-						//Added this call to save the user action log on 04-03-2022 by Akash
-						if ($application_type == 4) {
-							// SMS - APPLICATION SUBMITTED 
-							#$this->DmiSmsEmailTemplates->sendMessage(69,$customer_id); # CHEMIST
-							#$this->DmiSmsEmailTemplates->sendMessage(70,$customer_id); # RO
-						} else {
-							// SMS - APPLICATION SUBMITTED 
-							#$this->DmiSmsEmailTemplates->sendMessage(6,$customer_id); # APPLICANT , RO , DDO
-						}
-
 						//For Chemist i.e Apllication Type 4 then redirect to Chemist Home after Final Submit -> Akash [29-09-2021].
 						if ($application_type == 4) {
 							$redirect_to = '../chemist/home';
@@ -744,7 +734,7 @@
 				
 				if (!empty($list_applicant_payment_id)) { $process_query = 'Updated'; } else { $process_query = 'Saved'; }
 
-				$sub_commodity_array = explode(',',$firm_details['sub_commodity']);
+				$sub_commodity_array = explode(',',(string) $firm_details['sub_commodity']); #For Deprecations
 
 				if (!empty($firm_details['sub_commodity'])) {
 					
@@ -769,7 +759,7 @@
 				if (!empty($firm_details['packaging_materials'])) {
 					
 					$this->loadModel('DmiPackingTypes');
-					$packaging_materials = explode(',',$firm_details['packaging_materials']);
+					$packaging_materials = explode(',',(string) $firm_details['packaging_materials']); #For Deprecations
 					$packaging_type = $this->DmiPackingTypes->find('list', array('valueField'=>'packing_type', 'conditions'=>array('id IN'=>$packaging_materials)));
 					$this->set('packaging_type',$packaging_type);
 				}
@@ -825,9 +815,10 @@
 							//Added this call to save the user action log on 04-03-2022 by Akash
 							$this->Customfunctions->saveActionPoint('Firm Final Submitted', 'Success');
 	
-							//SMS for Application Submitted on 12-08-2022 By Akash
-							#$this->DmiSmsEmailTemplates->sendMessage(6,$customer_id); #To Applicant , RO , DDO
-
+							#SMS: Application Final Submit
+							$this->DmiSmsEmailTemplates->sendMessage(5,$customer_id); #APPLICANT , RO , DDO
+							$this->DmiSmsEmailTemplates->sendMessage(6,$customer_id); #Applicant , RO , DDO
+							
 							$message_theme = 'success';
 							$message = $firm_type_text.' - Final submitted successfully ';
 							$redirect_to = '../applicationformspdfs/'.$section_details['forms_pdf'];
@@ -882,7 +873,9 @@
 					$get_payment_details = $this->Paymentdetails->saveApplicantPaymentDetails($this->request->getData(), $payment_table);
 
 					if ($get_payment_details == true)
-					{
+					{	
+						#SMS: Applicant Replied to DDO
+						//$this->DmiSmsEmailTemplates->sendMessage(50,$customer_id); # DDO
 						$message_theme = 'success';
 						$message = $firm_type_text.' - Payment Section, '.$process_query.' successfully';
 						$redirect_to = 'payment';

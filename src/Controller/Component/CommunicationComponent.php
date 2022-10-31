@@ -115,8 +115,8 @@
 
 
 			// Updated Date comparison logic to solve issue of date comparison on month change (by Pravin 12-08-2017)
-			$comment_reply_date = strtotime(str_replace('/','-',$comment_reply_date));
-			$last_submit_comment_date = strtotime(str_replace('/','-',$last_submit_comment_date));
+			$comment_reply_date = strtotime(str_replace('/','-',(string) $comment_reply_date));  // added the (string) type-cast to fix the PHP8.1.4 Depractions - Akash [06-10-2022]
+			$last_submit_comment_date = strtotime(str_replace('/','-',(string) $last_submit_comment_date)); // added the (string) type-cast to fix the PHP8.1.4 Depractions - Akash [06-10-2022]
 
 			//compare Sent to date and save comment/reply date
 			if($comment_reply_date > $last_submit_comment_date)
@@ -197,8 +197,8 @@
 				$section_last_referred_back_date = $reffered_back_date;
 
 				// Updated Date comparison logic to solve issue of date comparison on month change (by Pravin 12-08-2017)
-				$section_last_referred_back_date = strtotime(str_replace('/','-',$section_last_referred_back_date));
-				$last_submit_referred_back_date = strtotime(str_replace('/','-',$last_submit_referred_back_date));
+				$section_last_referred_back_date = strtotime(str_replace('/','-',(string) $section_last_referred_back_date)); // added the (string) type-cast to fix the PHP8.1.4 Depractions - Akash [06-10-2022]
+				$last_submit_referred_back_date = strtotime(str_replace('/','-',(string) $last_submit_referred_back_date)); // added the (string) type-cast to fix the PHP8.1.4 Depractions - Akash [06-10-2022]
 
 				if($section_last_referred_back_date > $last_submit_referred_back_date)
 				{
@@ -363,8 +363,8 @@
 
 
 			// Updated Date comparison logic to solve issue of date comparison on month change (by Pravin 12-08-2017)
-			$last_submit_replied_date = strtotime(str_replace('/','-',$last_submit_replied_date));
-			$section_last_replied_date = strtotime(str_replace('/','-',$section_last_replied_date));
+			$last_submit_replied_date = strtotime(str_replace('/','-',(string) $last_submit_replied_date));// added the (string) type-cast to fix the PHP8.1.4 Depractions - Akash [06-10-2022]
+			$section_last_replied_date = strtotime(str_replace('/','-',(string) $section_last_replied_date));// added the (string) type-cast to fix the PHP8.1.4 Depractions - Akash [06-10-2022]
 
 			if($section_last_replied_date > $last_submit_replied_date)
 			{
@@ -423,8 +423,8 @@
 				//compare last referred back date of final submit table and current section table
 				$section_last_replied_date = $section_form_details[0]['io_reply_date'];
 
-				$section_last_replied_date = strtotime(str_replace('/','-',$section_last_replied_date));
-				$last_submit_reply_date = strtotime(str_replace('/','-',$last_submit_reply_date));
+				$section_last_replied_date = strtotime(str_replace('/','-',(string) $section_last_replied_date));// added the (string) type-cast to fix the PHP8.1.4 Depractions - Akash [06-10-2022]
+				$last_submit_reply_date = strtotime(str_replace('/','-',(string) $last_submit_reply_date));// added the (string) type-cast to fix the PHP8.1.4 Depractions - Akash [06-10-2022]
 
 				if($section_last_replied_date > $last_submit_reply_date)
 				{
@@ -449,8 +449,8 @@
 				//compare last referred back date of final submit table and current section table
 				$section_last_referred_back_date = $section_form_details[0]['referred_back_date'];
 
-				$section_last_referred_back_date = strtotime(str_replace('/','-',$section_last_referred_back_date));
-				$last_submit_referred_back_date = strtotime(str_replace('/','-',$last_submit_referred_back_date));
+				$section_last_referred_back_date = strtotime(str_replace('/','-',(string) $section_last_referred_back_date));// added the (string) type-cast to fix the PHP8.1.4 Depractions - Akash [06-10-2022]
+				$last_submit_referred_back_date = strtotime(str_replace('/','-',(string) $last_submit_referred_back_date));// added the (string) type-cast to fix the PHP8.1.4 Depractions - Akash [06-10-2022]
 
 				if($section_last_referred_back_date > $last_submit_referred_back_date)
 				{

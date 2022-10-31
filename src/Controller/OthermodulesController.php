@@ -32,7 +32,7 @@ class OthermodulesController extends AppController{
 
 		if ($username == null){
 
-			echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->getRequest()->getAttribute('webroot');?>users/login_user">Please Login</a><?php
+			$this->customAlertPage("Sorry You are not authorized to view this page..");
 			exit();
 
 		} else {
@@ -42,7 +42,7 @@ class OthermodulesController extends AppController{
 			$check_user = $this->DmiUsers->find('all',array('conditions'=>array('email IS'=>$this->Session->read('username'))))->first();
 
 			if (empty($check_user)) {
-				echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->getRequest()->getAttribute('webroot');?>users/login_user">Please Login</a><?php
+				$this->customAlertPage("Sorry You are not authorized to view this page..");
 				exit();
 			}
 		}
@@ -330,9 +330,13 @@ class OthermodulesController extends AppController{
 					$inspection_officers = $newArray;
 				//till here
 				
+				$applTypeArray = $this->Session->read('applTypeArray');
+				//Index 1, Now Renewal application will not list except DDO dashboard, any where in list. on 20-10-2022
+				unset($applTypeArray['1']);
+				
 				//get flow wise tables
 				$this->loadModel('DmiFlowWiseTablesLists');
-				$flow_wise_tables = $this->DmiFlowWiseTablesLists->find('all',array('conditions'=>array('application_type IN'=>$this->Session->read('applTypeArray')),'order'=>'id ASC'))->toArray();
+				$flow_wise_tables = $this->DmiFlowWiseTablesLists->find('all',array('conditions'=>array('application_type IN'=>$applTypeArray),'order'=>'id ASC'))->toArray();
 				
 				$i=0;
 				foreach($flow_wise_tables as $each_flow){
@@ -582,7 +586,7 @@ class OthermodulesController extends AppController{
 
 			foreach ($allRequests as $each) {
 
-				$office_id = explode(',',$each['req_by_office']);
+				$office_id = explode(',',(string) $each['req_by_office']); #For Deprecations
 				$get_office_name = '';
 
 				foreach ($office_id as $each_office) {

@@ -193,9 +193,15 @@ class AuthenticationComponent extends Component {
 	// DATE : ----
 
 	public function forgotPasswordLib($table,$emailforrecovery,$customer_id=null) {
-
+		
+		
 		$Dmitable = TableRegistry::getTableLocator()->get($table);
-
+		
+		// To check if the mail is encoded or not - Akash [20-10-2022]
+		if (preg_match('%^[a-zA-Z0-9/+]*={0,2}$%', $emailforrecovery)) {} else {
+           $emailforrecovery = base64_encode($emailforrecovery);
+        }	
+		
 		//applied condition on 19-09-2022 by Amol, if chemist applied through forgot password.
 		if ($table=='DmiChemistRegistrations') {
 			$customer_id=null;
@@ -242,7 +248,8 @@ class AuthenticationComponent extends Component {
 			$url = 'home.?'.'$key='.$key_id.'&'.'$id='.$encrypted_user_id;
 			$host_path = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
 			$sendlink = "<html><body><a href='$host_path/DMI/$controller/reset_password/$url'>Please click here to set Password</a></body></html>";
-			$to = base64_encode($emailforrecovery);//for email encoding
+			
+			 //function to check is the string is proper email id
 			$subject = 'DMI AGMARK Set Password Link';
 			//updated on 18-03-2019, email pattern changed
 			$txt = 	'Hello' .
@@ -254,11 +261,18 @@ class AuthenticationComponent extends Component {
 					"<html><body><br></body></html>" .'Ministry of Agriculture and Farmers Welfare,' .
 					"<html><body><br></body></html>" .'Government of India.';
 
-			//$txt = $sendlink;
+			$txt = $sendlink;
 			$headers = 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
 			$headers .= "From: dmiqc@nic.in";
-			//	mail($to,$subject,$txt,$headers, '-f dmiqc@nic.in'); //added new parameter '-f dmiqc@nic.in' on 08-12-2018 by Amol
-			//commented for testing mode
+			
+			//This Condition is added to check wheather the Email is Encoded form or not - Akash [20-10-2022]
+			if (filter_var($emailforrecovery, FILTER_VALIDATE_EMAIL)) {
+				$to = $emailforrecovery; 
+			} else {
+				$to = base64_decode($emailforrecovery);
+			}
+			
+			mail($to,$subject,$txt,$headers, '-f dmiqc@nic.in'); //added new parameter '-f dmiqc@nic.in' on 08-12-2018 by Amol
 
 			//store reset password link keys in DB
 			if ($table=='DmiCustomers' || $table=='DmiFirms') {
@@ -312,16 +326,30 @@ class AuthenticationComponent extends Component {
 			
 				if ($table == 'DmiUsers') {
 					//for admin users
-					$PassFromdb = $Dmitable->find('all', array('fields'=>'password','conditions'=> array('email IS' => $username)))->first();
+					$userDetails = $Dmitable->find('all', array('conditions'=> array('email IS' => $username)))->first();
+					$mob_no = $userDetails['phone'];
+					$passUser = $userDetails['f_name']." ".$userDetails['l_name'];
+
 				} elseif ($table == 'DmiCustomers' || $table == 'DmiFirms') {
 					//for customers
-					$PassFromdb = $Dmitable->find('all', array('fields'=>'password','conditions'=> array('customer_id IS' => $username)))->first();
+					$userDetails = $Dmitable->find('all', array('conditions'=> array('customer_id IS' => $username)))->first();
+					if($table == 'DmiCustomers'){
+						$mob_no = $userDetails['mobile'];
+						$passUser = $userDetails['f_name']." ".$userDetails['l_name'];
+					}else{
+						$mob_no = $userDetails['mobile_no'];
+						$passUser = $userDetails['firm_name'];
+					}
+					
+
 				} elseif ($table == 'DmiChemistRegistrations') {	
 					//for chemist 
-					$PassFromdb = $Dmitable->find('all', array('fields'=>'password','conditions'=> array('chemist_id IS' => $username)))->first(); 
+					$userDetails = $Dmitable->find('all', array('conditions'=> array('chemist_id IS' => $username)))->first();
+					$mob_no = $userDetails['mobile'];
+					$passUser = $userDetails['chemist_fname']." ".$userDetails['chemist_lname'];
 				}
 				
-				$passarray = $PassFromdb['password'];
+				$passarray = $userDetails['password'];
 				$PassFromdbsalted = $randsalt . $passarray;
 				$Dbpasssaltedsha512 = hash('sha512',$PassFromdbsalted);
 				
@@ -347,24 +375,25 @@ class AuthenticationComponent extends Component {
 	
 						// MAINTAIN PASSWORD LOGS FOR RESTRICT BRUTE FORCE ATTACK By Aniket Ganvir dated 16th NOV 2020
 						$DmiPasswordLogs->savePasswordLogs($username, $table, $Removesaltnewpass);
-	
+
+						#SMS: Password Set
+						$sms_message = 'Hello '.$passUser.', your password has been set successfully AGMARK.';
+						$template_id = 1107160801193314481;
+						$this->sendSms(base64_decode($mob_no),$sms_message,$template_id);
+
 					} else {
-						#$this->saveActionPoint("Password Changed","Failed");
 						return 1;
 					}
 	
 				} else {
-					#$this->saveActionPoint("Password Changed","Failed");
 					return 2;
 				}
 	
 			} else {
-				#$this->saveActionPoint("Password Changed","Failed");
 				return 3;
 			}
 			
 		} else {
-			#$this->saveActionPoint("Password Changed","Failed");
 			return 4;
 		}
 
@@ -466,20 +495,14 @@ class AuthenticationComponent extends Component {
 					}
 
 				} else {
-
-					#$this->saveActionPoint("Password Reset","Failed");
 					return 1;
 				}
 
 			} else {
-
-				#$this->saveActionPoint("Password Reset","Failed");
 				return 2;
 			}
 
 		} else {
-
-			#$this->saveActionPoint("Password Reset","Failed");
 			return 3;
 		}
 
@@ -681,6 +704,60 @@ class AuthenticationComponent extends Component {
 			//query to save SMS sending logs in DB // added on 11-10-2017
 			$Dmi_sent_sms_log->save_sms_log($message_id, $mobileno, $MID, $sent_date, $msg);
 			*/
+		}
+
+		
+	}
+
+
+
+	// Send Email
+	// Description : ----
+	// @AUTHOR : Amol Chaudhari (c)
+	// #CONTRIBUTER : Akash Thakre (u) (m) 
+	// DATE : 27-04-2021
+
+	public function sendEmail($email_message,$email_id,$email_subject){
+				
+
+	
+		//To send Email on list of Email ids.
+		if (!empty($email_id)) {
+
+			//email format to send on mail with content from master
+			$email_format = 'Dear Sir/Madam' . "\r\n\r\n" .$email_message. "\r\n\r\n" .
+			'Thanks & Regards,' . "\r\n" .
+			'Directorate of Marketing & Inspection,' . "\r\n" .
+			'Ministry of Agriculture and Farmers Welfare,' . "\r\n" .
+			'Government of India.';
+
+		
+			$to = $email_id;
+			$subject = $email_subject;
+			$txt = $email_format;
+			$headers = "From: dmiqc@nic.in";
+
+			mail($to,$subject,$txt,$headers);
+		
+		
+			$DmiSentEmailLogs = TableRegistry::getTableLocator()->get('DmiSentEmailLogs');
+			$message_id=null;
+			$template_id=null;
+			
+			//query to save Email sending logs in DB // added on 11-10-2017
+			$DmiSentEmailLogsEntity = $DmiSentEmailLogs->newEntity(array(
+
+				'message_id'=>$message_id,
+				'destination_list'=>$email_id,
+				'sent_date'=>date('Y-m-d H:i:s'),
+				'message'=>$email_message,
+				'created'=>date('Y-m-d H:i:s'),
+				'template_id'=>$template_id //added on 12-05-2021 by Amol
+
+			));
+
+			$DmiSentEmailLogs->save($DmiSentEmailLogsEntity);
+		
 		}
 	}
 

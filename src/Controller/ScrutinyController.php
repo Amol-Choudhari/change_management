@@ -32,7 +32,7 @@ class ScrutinyController extends AppController{
 
 		if($this->Session->read('username') == null){
 
-			echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot');?>users/login-user">Please Login</a><?php
+			$this->customAlertPage("Sorry You are not authorized to view this page..");
 			exit;
 		}else{
 
@@ -48,7 +48,7 @@ class ScrutinyController extends AppController{
 				//proceed
 				}else{
 
-					echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot');?>users/login-user">Please Login</a><?php
+					$this->customAlertPage("Sorry You are not authorized to view this page..");
 					exit;
 				}
 
@@ -622,9 +622,8 @@ class ScrutinyController extends AppController{
 						$current_level = 'level_4';
 						$Dmi_all_applications_current_position->currentUserUpdate($customer_id,$user_email_id,$current_level);//call to custom function from model
 
-						//added on 23-08-2017 by Pravin to send SMS/Email
-						//call custom function from Model with message id
-						//$this->DmiSmsEmailTemplates->sendMessage(20,$customer_id);
+						#SMS: RO forwarded to HO
+						$this->DmiSmsEmailTemplates->sendMessage(20,$customer_id);
 					}
 
 					$this->Customfunctions->saveActionPoint('All Section Scrutinized', 'Success'); #Action
@@ -684,7 +683,10 @@ class ScrutinyController extends AppController{
 				$user_email_id = $ro_email_id;
 				$current_level = 'level_4_ro';
 				$Dmi_appl_current_pos_table->currentUserUpdate($customer_id,$user_email_id,$current_level);
-				//$this->DmiSmsEmailTemplates->sendMessage(20,$customer_id);
+
+				#SMS: RO forwarded to HO
+				$this->DmiSmsEmailTemplates->sendMessage(20,$customer_id);
+				
 				$this->Customfunctions->saveActionPoint('Application Forwarded', 'Success'); #Action
 				$message = $firm_type_text.' Forwarded to '.$forward_to_btn.' successfully';
 				$message_theme = "success";

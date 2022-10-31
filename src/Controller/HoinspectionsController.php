@@ -29,7 +29,7 @@ use App\Network\Response\Response;
 			parent::beforeFilter($event);
 			
 			if($this->Session->read('username') == null){
-				echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot');?>users/login_user">Please Login</a><?php
+				$this->customAlertPage("Sorry You are not authorized to view this page..");
 				exit();
 			}
 			else{
@@ -38,7 +38,7 @@ use App\Network\Response\Response;
 				$user_access = $this->DmiUserRoles->find('all',array('conditions'=>array('OR'=>array('ro_inspection'=>'yes','so_inspection'=>'yes','dy_ama'=>'yes','ho_mo_smo'=>'yes','jt_ama'=>'yes',
 																								'ama'=>'yes','super_admin'=>'yes','pao'=>'yes'),'user_email_id'=>$this->Session->read('username'))))->first();
 				if(empty($user_access)){
-					echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+					$this->customAlertPage("Sorry You are not authorized to view this page..");
 					exit;
 				}
 			}
@@ -171,7 +171,7 @@ use App\Network\Response\Response;
 			$check_user_role = $this->DmiUserRoles->find('all',array('conditions'=>array('user_email_id IS'=>$username)))->first();
 			$this->set('check_user_role',$check_user_role);
 
-			$split_customer_id = explode('/',$customer_id);
+			$split_customer_id = explode('/',(string) $customer_id); #For Deprecations
 			$this->set('split_customer_id',$split_customer_id);
 
 			//check CA BEVO Applicant
@@ -420,8 +420,7 @@ use App\Network\Response\Response;
 
 								$this->Session->write('application_mode','view');
 
-								//call custom function from Model with message id
-								$this->loadModel('DmiSmsEmailTemplates');
+								#SMS: Ho Level All SMS
 								//$this->DmiSmsEmailTemplates->sendMessage($sms_id,$customer_id);
 
 								if($comment_to == 'so'){
@@ -464,14 +463,14 @@ use App\Network\Response\Response;
 					//then approved by JTAMA and send to DYAMA
 					if($ca_bevo_applicant == 'yes' && $application_type==1) { //added cond. on 22-11-2021 for appl. type = 1
 
-						//call custom function from Model with message id
-						//$this->DmiSmsEmailTemplates->sendMessage(54,$customer_id);
+						#SMS: JTAMA approved application
+						//$this->DmiSmsEmailTemplates->sendMessage(53,$customer_id);
 						$sent_ur = 'Dy. AMA';
 
 					}else{
 
-						//call custom function from Model with message id
-						//$this->DmiSmsEmailTemplates->sendMessage(26,$customer_id);
+						#SMS: AMA approved application
+						$this->DmiSmsEmailTemplates->sendMessage(26,$customer_id);
 						$sent_ur = 'Jt. AMA';
 					}
 
@@ -663,7 +662,7 @@ use App\Network\Response\Response;
 					$report_form = '../inspections/inspection_report_fetch_id/'.$f_id.'/view/'.$appl_type_id;
 					
 					//get certificate type
-					$split_customer_id = explode('/',$customer_id);
+					$split_customer_id = explode('/',(string) $customer_id); #For Deprecations
 					if($split_customer_id[1] == 1){					
 						$cert_type = 'CA';
 						

@@ -28,7 +28,7 @@ class CustomfunctionsComponent extends Component {
 	public function checkCustomerIdAvailable($customer_id) {
 
 		if ( $customer_id == null ) {
-			echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>">Please Login</a><?php
+			$this->Controller->customAlertPage("Sorry You are not authorized to view this page..");
 			exit();
 		} else {
 			return $customer_id;
@@ -523,7 +523,7 @@ class CustomfunctionsComponent extends Component {
 				$form_approve_count = $form_approve_count+1;
 			}
 		}
-		// exit;
+		
 		$payment_table = $sections[0]['payment_section'];
 		$oldapplication = $this->isOldApplication($customer_id);
 
@@ -620,7 +620,7 @@ class CustomfunctionsComponent extends Component {
 			$Dmi_final_submit = TableRegistry::getTableLocator()->get($Dmi_final_submit_tb['application_form']);
 			$Dmi_payment_tb = TableRegistry::getTableLocator()->get($Dmi_final_submit_tb['payment']);
 			$Dmi_appl_current_pos = TableRegistry::getTableLocator()->get($Dmi_final_submit_tb['appl_current_pos']);
-			$Dmi_sms_email_template = TableRegistry::getTableLocator()->get('DmiSmsEmailTemplates');
+			$DmiSmsEmailTemplates = TableRegistry::getTableLocator()->get('DmiSmsEmailTemplates');
 			$Dmi_pao_detail = TableRegistry::getTableLocator()->get('DmiPaoDetails');
 			$Dmi_ro_office = TableRegistry::getTableLocator()->get('DmiRoOffices');
 			$Dmi_user = TableRegistry::getTableLocator()->get('DmiUsers');
@@ -628,7 +628,7 @@ class CustomfunctionsComponent extends Component {
 
 			//below whole code changed on 07-07-2017 by Amol make pending/final reply on same final submit btn
 			$final_submit_entry_id = $Dmi_final_submit->find('list', array('valueField'=>'id', 'conditions'=>array('customer_id IS'=>$customer_id, $grantDateCondition)))->toArray();
-
+			
 			//find RO by district ro id in customer id:
 			$split_customer_id = explode('/',$customer_id);
 			$district_ro_code = $split_customer_id[2];
@@ -681,9 +681,14 @@ class CustomfunctionsComponent extends Component {
 					$current_level = 'level_3';
 					//call to custom function from model
 					$Dmi_appl_current_pos->currentUserUpdate($customer_id,$user_email_id,$current_level);
-					//added on 22-08-2017 by Pravin to send SMS/Email
-					//call custom function from Model with message id
-					//$Dmi_sms_email_template->sendMessage(8,$customer_id);
+
+					if ($application_type == 4) {
+						#SMS: Chemist Referred back to RO/SO
+						$DmiSmsEmailTemplates->sendMessage(71,$customer_id);
+					}else{
+						#SMS: Applicant replied to RO
+						$DmiSmsEmailTemplates->sendMessage(8,$customer_id);
+					}
 
 					$this->singleWindowReplySubmit();
 
@@ -703,7 +708,7 @@ class CustomfunctionsComponent extends Component {
 
 					$oldapplication = $this->isOldApplication($customer_id);
 					$paymentSection = $this->Session->read('paymentSection');
-
+					
 					if ($paymentSection == 'available') {
 
 						$payment_id = MAX($list_payment_id);
@@ -715,16 +720,15 @@ class CustomfunctionsComponent extends Component {
 							$current_level = 'pao';
 							//call to custom function from model
 							$Dmi_appl_current_pos->currentUserEntry($customer_id,$user_email_id,$current_level);
-						}
+						}	
 
-						//added on 22-08-2017 by Pravin to send SMS/Email
-						//call custom function from Model with message id
-						//$this->Dmi_sms_email_template->send_message(6,$customer_id);//commented on 23-07-2018 by Amol
-						//$Dmi_sms_email_template->sendMessage(47,$customer_id);//added on 23-07-2018 by Amol
-						//$Dmi_sms_email_template->sendMessage(48,$customer_id);//added on 23-07-2018 by Amol
+						
+						#SMS: Application final submitted.
+						$DmiSmsEmailTemplates->sendMessage(47,$customer_id); #Applicant
+						$DmiSmsEmailTemplates->sendMessage(48,$customer_id); #DDO
 
 					} else {
-
+						
 						//if appl is for lab (domestic/export), No 'SO' involded as per new scenario
 						//to check appl type and get RO in-charge id to allocate
 						//applied on 21-09-2021 by Amol
@@ -746,11 +750,15 @@ class CustomfunctionsComponent extends Component {
 						$current_level = 'level_3';
 						//call to custom function from model
 						$Dmi_appl_current_pos->currentUserEntry($customer_id,$user_email_id,$current_level);
-
-						//added on 22-08-2017 by Pravin to send SMS/Email
-						//call custom function from Model with message id
-						//exit;
-						//$Dmi_sms_email_template->sendMessage(8,$customer_id);
+						
+						if($application_type==4){
+							#SMS: Application final submitted.
+							$DmiSmsEmailTemplates->sendMessage(68,$customer_id); #Applicant
+							$DmiSmsEmailTemplates->sendMessage(69,$customer_id); #RO
+						}else{
+							#SMS: Applicant replied to RO
+							$DmiSmsEmailTemplates->sendMessage(8,$customer_id);
+						}
 					}
 
 					return true;
@@ -1098,7 +1106,7 @@ class CustomfunctionsComponent extends Component {
 
 		$Dmi_all_applications_current_position = TableRegistry::getTableLocator()->get($appl_current_pos_table);
 		$Dmi_report_final_submit_table = TableRegistry::getTableLocator()->get($final_submit_table);
-		$Dmi_sms_email_template = TableRegistry::getTableLocator()->get('DmiSmsEmailTemplates');
+		$DmiSmsEmailTemplates = TableRegistry::getTableLocator()->get('DmiSmsEmailTemplates');
 		$Dmi_ro_office = TableRegistry::getTableLocator()->get('DmiRoOffices');
 		$Dmi_application_esigned_status = TableRegistry::getTableLocator()->get($esign_status_table);
 		$Dmi_allocation = TableRegistry::getTableLocator()->get($allocation_table);
@@ -1111,9 +1119,10 @@ class CustomfunctionsComponent extends Component {
 		if (empty($final_report_list_ids)) {
 
 			if ($this->commonSiteinspectionFormsFinalReport($customer_id,$allSectionDetails) == 1) {
-				//added on 23-08-2017 by Pravin to send SMS/Email
-				//call custom function from Model with message id
-				//$Dmi_sms_email_template->sendMessage(17,$customer_id);
+				
+				#SMS: IO Filed Report
+				$DmiSmsEmailTemplates->sendMessage(17,$customer_id);
+
 				$Dmi_temp_esign_status = TableRegistry::getTableLocator()->get('DmiTempEsignStatuses');
 				$Dmi_temp_esign_status->DeleteTempEsignRecord($customer_id);
 				return 1;
@@ -1152,9 +1161,9 @@ class CustomfunctionsComponent extends Component {
 				$current_level = 'level_3';
 				$Dmi_all_applications_current_position->currentUserUpdate($customer_id,$user_email_id,$current_level);//call to custom function from model
 
-				//added on 23-08-2017 by Pravin to send SMS/Email
-				//call custom function from Model with message id
-				//$Dmi_sms_email_template->sendMessage(19,$customer_id);
+				#SMS: IO Replied to RO
+				$DmiSmsEmailTemplates->sendMessage(19,$customer_id);
+
 
 				return 2;
 
@@ -1628,7 +1637,7 @@ class CustomfunctionsComponent extends Component {
 		//this will work as per old validity dates, for example: to show renewal button for already granted
 		//updated on 15-09-2021 by Amol
 
-		$grant_date_pattern = str_replace('/','-',$cert_grant_date);
+		$grant_date_pattern = str_replace('/','-',(string) $cert_grant_date); // added the (string) type-cast to fix the PHP8.1.4 Depractions - Akash [06-10-2022]
 		$new_order_date_pattern = str_replace('/','-','01/04/2021');
 
 		$split_grant_date = explode(' ',$grant_date_pattern);//as it will come with 00:00:00 some time
@@ -1662,7 +1671,7 @@ class CustomfunctionsComponent extends Component {
 					//then check month of last grant to decide whether to add 4yrs or 5 yrs for validity in below logic
 					if(empty($renewa_dates_present) && ($split_customer_id[1] == 1 || $split_customer_id[1] == 3)){
 						
-						$cert_grant_date = str_replace('/','-',$cert_grant_date);
+						$cert_grant_date = str_replace('/','-',(string) $cert_grant_date); // added the (string) type-cast to fix the PHP8.1.4 Depractions - Akash [06-10-2022]
 						$get_grant_year = date('Y',strtotime($cert_grant_date));
 						$get_grant_month = date('m',strtotime($cert_grant_date));
 						
@@ -1777,7 +1786,7 @@ class CustomfunctionsComponent extends Component {
 
 
 			//if application is not grant yet, then logic start from here as it is
-			$cert_grant_date = str_replace('/','-',$cert_grant_date);
+			$cert_grant_date = str_replace('/','-',(string) $cert_grant_date); // added the (string) type-cast to fix the PHP8.1.4 Depractions - Akash [06-10-2022]
 			$get_grant_year = date('Y',strtotime($cert_grant_date));
 			$get_grant_month = date('m',strtotime($cert_grant_date));
 
@@ -2020,7 +2029,7 @@ class CustomfunctionsComponent extends Component {
 
 		$userType = $this->Session->read('username');
 		//check User Type
-		$explodeValue = explode('/',$userType);
+		$explodeValue = explode('/',(string) $userType);  // added the (string) type-cast to fix the PHP8.1.4 Depractions - Akash [06-10-2022]
 
 		if ($explodeValue[0] == 'CHM') {
 
@@ -2166,8 +2175,7 @@ class CustomfunctionsComponent extends Component {
 		if (filter_var($post_input_request, FILTER_VALIDATE_INT, array("options" => array("min_range"=>$min_id_from_list, "max_range"=>$max_id_from_list))) === false) {
 
 
-			$this->Session->destroy();
-			echo "One of selected drop down value is not proper"; ?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login</a><?php
+			$this->Controller->customAlertPage("One of selected drop down value is not proper");
 			exit;
 		} else {
 			return $post_input_request;
@@ -2184,8 +2192,7 @@ class CustomfunctionsComponent extends Component {
 
 		if (count($get_extension_value) != 2 ) {
 
-			$this->Session->destroy();
-			echo "Invalid file type.";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login</a><?php
+			$this->Controller->customAlertPage("Invalid file type.");
 			exit;
 
 		} else {
@@ -2194,22 +2201,19 @@ class CustomfunctionsComponent extends Component {
 
 			if (in_array($extension_name,$valid_extension_file)) {} else {
 
-				$this->Session->destroy();
-				echo "Invalid file type.";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login</a><?php
+				$this->Controller->customAlertPage("Invalid file type.");
 				exit;
 			}
 		}
 
 		if (($file_size > 2097152)) {
 
-			$this->Session->destroy();
-			echo "File too large. File must be less than 2 megabytes.";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login</a><?php
+			$this->Controller->customAlertPage("File too large. File must be less than 2 megabytes.");
 			exit;
 
 		} elseif (($file_type != "application/pdf") && ($file_type != "image/jpeg")) {
 
-			$this->Session->destroy();
-			echo "Invalid file type. Only PDF, JPG types are accepted.";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login</a><?php
+			$this->Controller->customAlertPage("Invalid file type. Only PDF, JPG types are accepted.");
 			exit;
 
 		} else {
@@ -2232,21 +2236,19 @@ class CustomfunctionsComponent extends Component {
 
 						if ($cleaned_pdf_content=='invalid') {
 
-							$this->Session->destroy();
-							echo "File seems to be corrupted !";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login</a><?php
+							$this->Controller->customAlertPage("File seems to be corrupted !");
 							exit;
 						}
 
 					} else {
 
-						$this->Session->destroy();
-						echo "Sorry....modified PDF file";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login</a><?php
+						$this->Controller->customAlertPage("Sorry....modified PDF file");
 						exit;
 					}
 
 				} else {
 
-					echo "Not getting file path";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login</a><?php
+					$this->Controller->customAlertPage("Not getting file path");
 					exit;
 				}
 
@@ -2267,8 +2269,7 @@ class CustomfunctionsComponent extends Component {
 							// original file
 						} else {
 
-							$this->Session->destroy();
-							echo "File seems to be corrupted !";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login</a><?php
+							$this->Controller->customAlertPage("File seems to be corrupted !");
 							exit;
 						}
 
@@ -2278,21 +2279,19 @@ class CustomfunctionsComponent extends Component {
 
 						if ($cleaned_img_content=='invalid') {
 
-							$this->Session->destroy();
-							echo "File seems to be corrupted !";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login</a><?php
+							$this->Controller->customAlertPage("File seems to be corrupted !");
 							exit;
 						}
 
 					} else {
 
-						$this->Session->destroy();
-						echo "Sorry....modified JPG file";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login</a><?php
+						$this->Controller->customAlertPage("Sorry....modified JPG file");
 						exit;
 					}
 
 				} else {
 
-					echo "Not getting file path";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login</a><?php
+					$this->Controller->customAlertPage("Not getting file path");
 					exit;
 				}
 
@@ -2313,8 +2312,7 @@ class CustomfunctionsComponent extends Component {
 							// original file
 						} else {
 
-							$this->Session->destroy();
-							echo "File seems to be corrupted !";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login</a><?php
+							$this->Controller->customAlertPage("File seems to be corrupted !");
 							exit;
 						}
 
@@ -2324,21 +2322,19 @@ class CustomfunctionsComponent extends Component {
 
 						if ($cleaned_img_content=='invalid') {
 
-							$this->Session->destroy();
-							echo "File seems to be corrupted !";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login</a><?php
+							$this->Controller->customAlertPage("File seems to be corrupted !");
 							exit;
 						}
 
 					} else {
 
-						$this->Session->destroy();
-						echo "Sorry....modified JPG file";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login</a><?php
+						$this->Controller->customAlertPage("Sorry....modified JPG file");
 						exit;
 					}
 
 				} else {
 
-					echo "Not getting file path";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login</a><?php
+					$this->Controller->customAlertPage("Not getting file path");
 					exit;
 
 				}
@@ -2357,7 +2353,7 @@ class CustomfunctionsComponent extends Component {
 
 			} else {
 
-				echo "File not uploaded please select proper file";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login</a><?php
+				$this->Controller->customAlertPage("File not uploaded please select proper file");
 				exit;
 			}
 
@@ -2573,12 +2569,12 @@ class CustomfunctionsComponent extends Component {
 				if ($valid == 1) {
 					return $this->changeDateFormat($date);
 				} else {
-					echo"Sorry.. Something wrong happened. ";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login again</a><?php
+					$this->Controller->customAlertPage("Sorry.. Something wrong happened. ");
 					exit;
 				}
 
 			} else {
-				echo"Sorry.. Something wrong happened. ";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login again</a><?php
+				$this->Controller->customAlertPage("Sorry.. Something wrong happened. ");
 				exit;
 			}
 
@@ -2626,7 +2622,7 @@ class CustomfunctionsComponent extends Component {
 		$this->Controller->set('sub_commodity_value',$sub_commodity_value);
 
 		//taking id of multiple Packaging Materials types to show names in list
-		$packaging_type_id = explode(',',$added_firm_field['packaging_materials']);
+		$packaging_type_id = explode(',',$added_firm_field['packaging_materials'] ?? ''); //this is explode function is udpated for the Decraption by PHP 8.1 - Akash [07-10-2022]
 		$packaging_materials_value = $DmiPackingTypes->find('list',array('keyField'=>'id','valueField'=>'packing_type','conditions'=>array('id IN'=>$packaging_type_id)))->toArray();
 		$this->Controller->set('packaging_materials_value',$packaging_materials_value);
 
@@ -3362,10 +3358,13 @@ class CustomfunctionsComponent extends Component {
 
 
 	//User Action Performed Action for Logs
-	public function saveActionPoint($action,$status) {
+	public function saveActionPoint($action,$status,$username=null) {
 		
+		if($username==null){
+			$username=$_SESSION['username'];
+		}
 		//get user type
-		$user_type = $this->getuserType($_SESSION['username']);
+		$user_type = $this->getuserType($username);
 		
 		if ($user_type == 'User') {
 			#load model to save action 
@@ -3383,7 +3382,7 @@ class CustomfunctionsComponent extends Component {
 		$model = TableRegistry::getTableLocator()->get($action_model);
 		
 		//calling the model save function
-		$model->saveActionLogs($action,$status);
+		$model->saveActionLogs($action,$status,$username);
 	}
 	
 	
@@ -3416,6 +3415,7 @@ class CustomfunctionsComponent extends Component {
 			$customer_id = $this->Session->read('username');
 		}
 
+		/*
 		if ($type =='CHM') {
 			
 			if(!empty($result[0])){
@@ -3432,6 +3432,8 @@ class CustomfunctionsComponent extends Component {
 				} 
 			}
 		}
+		*/
+
 
 		$DmiCertQrCodes = TableRegistry::getTableLocator()->get('DmiCertQrCodes'); //initialize model in component
 		
@@ -3440,13 +3442,13 @@ class CustomfunctionsComponent extends Component {
 		require_once(ROOT . DS .'vendor' . DS . 'phpqrcode' . DS . 'qrlib.php');
 		
 		if ($type == 'CHM') {
-			$data = "CA Id :".$result[2]."##"."Chemist Name :".$result[1]."##"."commodity_name :".$data1."##"."TBL Name: ".$data2."##"."Printer Name: ".$data3;
+			$data = "Chemist Name:".$result[0]." ## "."CA Name :".$result[1];
 		}elseif ($type=='FDC') {
-			$data = "Applicant Id :".$result."##"."This is the Certificate of Fifteen Digit Code".";";
+			$data = "Applicant Id :".$result." ## "."This is the Certificate of Fifteen Digit Code".";";
 		}elseif($type=='ECode'){
-			$data = "Applicant Id :".$result[0]."##"."ECode :".$result[1].";";
+			$data = "Applicant Id :".$result[0]." ## "."ECode :".$result[1].";";
 		}else{
-			$data = "MECARD:N:".'Certificate No:'.$result[0].'Grant Date:'.$result[1]." Valid up to date:".$result[2][0].";";
+			$data = "Certificate No :".$result[0]." ## "."Firm Name :".$result[3]." ## "."Grant Date :".$result[1]." ## "."Valid up to date: ".$result[2][0];
 		}
 
 		$qrimgname = rand();
@@ -3505,7 +3507,7 @@ class CustomfunctionsComponent extends Component {
 			require_once(ROOT . DS .'vendor' . DS . 'phpqrcode' . DS . 'qrlib.php');
 	
 			//$data = "MECARD:N:".'Esigned By:'.$result[0].'(Chemist In-charge)'.";EMAIL:".$result[1]['firm_name']." ;";
-			$data = "CA Id :".$firm_details['customer_id']."##"."Chemist Name :".$chemist_name."##"."commodity_name :".$data1."##"."TBL Name: ".$data2."##"."Printer Name: ".$data3;
+			$data = "CA Id :".$firm_details['customer_id']." ## "."Chemist Name :".$chemist_name." ## "."commodity_name :".$data1." ## "."TBL Name: ".$data2." ## "."Printer Name: ".$data3;
 			
 			$qrimgname = rand();
 			

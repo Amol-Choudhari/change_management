@@ -277,4 +277,10 @@ namespace app\Model\Table;
 		 }
 
 
+		 public function getUserDetailsById($id){
+
+			return $details =  $this->find('all')->where(['id IS' => $id, 'status !=' => 'disactive'])->first();
+ 
+		 }
+
 } ?>

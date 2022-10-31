@@ -11,12 +11,14 @@ $("#approved_btn").click(function(e){
 	
 });
 
+
+
 $("#send_comment_btn").click(function(e){
 	
 	if(comment_reply_box_validation()==false){
 		e.preventDefault();
 	}else{
-		//$("#view_applicant_forms").submit();
+		$("#view_applicant_forms").submit();
 	}
 	
 });
@@ -34,21 +36,15 @@ function comment_reply_box_validation(){
 		$("#error_save_reply").show().text(check_whitespace_validation_textarea(check_save_reply).error_message);
 		$("#error_save_reply").css({"color":"red","font-size":"14px","font-weight":"500","text-align":"right"});
 		$("#check_save_reply").click(function(){$("#error_save_reply").hide().text;});
-		//setTimeout(function(){ $("#error_packer_name").fadeOut();},5000);
-
 		value_return = 'false';
 	}
 
 
-	if(value_return == 'false')
-		{
-			return false;
-
-		}else{
-
-			exit();
-
-		}
+	if(value_return == 'false'){
+		return false;
+	}else{
+		exit();
+	}
 
 }
 

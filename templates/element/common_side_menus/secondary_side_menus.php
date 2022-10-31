@@ -133,19 +133,24 @@ if ($current_menu == 'menu_register') {
 								<p class="nav-icon-p">Chemist Registration</p>
 								</a>
 							</li>
-							<li class="nav-item">
-								<a href="<?php echo $this->request->getAttribute("webroot");?>application/application-type/5" class="nav-link">
-								<i class="nav-icon fas fa-share"></i>
-									<p class="nav-icon-p">15 Digit Code Approval</p>
-								</a>
-							</li>
-							<li class="nav-item">
-								<a href="<?php echo $this->request->getAttribute("webroot");?>application/application-type/6" class="nav-link">
-								<i class="nav-icon fas fa-share"></i>
-								<p class="nav-icon-p">E-Code Approval</p>
-								</a>
-							</li>
+							<!-- below code is added on 14-10-2022 by Amol, to hide options if 15 digit and Ecode certificate is approved once.
+								no renewal so only can apply once till grant. -->
+							<?php if($Is15DigitApproved!='yes') { ?>
+								<li class="nav-item">
+									<a href="<?php echo $this->request->getAttribute("webroot");?>application/application-type/5" class="nav-link">
+									<i class="nav-icon fas fa-share"></i>
+										<p class="nav-icon-p">15 Digit Code Approval</p>
+									</a>
+								</li>
+							<?php }if($IsECodeApproved!='yes') { ?>
+								<li class="nav-item">
+									<a href="<?php echo $this->request->getAttribute("webroot");?>application/application-type/6" class="nav-link">
+									<i class="nav-icon fas fa-share"></i>
+									<p class="nav-icon-p">E-Code Approval</p>
+									</a>
+								</li>
 
+							<?php } ?>
 						<?php } ?>
 					</ul>
 				  </li>

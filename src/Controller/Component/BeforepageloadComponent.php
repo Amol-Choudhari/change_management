@@ -208,8 +208,8 @@ class BeforepageloadComponent extends Component {
 				$valid_for_renewal = $this->Controller->checkApplicantValidForRenewal($customer_id);
 
 				if ($valid_for_renewal == 'yes') {
-					//send renewal alert
-					//$DmiSmsEmailTemplates->sendMessage(31, $customer_id);
+					#SMS: Renewal Alert
+					$DmiSmsEmailTemplates->sendMessage(31, $customer_id);
 				}
 			}
 		}
@@ -250,7 +250,7 @@ class BeforepageloadComponent extends Component {
 					$logTable->updateAll(array('time_out' => "$dateMod"),array('id' => $getId['id']));
 					
 					$this->Authentication->browserLoginStatus($username,null);
-					$this->Controller->Session->destroy();	
+					//$this->Controller->Session->destroy();	
 				}
 			}
 		}
@@ -267,8 +267,7 @@ class BeforepageloadComponent extends Component {
 				$logTable->updateAll(array('time_out' => "$dateMod"),array('id' => $getId['id']));
 				$this->Authentication->browserLoginStatus($username,null);
 					
-				$this->Controller->Session->destroy();
-				echo "Your session has timed out due to inactivity";?><a href="<?php echo $this->getController()->getRequest()->getAttribute('webroot');?>"> Please Login</a><?php "Again";
+				$this->Controller->customAlertPage("Your session has timed out due to inactivity");
 				exit;
 
 			} else {
@@ -465,6 +464,29 @@ class BeforepageloadComponent extends Component {
 		$final_submit_id = $DmiFinalSubmits->find('all', array('conditions' => array('customer_id IS' => $customer_id),'order'=>'id desc'))->first();
 		$IsApproved='';
         
+		//below code is added on 14-10-2022 by Amol, to hide options if 15 digit and Ecode certificate is approved once.
+		//no renewal so only can apply once till grant.
+		$Is15DigitApproved='';
+		$IsECodeApproved='';
+		$Dmi15DigitFinalSubmits = TableRegistry::getTableLocator()->get('Dmi15DigitFinalSubmits');
+		$final_submit_FDC_id = $Dmi15DigitFinalSubmits->find('all', array('conditions' => array('customer_id IS' => $customer_id),'order'=>'id desc'))->first();
+		
+		$DmiECodeFinalSubmits = TableRegistry::getTableLocator()->get('DmiECodeFinalSubmits');
+		$final_submit_Ecode_id = $DmiECodeFinalSubmits->find('all', array('conditions' => array('customer_id IS' => $customer_id),'order'=>'id desc'))->first();
+   
+		if (!empty($final_submit_FDC_id)) {
+			//get grant status		
+			if ($final_submit_FDC_id['status']=='approved' && $final_submit_FDC_id['current_level']=='level_3') {
+				$Is15DigitApproved='yes';
+			}
+		}
+		if (!empty($final_submit_Ecode_id)) {
+			//get grant status		
+			if ($final_submit_Ecode_id['status']=='approved' && $final_submit_Ecode_id['current_level']=='level_3') {
+				$IsECodeApproved='yes';
+			}
+		}
+		
 		if (!empty($final_submit_id)) {
             
 			$show_button = 'Application Status';
@@ -496,6 +518,8 @@ class BeforepageloadComponent extends Component {
 		$this->Controller->set('show_renewal_btn',$show_renewal_btn);
 		$this->Controller->set('show_button', $show_button);
 		$this->Controller->set('show_renewal_button', $show_renewal_button);
+		$this->Controller->set('Is15DigitApproved',$Is15DigitApproved);
+		$this->Controller->set('IsECodeApproved',$IsECodeApproved);
 
 	}
 	
@@ -507,8 +531,7 @@ class BeforepageloadComponent extends Component {
 		/*	$validHostName = array('agmarkonline.dmi.gov.in','esignservice.cdac.in');
 			$hostName = $_SERVER['HTTP_HOST'];
 			if(!in_array($hostName,$validHostName)){
-				$this->Controller->Session->destroy();
-				echo "Something went wrong. ";?><a href="<?php echo $this->webroot;?>"> Please Login</a><?php "Again";					
+				$this->Controller->customAlertPage("Something went wrong. ");
 				exit;
 			}else{
 				
@@ -521,8 +544,7 @@ class BeforepageloadComponent extends Component {
 				}else{
 					// validated referere, Done by Pravin Bhakare 10-02-2021
 					if(isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'],$hostName) == null){
-						$this->Controller->Session->destroy();
-						echo "Something went wrong. ";?><a href="<?php echo $this->webroot;?>"> Please Login</a><?php "Again";					
+						$this->Controller->customAlertPage("Something went wrong. ");
 						exit;
 					}
 					

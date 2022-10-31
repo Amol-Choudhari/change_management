@@ -17,11 +17,12 @@ var tableRw = JSON.parse(JSON.stringify(progbarvalue));
 
 		$('#section'+section_id).removeClass();
 		$('#span'+section_id).removeClass();
+		var parseFinalSubmit = JSON.parse(pbfinalsubmit);
 
        if (current_level== 'level_2') {
 
                 if (pbfinalsubmit != null) {
-                      final_submit = pbfinalsubmit['status'];
+                      final_submit = parseFinalSubmit['status'];
                  }
 
 		if (sectionvalue=='') {
@@ -54,7 +55,7 @@ var tableRw = JSON.parse(JSON.stringify(progbarvalue));
      //Current Level 2
 	 if (current_level!= 'level_2') {
 
-		 if (sectionvalue=='saved' && pbfinalsubmit['status'] == 'pending') {
+		 if (sectionvalue=='saved' && parseFinalSubmit['status'] == 'pending') {
 
 			$('#section'+section_id).addClass('progress_bar d-inline p-1 pl-3 pr-3 mr-1').addClass('bg-red');
 			$('#span'+section_id).addClass('glyphicon').addClass('glyphicon-remove-sign');
@@ -64,27 +65,27 @@ var tableRw = JSON.parse(JSON.stringify(progbarvalue));
             $('#section'+section_id).addClass('progress_bar d-inline p-1 pl-3 pr-3 mr-1').addClass('bg-warning');
 			$('#span'+section_id).addClass('glyphicon').addClass('glyphicon-remove-sign');
 
-         } else if (sectionvalue=='referred_back' && pbfinalsubmit['status'] == 'pending') {
+         } else if (sectionvalue=='referred_back' && parseFinalSubmit['status'] == 'pending') {
 
             $('#section'+section_id).addClass('progress_bar d-inline p-1 pl-3 pr-3 mr-1').addClass('bg-warning');
 			$('#span'+section_id).addClass('glyphicon').addClass('glyphicon-remove-sign');
 
-         } else if (sectionvalue=='referred_back' && pbfinalsubmit['status'] == 'referred_back') {
+         } else if (sectionvalue=='referred_back' && parseFinalSubmit['status'] == 'referred_back') {
 
 			$('#section'+section_id).addClass('progress_bar d-inline p-1 pl-3 pr-3 mr-1').addClass('bg-warning');
 			$('#span'+section_id).addClass('glyphicon').addClass('glyphicon-remove-sign');
 
-		 } else if (sectionvalue=='referred_back' && pbfinalsubmit['status'] == 'replied') {
+		 } else if (sectionvalue=='referred_back' && parseFinalSubmit['status'] == 'replied') {
 
 			$('#section'+section_id).addClass('progress_bar d-inline p-1 pl-3 pr-3 mr-1').addClass('bg-warning');
 			$('#span'+section_id).addClass('glyphicon').addClass('glyphicon-remove-sign');
 
-		 } else if (sectionvalue=='replied' && pbfinalsubmit['status'] != 'referred_back') {
+		 } else if (sectionvalue=='replied' && parseFinalSubmit['status'] != 'referred_back') {
 
 			$('#section'+section_id).addClass('progress_bar d-inline p-1 pl-3 pr-3 mr-1').addClass('bg-warning');
 			$('#span'+section_id).addClass('glyphicon').addClass('glyphicon-remove-sign');
 
-		 } else if (sectionvalue=='replied' && pbfinalsubmit['status'] == 'referred_back') {
+		 } else if (sectionvalue=='replied' && parseFinalSubmit['status'] == 'referred_back') {
 
 			$('#section'+section_id).addClass('progress_bar d-inline p-1 pl-3 pr-3 mr-1').addClass('bg-warning');
 			$('#span'+section_id).addClass('glyphicon').addClass('glyphicon-remove-sign');

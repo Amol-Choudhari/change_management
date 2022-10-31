@@ -76,7 +76,7 @@ use Cake\View\ViewBuilder;
 
 				if($renewalDue == 'yes'){
 
-					$split_customer_id = explode('/',$each_application);
+					$split_customer_id = explode('/',(string) $each_application); #For Deprecations
 
 					if($split_customer_id[1] == 1){
 

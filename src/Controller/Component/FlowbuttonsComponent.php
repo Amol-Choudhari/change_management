@@ -436,11 +436,14 @@ class FlowbuttonsComponent extends Component {
 				}
 			//commented this condition on 18-05-2021 by Amol
 			//now the CA Bevo will not be forwarded to HO, and grant by SO/RO only
-			/*	elseif($ca_bevo_applicant == 'yes' && $firm_type==1){
+			
+			//uncommented below code on 10-10-2022 as per new order on 10-10-2022
+			//that the CA BEVO application should approved through HO
+				elseif($ca_bevo_applicant == 'yes' && $firm_type==1){
 					
 					$HoInspectionExist = 'yes';
 					
-				}	*/	
+				}
 			
 			//for E-Code application, HO approval required
 			//added on 22-11-2021 by Amol

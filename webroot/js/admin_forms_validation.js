@@ -1162,7 +1162,9 @@
 									  'home_link','pao_name','pao_mobile_no','pao_email_id','ho_mo_name','ho_mo_mobile_no','ho_mo_email_id','chemist_user','inward_officer_name',
                                       'ral_cal_oic_name','chemist_name','chief_chemist_name','lab_incharge_name','dol_name','inward_clerk_name','outward_clerk_name',
                                       'ro_so_officer_name','ro_so_oic_name','account_ddo_name','head_office_name','ro_incharge_name','sample_code','sample_registration_date',
-                                      'source_user_role','destination_user_role','source_officer','destination_officer','replica_commodities','chemist_id','source_office','destination_office']
+                                      'source_user_role','destination_user_role','source_officer','destination_officer','replica_commodities','chemist_id','source_office',
+									  'destination_office','application_type','packer_name','dummy','dst_user','sample_code','sample_flow','src_user','dst_usr_role','dst_office',
+									  'src_usr_role','src_office','ral','oic','customer_name','cal_ral']
 
 			var sms_message = $('#sms_message').val();
 			

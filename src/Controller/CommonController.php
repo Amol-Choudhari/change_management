@@ -65,7 +65,7 @@ class CommonController extends AppController {
 	public function authenticateUser(){
 
 		if ($this->Session->read('username') == null) {
-			echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+			$this->customAlertPage("Sorry You are not authorized to view this page..");
 			exit;
 
 		} else {
@@ -92,7 +92,7 @@ class CommonController extends AppController {
 
 			} else {
 
-				echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+				$this->customAlertPage("Sorry You are not authorized to view this page..");
 				exit;
 			}
 		}
@@ -321,7 +321,7 @@ class CommonController extends AppController {
 				$this->redirect('/');
 
 			} else {
-				echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+				$this->customAlertPage("Sorry You are not authorized to view this page..");
 				exit;
 			}
 			
@@ -384,6 +384,59 @@ class CommonController extends AppController {
 		} else {
 		return FALSE;
 		}
+	}
+
+	// Calling logout on session expired
+	// DESCRIPTION : ON USER'S SESSION EXPIRED, CALL THIS FUNCTION TO BYPASS THE 'ALREADY LOGGEDIN' MODAL ALERT ON THE TIME OF LOGIN
+	// @AUTHOR : ANIKET GANVIR
+	// DATE : 13-10-2022
+
+	public function sessionExpiredLogout() {
+
+		$this->autoRender = false;
+		$username = $_POST['session_username'];
+
+		$this->Session->write('username', $username);
+		$this->authenticateUser();
+
+		if (!empty($username)) {
+
+			//check the user type
+			$userType = $this->Customfunctions->getUserType($username);
+
+			#get the specific log table
+			$getTable = $this->getSpecificTable();
+			$logsTable = $getTable['log_table'];
+			#load the model
+			$this->loadModel($logsTable);
+			
+			if ($userType == 'User') {
+				$condition = array('email_id IS'=>$username);
+			} else {
+				$condition = array('customer_id IS'=>$username);
+			}
+			
+			$list_id = $this->$logsTable->find('list', array('valueField' => 'id', 'conditions' => $condition))->toList();
+
+			if (!empty($list_id)) {
+
+				$fetch_last_id_query = $this->$logsTable->find('all', array('fields' => 'id', 'conditions' => array('id' => max($list_id), 'remark' => 'Success')))->first();
+				$fetch_last_id = $fetch_last_id_query['id'];
+
+				$UserLogsEntity = $this->$logsTable->newEntity(array('id' => $fetch_last_id,'time_out' => date('H:i:s')));
+				$this->$logsTable->save($UserLogsEntity);
+				$this->Authentication->browserLoginStatus($username,null);
+				$this->Session->destroy();
+				echo 'success'; exit;
+
+			} else {
+				echo 'Unauthorized request'; exit;
+			}
+			
+		} else {
+			echo 'Invalid username'; exit;
+		}
+		
 	}
 
 }

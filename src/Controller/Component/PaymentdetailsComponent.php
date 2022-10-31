@@ -128,16 +128,22 @@
 								
 					if($DmiApplicantPaymentDetails->save($DmiApplicantPaymentDetailsEntity)){
 						 
-							//Entry in all applications current position table (Done By pravin 4/11/2017)
-							$user_email_id = $pao_user_email_id['email'];
-							$current_level = 'pao';
-							$all_applications_current_position->currentUserUpdate($customer_id,$user_email_id,$current_level);//call to custom function from model
+						//Entry in all applications current position table (Done By pravin 4/11/2017)
+						$user_email_id = $pao_user_email_id['email'];
+						$current_level = 'pao';
+						$all_applications_current_position->currentUserUpdate($customer_id,$user_email_id,$current_level);//call to custom function from model
+						
+						if($form_table == 'DmiAdvPaymentDetails'){
+							#SMS: Advance Payment referred back replied
+							$DmiSmsEmailTemplates->sendMessage(64,$customer_id); #DDO	
+						}else{
+							#SMS: Applicant Replied to DDO
+							$DmiSmsEmailTemplates->sendMessage(50,$customer_id);
+						}
 							
-							//added on 23-07-2018 by Amol
-							//$DmiSmsEmailTemplates->sendMessage(50,$customer_id);
-					
-							return true;	
+						return true;	
 					}
+					
 				}else{
 					
 					$DmiApplicantPaymentDetailsEntity = $DmiApplicantPaymentDetails->newEntity(array(

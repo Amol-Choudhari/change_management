@@ -38,6 +38,24 @@
 
             <?php  } ?>
 
+            <!-- Session timer countdown - Aniket G [13-10-2022] -->
+            <li class="nav-item">
+                <?php $maxlifetime = ini_get("session.gc_maxlifetime") * 1000; ?>
+                <input type="hidden" value="<?php echo $maxlifetime; ?>" id="session_timeout_value">
+                <?php echo $this->Form->create(null, array('type' => 'file', 'enctype' => 'multipart/form-data', 'class' => '')); ?>
+                <div id="session_timer">
+                    <div id="session_timer_text">Session time:</div>
+                    <div id="session_timer_counter"><?php echo $maxlifetime/(60*1000); ?> : 00</div>
+                    <?php echo $this->Form->control('session_timer_id', array('type'=>'hidden', 'id'=>'session_timer_id', 'value'=>$_SESSION['browser_session_d'])); ?>
+                    <?php echo $this->Form->control('session_timer_logout_url', array('type'=>'hidden', 'id'=>'session_timer_logout_url', 'value'=>$this->Url->build(['controller'=>'common', 'action'=>'sessionExpiredLogout']))); ?>
+                    <?php echo $this->Form->control('session_username', array('type'=>'hidden', 'id'=>'session_username', 'value'=>$_SESSION['username'])); ?>
+                    <?php echo $this->Form->control('session_timer_status', array('type'=>'hidden', 'id'=>'session_timer_status', 'value'=>0)); ?>
+                </div>
+                <?php echo $this->Form->end(); ?>
+                <?php echo $this->Html->css('element/session_timer'); ?>
+                <?php echo $this->Html->script('element/session_timer'); ?>
+            </li>
+
             <li class="nav-item" title="Logout">
                 <?php echo $this->Html->link('<i class="fas fa-power-off text-lg"></i>', array('controller'=>'common', 'action'=>'logout'), array('class'=>'nav-link', 'role'=>'button', 'escape'=>false)); ?>
             </li>

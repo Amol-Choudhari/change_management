@@ -42,7 +42,7 @@ class FeedbacksController extends AppController{
 	   $username = $this->Session->read('username'); 
 
 	   if($username == null){
-		   echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->getRequest()->getAttribute('webroot');?>users/login_user">Please Login</a><?php
+			$this->customAlertPage("Sorry You are not authorized to view this page..");
 		   exit();
 	   }else{
 			//check if user entry in Dmi_users table for valid user by Mohnish
@@ -50,7 +50,7 @@ class FeedbacksController extends AppController{
 				
 			if(empty($check_user)){
 				 
-				echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->getRequest()->getAttribute('webroot');?>users/login_user">Please Login</a><?php
+				$this->customAlertPage("Sorry You are not authorized to view this page..");
 				exit();
 
 			}		

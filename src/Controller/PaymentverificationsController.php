@@ -32,7 +32,7 @@ class PaymentverificationsController extends AppController{
 
 		if ($this->Session->read('username') == null) {
 
-			echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot');?>users/login_user">Please Login</a><?php
+			$this->customAlertPage("Sorry You are not authorized to view this page..");
 			exit();
 
 		} else {
@@ -42,7 +42,7 @@ class PaymentverificationsController extends AppController{
 
 			if(empty($user_access)){
 
-				echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+				$this->customAlertPage("Sorry You are not authorized to view this page..");
 				exit;
 
 			}
@@ -116,7 +116,7 @@ class PaymentverificationsController extends AppController{
 			$firm_name = $this->DmiFirms->find('all', array('fields'=>'firm_name', 'conditions' => array('customer_id IS'=>$customer_id)))->first();
 			$this->set('firm_name',$firm_name);
 			$this->set('customer_id',$customer_id);
-			$split_customer_id = explode('/',$customer_id);
+			$split_customer_id = explode('/',(string) $customer_id); #For Deprecations
 			$district_code = $split_customer_id[2];	//updated on 20-08-2018 by amol
 
 			//updated and added code to get Office table details from appl mapping Model
@@ -149,7 +149,7 @@ class PaymentverificationsController extends AppController{
 				$this->set('existed_appl_details',$existed_appl_details);
 			}
 
-			$payment_trasaction_date = explode(' ',$payment_confirmation_query['transaction_date']);
+			$payment_trasaction_date = explode(' ',(string) $payment_confirmation_query['transaction_date']); #For Deprecations
 
 			$action_value =null;
 
@@ -226,8 +226,15 @@ class PaymentverificationsController extends AppController{
 						#Action
 						$this->Customfunctions->saveActionPoint('Payment Not Confirmed','Success');
 
-						#SMS : Payment Not Confirmed
-						//$this->DmiSmsEmailTemplates->sendMessage(49,$customer_id);
+						//below condition is added for advance payment for sms
+						if ($appl_type == 7) {
+							#SMS : Payment Not Confirmed
+							$this->DmiSmsEmailTemplates->sendMessage(63,$customer_id); #Applicant
+						}else{
+							#SMS : Payment Not Confirmed
+							$this->DmiSmsEmailTemplates->sendMessage(49,$customer_id); #Applicant
+						}
+						
 
 						$message = 'Payment not confirmed and Referred Back to Applicant';
 						$message_theme = 'success';
@@ -291,19 +298,29 @@ class PaymentverificationsController extends AppController{
 						if ($appl_type==2) {
 							
 							#SMS : Renewal Payement Confirmed
-							//$this->DmiSmsEmailTemplates->sendMessage(51,$customer_id);
-							//$this->DmiSmsEmailTemplates->sendMessage(52,$customer_id);
+							$this->DmiSmsEmailTemplates->sendMessage(51,$customer_id); #Applicant
+							$this->DmiSmsEmailTemplates->sendMessage(52,$customer_id); #RO
 
 							$this->Customfunctions->saveActionPoint('Renewal Payment Confirmed','Success'); #Action
 							$message = 'As the payment confirmed, the application for renewal is granted and available RO/SO In-charge to digitally sign the certificate.';
 							$message_theme = 'info';
 							$redirect_to = '../inspections/finalGrantCall';
 
+						} elseif ($appl_type==7) {
+							
+							#SMS : Advance Payement Confirmed
+							$this->DmiSmsEmailTemplates->sendMessage(65,$customer_id); #Applicant,DDO,RO
+							$this->Customfunctions->saveActionPoint('Payment Confirmed','Success'); #Action
+							$message = 'Payment Confirmed Successfully';
+							$message_theme = 'success';
+							$redirect_to = $redirect_url;
+							
+							
 						} else {
-
+							
 							#SMS : Payement Confirmed
-							//$this->DmiSmsEmailTemplates->sendMessage(51,$customer_id);
-							//$this->DmiSmsEmailTemplates->sendMessage(52,$customer_id);
+							$this->DmiSmsEmailTemplates->sendMessage(51,$customer_id); #Applicant
+							$this->DmiSmsEmailTemplates->sendMessage(52,$customer_id); #RO
 
 							$this->Customfunctions->saveActionPoint('Payment Confirmed','Success'); #Action
 							$message = 'Payment Confirmed Successfully';
@@ -346,7 +363,7 @@ class PaymentverificationsController extends AppController{
 
 			$currBalanceAmt = $currBalance['balance_amount'];
 
-			$explodeVal = explode('/',$lastTransId['trans_id']);
+			$explodeVal = explode('/',(string) $lastTransId['trans_id']); #For Deprecations
 			$trans_id = $explodeVal[2]+1;
 			$transcationid = 'ADP/'.date('m').'/'.$trans_id;
 		}

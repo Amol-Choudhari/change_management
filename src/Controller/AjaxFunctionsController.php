@@ -93,7 +93,7 @@ class AjaxFunctionsController extends AppController{
 			$this->autoRender = false;
 			$this->loadModel('MCommodity');
 			$this->loadModel('DmiApplicationCharges');
-			$selected_commodity_ids = explode(',',$this->request->getData('selected_sub_commodities'));
+			$selected_commodity_ids = explode(',',(string) $this->request->getData('selected_sub_commodities')); #For Deprecations
 
 			$get_category_ids = $this->MCommodity->find('list',array('valueField'=>'category_code','conditions'=>array('commodity_code IN'=>$selected_commodity_ids)))->toList();
 
@@ -1906,7 +1906,7 @@ class AjaxFunctionsController extends AppController{
 	{
 		$this->autoRender = false;
 		$username = $this->Session->read('username');
-		$explodeValue = count(explode('/', $username));
+		$explodeValue = count(explode('/',(string) $username)); #For Deprecations
 	
 		if ($explodeValue == 4) {
 			$model = 'DmiFirms';

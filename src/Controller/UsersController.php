@@ -32,71 +32,7 @@ class UsersController extends AppController {
 
 	}
 
-	/*
-	public function testa(){
-		$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
-		$spreadsheet = $reader->load("D:\sample.xlsx");
-		$sheetData = $spreadsheet->getActiveSheet()->toArray();
-		$this->loadModel('DmiApplWithRoMappings');
 
-		$i=1;
-		$this->loadModel('DmiRejectedApplLogs');
-		unset($sheetData[0]);
-
-		foreach ($sheetData as $t) {
-			
-			$appl_type = $this->Customfunctions->firmType($t[0]);
-			$form_type = $this->Customfunctions->checkApplicantFormType($t[0]);
-			$customer_id = $t[0];
-			$by_user = $this->DmiApplWithRoMappings->getOfficeDetails($t[0]);
-			
-			
-			pr($isDone);
-
-		
-			if (!empty($isDone)) {
-				//saving the entries in Database 
-				$Entity = $this->DmiRejectedApplLogs->newEntity(array(
-
-					'appl_type' => $appl_type,
-					'form_type' => $form_type,
-					'customer_id' => $customer_id,
-					'by_user' => $by_user['ro_email_id'],
-					'remark' => 'For Phase 2',
-					'created' =>date('Y-m-d H:i:s')
-				));
-				
-				$this->DmiRejectedApplLogs->save($Entity);
-			}
-			
-
-			$i++;
-		}
-		exit;
-		
-	}
-   */
-
-	/*
-	public function testB(){
-		$this->loadModel('DmiRejectedApplLogs');
-		$this->loadModel('DmiApplWithRoMappings');
-
-		$isDone = $this->DmiRejectedApplLogs->find('all')->select(['id','customer_id'])->where(['by_user IS'=>'ZG1pcWNAbmljLmlu'])->toArray();
-		foreach ($isDone as $key => $value) {
-			$by_user = $this->DmiApplWithRoMappings->getOfficeDetails($value['customer_id']);
-
-			$Entity = $this->DmiRejectedApplLogs->newEntity(array(
-
-				'id' => $value['id'],
-				'by_user' => $by_user['ro_email_id'],
-			));
-			$this->DmiRejectedApplLogs->save($Entity);
-		}
-	
-	}
-
-	*/
 
 	// CREATE CAPTCHA
 	public function createCaptcha() {
@@ -307,7 +243,7 @@ class UsersController extends AppController {
 
 		if (empty($_GET['$key']) || empty($_GET['$id'])) {
 
-			echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+			$this->customAlertPage("Sorry You are not authorized to view this page..");
 			exit;
 
 		} else {
@@ -344,8 +280,7 @@ class UsersController extends AppController {
 
 						if ($reset_pass_result == 1) {
 
-							//Added this call to save the user action log on 09-09-2022
-							$this->Customfunctions->saveActionPoint('Reset Password (Email Not Matched)','Failed');
+							$this->Customfunctions->saveActionPoint('Reset Password (Email Not Matched)','Failed',$user_id); #Action
 							$email_id_not_matched_msg = 'Sorry...Email id not matched by id to save new password';
 							$this->set('email_id_not_matched_msg', $email_id_not_matched_msg);
 							return null;
@@ -354,7 +289,7 @@ class UsersController extends AppController {
 						} elseif ($reset_pass_result == 2) {
 
 							//Added this call to save the user action log on 09-09-2022
-							$this->Customfunctions->saveActionPoint('Reset Password (Incorrect Captcha)','Failed');
+							$this->Customfunctions->saveActionPoint('Reset Password (Incorrect Captcha)','Failed',$user_id); #Action
 							$incorrect_captcha_msg = 'Incorrect Captcha code entered.';
 							$this->set('incorrect_captcha_msg', $incorrect_captcha_msg);
 							return null;
@@ -362,7 +297,7 @@ class UsersController extends AppController {
 						} elseif ($reset_pass_result == 3) {
 
 							//Added this call to save the user action log on 09-09-2022
-							$this->Customfunctions->saveActionPoint('Reset Password (Password Not Macthed)','Failed');
+							$this->Customfunctions->saveActionPoint('Reset Password (Password Not Macthed)','Failed',$user_id); #Action
 							$comfirm_pass_msg = 'Confirm password not matched';
 							$this->set('comfirm_pass_msg', $comfirm_pass_msg);
 							return null;
@@ -371,7 +306,7 @@ class UsersController extends AppController {
 						} elseif ($reset_pass_result == 4) {
 
 							//Added this call to save the user action log on 09-09-2022
-							$this->Customfunctions->saveActionPoint('Reset Password (Password is Same as Last)','Failed');
+							$this->Customfunctions->saveActionPoint('Reset Password (Password is Same as Last)','Failed',$user_id); #Action
 							// SHOW ERROR MESSAGE IF NEW PASSWORD FOUND UNDER LAST THREE PASSWORDS OF USER By Aniket Ganvir dated 16th NOV 2020
 							$comfirm_pass_msg = 'This password matched with your last three passwords, Please enter different password';
 							$this->set('comfirm_pass_msg', $comfirm_pass_msg);
@@ -381,7 +316,7 @@ class UsersController extends AppController {
 						} else {
 
 							//Added this call to save the user action log on 09-09-2022
-							$this->Customfunctions->saveActionPoint('Reset Password','Success');
+							$this->Customfunctions->saveActionPoint('Reset Password','Success',$user_id); #Action
 							//update link key table status to 1 for successfully
 							$this->DmiUsersResetpassKeys->updateKeySuccess($user_id, $key_id);
 							$message = 'Password Changed Successfully';
@@ -572,7 +507,7 @@ class UsersController extends AppController {
 		if (!empty($user_access)) {
 			//proceed
 		} else {
-			echo "Sorry You are not authorized to view this page..Sorry.. You don't have permission to view this page"; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+			$this->customAlertPage("Sorry You are not authorized to view this page..Sorry.. You don't have permission to view this page");
 			exit;
 		}
 
@@ -1473,8 +1408,12 @@ class UsersController extends AppController {
 	public function checkUserInprocessAppl($user_email_id) {
 
 		//get flow wise tables to check user allocated appln.
+		$applTypeArray = $this->Session->read('applTypeArray');
+		//Index 1, Now Renewal application will not list except DDO dashboard, any where in list. on 20-10-2022
+		unset($applTypeArray['1']);
+			
 		$this->loadModel('DmiFlowWiseTablesLists');
-		$flow_wise_tables = $this->DmiFlowWiseTablesLists->find('all', array('conditions' => array('application_type IN' => $this->Session->read('applTypeArray')), 'order' => 'id ASC'))->toArray();
+		$flow_wise_tables = $this->DmiFlowWiseTablesLists->find('all', array('conditions' => array('application_type IN' => $applTypeArray), 'order' => 'id ASC'))->toArray();
 
 		foreach ($flow_wise_tables as $each_flow) {
 
@@ -1953,7 +1892,7 @@ class UsersController extends AppController {
 	public function adminLogs() {
 
 		if ($this->Session->read('username') == null) {
-			echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+			$this->customAlertPage("Sorry You are not authorized to view this page..");
 			exit;
 		}
 
@@ -1986,7 +1925,7 @@ class UsersController extends AppController {
 		$username = $this->Session->read('username');
 
 		if ($username == null) {
-			echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+			$this->customAlertPage("Sorry You are not authorized to view this page..");
 			exit;		
 		}
 		//by default

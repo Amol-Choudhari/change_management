@@ -74,7 +74,7 @@ class ReportsController extends AppController {
 
 		if ($this->Session->read('username') == null) {
 
-			echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot');?>">Please Login</a><?php
+			$this->customAlertPage("Sorry You are not authorized to view this page..");
 			exit();
 		}
 
@@ -82,7 +82,7 @@ class ReportsController extends AppController {
 
 		if ($this->Session->read('username') == null && $user_role['view_reports'] == 'yes') {
 
-			echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot');?>">Please Login</a><?php
+			$this->customAlertPage("Sorry You are not authorized to view this page..");
 			exit();
 		}
 

@@ -42,7 +42,7 @@
 
 			if ($customer_id == null) {
 
-				echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+				$this->customAlertPage("Sorry You are not authorized to view this page..");
 				exit;
 
 			} else { //this else portion added on 10-07-2017 by Amol to allow only logged in Applicant
@@ -56,12 +56,12 @@
 
 					if (empty($paouser)) {
 
-						echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+						$this->customAlertPage("Sorry You are not authorized to view this page..");
 						exit;
 					}
 
 				}else{
-					echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+					$this->customAlertPage("Sorry You are not authorized to view this page..");
 					exit;
 				}
 			}
@@ -199,12 +199,11 @@
 
 				if ($this->DmiAdvPaymentDetails->save($DmiAdvPaymentDetailsEntity)) {
 
-					//SMS/EMAIL - Adavance Payment Final Submit
-					//$this->DmiSmsEmailTemplates->sendMessage(108,$customer_id,'DmiChemistFinalSubmits'); #PACKER
-					//$this->DmiSmsEmailTemplates->sendMessage(109,$customer_id,'DmiChemistFinalSubmits'); #DDO
+					#SMS: Adavance Payment Final Submit
+					$this->DmiSmsEmailTemplates->sendMessage(61,$customer_id); #PACKER
+					$this->DmiSmsEmailTemplates->sendMessage(62,$customer_id); #DDO
 					
-					///Added this call to save the user action log on 09-09-2022 by Akash
-					$this->Customfunctions->saveActionPoint('Advance Payment(Save)', 'Success');
+					$this->Customfunctions->saveActionPoint('Advance Payment(Save)', 'Success'); #Action
 					$message = 'Advance payment saved. After verification of payment details, the amount will be creadited on your account.';
 					$message_theme = 'success';
 					$redirect_to = 'add_payment';
@@ -215,14 +214,14 @@
 				$get_payment_details = $this->Paymentdetails->saveApplicantPaymentDetails($this->request->getData(),'DmiAdvPaymentDetails');
 				
 				if ($get_payment_details == 1) {
-					///Added this call to save the user action log on 09-09-2022 by Akash
-					$this->Customfunctions->saveActionPoint('Advance Payment Final Submit', 'Success');
+
+					$this->Customfunctions->saveActionPoint('Advance Payment Final Submit', 'Success'); #Action
 					$message = 'Advance Payment, Saved successfully';
 					$message_theme = 'success';
 					$redirect_to = 'add_payment';
 				} else {
-					///Added this call to save the user action log on 09-09-2022 by Akash
-					$this->Customfunctions->saveActionPoint('Advance Payment Final Submit', 'Failed');
+					
+					$this->Customfunctions->saveActionPoint('Advance Payment Final Submit', 'Failed'); #Action
 					$message = 'Advance Payment Not, Saved successfully';
 					$message_theme = 'failed';
 					$redirect_to = 'add_payment';

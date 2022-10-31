@@ -145,7 +145,7 @@
 				$DmiOldCertDateUpdateLogs = TableRegistry::getTableLocator()->get('DmiOldCertDateUpdateLogs');
 
 				$firm_detail_table_name = TableRegistry::getTableLocator()->get($tablename);//initialize model in component
-				$Dmi_sms_email_template = TableRegistry::getTableLocator()->get('DmiSmsEmailTemplates');//initialize model in component
+				$DmiSmsEmailTemplates = TableRegistry::getTableLocator()->get('DmiSmsEmailTemplates');//initialize model in component
 
 				$current_level = 'level_1'; //forced to save the entry as from level_1, but done by RO
 
@@ -194,9 +194,19 @@
 									'created'=>date('Y-m-d H:i:s'),
 									'modified'=>date('Y-m-d H:i:s')
 								));
-								$Dmi_final_submit->save($Dmi_final_submit_entity);
 
-								//$Dmi_sms_email_template->sendMessage(13,$customer_id);
+								$Dmi_final_submit->save($Dmi_final_submit_entity);
+								
+								//The Chemist SMS after approval is added this condition - Akash[11-10-2022]
+								if ($_SESSION['application_type'] == 4) {
+									#SMS: Chemist Approved
+									$DmiSmsEmailTemplates->sendMessage(72,$customer_id); #Chemist
+									$DmiSmsEmailTemplates->sendMessage(73,$customer_id); #Packer
+								}else{
+									#SMS: RO all Sections Scrutinized
+									$DmiSmsEmailTemplates->sendMessage(13,$customer_id);
+								}
+								
 
 								return 1;
 							}
@@ -227,7 +237,7 @@
 
 			$allocationTable = $Dmi_final_submit_tb['allocation'];
 
-			$Dmi_sms_email_template = TableRegistry::getTableLocator()->get('DmiSmsEmailTemplates');
+			$DmiSmsEmailTemplates = TableRegistry::getTableLocator()->get('DmiSmsEmailTemplates');
 
 			$split_customer_id = explode('/',$customer_id);
 			$current_level = $this->Session->read('current_level');
@@ -236,11 +246,10 @@
 			$comment_by = $this->Session->read('username');
 
 			//this condition is added on 05-07-2017 by Amol to checl level 1 allocation
-			if(!empty($find_user_id['level_1']))
-			{
+			if(!empty($find_user_id['level_1'])){
 
-				if($current_level == 'level_1')
-				{
+				if($current_level == 'level_1'){
+
 					$comment_to = $find_user_id['level_3'];
 
 				}elseif($current_level == 'level_3'){
@@ -249,24 +258,20 @@
 				}
 
 				//this condition is added on 05-07-2017 by Amol to check comment saved for MO before submit by RO
-				if(($current_level == 'level_3' && $level3_current_comment_to == 'mo') ||
-					$current_level == 'level_1')
-				{
+				if(($current_level == 'level_3' && $level3_current_comment_to == 'mo') || $current_level == 'level_1'){
 
-					if($Dmi_mo_level3_comments_detail->saveCommentsDetails($customer_id,$comment_by,$comment_to) == 1)
-					{
+					if($Dmi_mo_level3_comments_detail->saveCommentsDetails($customer_id,$comment_by,$comment_to) == 1){
 
 						//Update record in all applications current position table
 						//created and applied on 03-04-2017 by amol
 
 						$user_email_id = $comment_to;
-						if($current_level == 'level_1')
-						{
+						if($current_level == 'level_1'){
+							
 							$level = 'level_3';
 							$sent_to = $office_type;
 							$sms_id = 11;
-						}
-						elseif($current_level == 'level_3'){
+						}elseif($current_level == 'level_3'){
 
 							$level = 'level_1';
 							$sent_to = 'MO';
@@ -276,9 +281,9 @@
 						$this->Customfunctions->updateLevel3CurrentCommentTo($sections,$customer_id);
 
 						$Dmi_all_applications_current_position->currentUserUpdate($customer_id,$user_email_id,$level);//call to custom function from model
-						//added on 22-08-2017 by Pravin to send SMS/Email
-						//call custom function from Model with message id
-						//$Dmi_sms_email_template->sendMessage($sms_id,$customer_id);
+						
+						#SMS: MO commented to RO
+						$DmiSmsEmailTemplates->sendMessage($sms_id,$customer_id);
 
 						return array(1,$sent_to);
 					}
@@ -290,53 +295,52 @@
 		}
 
 
-		public function RO2ApplicantCommentFinalSubmit($customer_id,$tablename,$ro_current_comment_to,$current_level,$sections){
+	public function RO2ApplicantCommentFinalSubmit($customer_id,$tablename,$ro_current_comment_to,$current_level,$sections){
 
-				$application_type = $this->Session->read('application_type');
-				$Dmi_flow_wise_tables_list = TableRegistry::getTableLocator()->get('DmiFlowWiseTablesLists');
-				$Dmi_final_submit_tb = $Dmi_flow_wise_tables_list->find('all',array('conditions'=>array('application_type IS'=>$application_type)))->first();
-				$Dmi_final_submit = TableRegistry::getTableLocator()->get($Dmi_final_submit_tb['application_form']);
-				$Dmi_all_applications_current_position = TableRegistry::getTableLocator()->get($Dmi_final_submit_tb['appl_current_pos']);
-
-
-				$Dmi_ro_office = TableRegistry::getTableLocator()->get('DmiRoOffices');//initialize model in component
-				$Dmi_sms_email_template = TableRegistry::getTableLocator()->get('DmiSmsEmailTemplates');//initialize model in component
-				$DmiFirms = TableRegistry::getTableLocator()->get('DmiFirms');
-
-				if($ro_current_comment_to == 'applicant')
-				{
-					if($this->Customfunctions->sentToApplicant($customer_id,$current_level,$Dmi_final_submit_tb['application_form']) == 1)
-					{
-						// Send to current application postion entry to all_applications_current_position Table (By Pravin 19/05/2017)
-						$split_customer_id = explode('/',$customer_id);
-						$district_ro_code = $split_customer_id[2];
-
-						$firm_details = $DmiFirms->firmDetails($customer_id);
-						$user_email_id = $firm_details['email'];
-
-						$current_level = 'applicant';
-
-						$this->Customfunctions->updateLevel3CurrentCommentTo($sections,$customer_id);
-
-						$Dmi_all_applications_current_position->currentUserUpdate($customer_id,$user_email_id,$current_level); //call to custom function from model
-
-						//added on 22-08-2017 by Pravin to send SMS/Email
-						//call custom function from Model with message id
-
-						//to send to the chemist for referred back 
-						if ($_SESSION['application_type'] == 4) {
-							//$Dmi_sms_email_template->sendMessage(71,$customer_id);
-						} else { 
-							#$Dmi_sms_email_template->sendMessage(7,$customer_id);
-						}
+		$application_type = $this->Session->read('application_type');
+		$Dmi_flow_wise_tables_list = TableRegistry::getTableLocator()->get('DmiFlowWiseTablesLists');
+		$Dmi_final_submit_tb = $Dmi_flow_wise_tables_list->find('all',array('conditions'=>array('application_type IS'=>$application_type)))->first();
+		$Dmi_final_submit = TableRegistry::getTableLocator()->get($Dmi_final_submit_tb['application_form']);
+		$Dmi_all_applications_current_position = TableRegistry::getTableLocator()->get($Dmi_final_submit_tb['appl_current_pos']);
 
 
-						return 1;
-					}
+		$Dmi_ro_office = TableRegistry::getTableLocator()->get('DmiRoOffices');//initialize model in component
+		$DmiSmsEmailTemplates = TableRegistry::getTableLocator()->get('DmiSmsEmailTemplates');//initialize model in component
+		$DmiFirms = TableRegistry::getTableLocator()->get('DmiFirms');
 
-				}else{ return 2; }
+		if($ro_current_comment_to == 'applicant')
+		{
+			if($this->Customfunctions->sentToApplicant($customer_id,$current_level,$Dmi_final_submit_tb['application_form']) == 1)
+			{
+				// Send to current application postion entry to all_applications_current_position Table (By Pravin 19/05/2017)
+				$split_customer_id = explode('/',(string) $customer_id); //this is explode function is udpated for the Decraption by PHP 8.1 - Akash [07-10-2022]
+				$district_ro_code = $split_customer_id[2];
 
-		}
+				$firm_details = $DmiFirms->firmDetails($customer_id);
+				$user_email_id = $firm_details['email'];
+
+				$current_level = 'applicant';
+
+				$this->Customfunctions->updateLevel3CurrentCommentTo($sections,$customer_id);
+
+				$Dmi_all_applications_current_position->currentUserUpdate($customer_id,$user_email_id,$current_level); //call to custom function from model
+
+				//to send to the chemist for referred back 
+				if ($_SESSION['application_type'] == 4) {
+					#SMS: RO referred back to chemist 
+					$DmiSmsEmailTemplates->sendMessage(70,$customer_id); #Chemist
+				} else {
+					#SMS: RO referred back to applicant 
+					$DmiSmsEmailTemplates->sendMessage(7,$customer_id); #Applicant
+				}
+
+
+				return 1;
+			}
+
+		}else{ return 2; }
+
+	}
 
 		public function ROScrutinizedOldApplication($customer_id){
 
@@ -430,6 +434,6 @@
 
 
 
-	}
+}
 
 ?>

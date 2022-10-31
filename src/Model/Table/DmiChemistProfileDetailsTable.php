@@ -78,8 +78,7 @@ class DmiChemistProfileDetailsTable extends Table{
 			$result[0]['reffered_back_date'] = $reffered_back_date;
 			
 		}
-		 //$result['count'] = $count;
-		//print_r($result); exit;
+		
 		 return array($result[0]);
 	}
 
@@ -93,7 +92,11 @@ class DmiChemistProfileDetailsTable extends Table{
 		$DmiChemistRegistrations = TableRegistry::getTableLocator()->get('DmiChemistRegistrations');
 		$get_registered_details = $DmiChemistRegistrations->find('all',array('conditions'=>array('chemist_id IS'=>$chemist_id)))->first();
 		$registered_details = $get_registered_details;
-
+		
+		//added date function on 12/10/2022 by Shankhpal to convert date format, as saving null
+		$CustomersController = new CustomersController;
+		$chemistdob = $CustomersController->Customfunctions->changeDateFormat($registered_details['dob']);
+		
 		if($dataValidatation == 1 ){
 
 			$section_form_details = $this->sectionFormDetails($chemist_id);
@@ -206,7 +209,7 @@ class DmiChemistProfileDetailsTable extends Table{
 				'pin_code'=>$pin_code,
 				'email'=>$registered_details['email'],
 				'mobile_no'=>$registered_details['mobile'],
-				'dob'=>$registered_details['dob'],
+				'dob'=>$chemistdob,
 				'gender'=>$gender,
 				#'pan_no'=>$pan_no,
 				'address'=>$address,
@@ -328,8 +331,8 @@ class DmiChemistProfileDetailsTable extends Table{
 			'ro_reply_comment'=>$ro_reply_comment,
 			'ro_reply_comment_date'=>$ro_reply_comment_date,
 			'rr_comment_ul'=>$rr_comment_ul,
-			'document'=>$document, #This is added by Akash on the 09-08-2022 
-			'document_id_no'=>$document_id_no #This is added by Akash on the 09-08-2022 
+			'document'=>$forms_data['document'], #This is added by Akash on the 09-08-2022 
+			'document_id_no'=>$forms_data['document_id_no'] #This is added by Akash on the 09-08-2022 
 
 		));
 

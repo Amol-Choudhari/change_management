@@ -76,7 +76,7 @@ class ApplicationformspdfsController extends AppController{
 		$all_data_pdf = $this->render($pdf_view_path);				
 		
 		$customer_id = $this->Session->read('username');				
-		$split_customer_id = explode('/',$customer_id);
+		$split_customer_id = explode('/',(string) $customer_id); #For Deprecations
 		
 		//as per distributed folder structure, get folder name as per application to store pdf
 		//on 04-10-2021 by Amol
@@ -233,7 +233,7 @@ class ApplicationformspdfsController extends AppController{
 		$all_data_pdf = $this->render($pdf_view_path);
 	
 		$customer_id = $this->Session->read('customer_id');		
-		$split_customer_id = explode('/',$customer_id);
+		$split_customer_id = explode('/',(string) $customer_id); #For Deprecations
 		
 		//as per distributed folder structure, get folder name as per application to store pdf
 		//on 04-10-2021 by Amol
@@ -333,7 +333,7 @@ class ApplicationformspdfsController extends AppController{
 		$all_data_pdf = $this->render($pdf_view_path);		
 		
 		$customer_id = $this->Session->read('customer_id');				
-		$split_customer_id = explode('/',$customer_id);	
+		$split_customer_id = explode('/',(string) $customer_id); #For Deprecations	
 		
 		//as per distributed folder structure, get folder name as per application to store pdf
 		//on 04-10-2021 by Amol
@@ -414,7 +414,7 @@ class ApplicationformspdfsController extends AppController{
 				
 			}else{
 			
-				echo "Sorry.. Certificate is generated but details not saved in DB because some functions not worked properly."; ?><a href="<?php echo $this->request->getAttribute('webroot');?>users/login_user">Please Login</a><?php
+				$this->customAlertPage("Sorry.. Certificate is generated but details not saved in DB because some functions not worked properly.");
 				exit();
 			}
 
@@ -470,7 +470,7 @@ class ApplicationformspdfsController extends AppController{
 	public function generateGrantCerticateToReEsignPdf($pdf_view_path){
 				
 		$customer_id = $this->Session->read('customer_id');				
-		$split_customer_id = explode('/',$customer_id);	
+		$split_customer_id = explode('/',(string) $customer_id); #For Deprecations	
 		
 		$application_type = 1;//$this->Session->read('application_type');
 		$Dmi_flow_wise_tables_list = TableRegistry::getTableLocator()->get('DmiFlowWiseTablesLists');
@@ -585,7 +585,7 @@ class ApplicationformspdfsController extends AppController{
 		$this->set('firm_state_name',$firm_state_name);
 		
 		// to show commodities and there selected sub-commodities
-		$sub_commodity_array = explode(',',$customer_firm_data['sub_commodity']);
+		$sub_commodity_array = explode(',',(string) $customer_firm_data['sub_commodity']); #For Deprecations
 
 		$i=0;
 		foreach($sub_commodity_array as $sub_commodity_id)
@@ -775,7 +775,7 @@ class ApplicationformspdfsController extends AppController{
 		$pdf_date = date('d-m-Y');
 		$this->set('pdf_date',$pdf_date);		
 		
-		$split_customer_id = explode('/',$customer_id);
+		$split_customer_id = explode('/',(string) $customer_id); #For Deprecations
 		$primary_id_code = $split_customer_id[0];
 		
 		// data from DMI Customer Table
@@ -821,7 +821,7 @@ class ApplicationformspdfsController extends AppController{
 		$firm_state_name = $fetch_state_name['state_name'];
 		$this->set('firm_state_name',$firm_state_name);			
 		
-		$packaging_materials = explode(',',$customer_firm_data['packaging_materials']);				 
+		$packaging_materials = explode(',',(string) $customer_firm_data['packaging_materials']); #For Deprecations
 		$packaging_type_list = $this->DmiPackingTypes->find('list', array('keyField'=>'id','valueField'=>'packing_type', 'conditions'=>array('id IN'=>$packaging_materials)))->toArray();			 
 		$this->set('packaging_type_list',$packaging_type_list);
 		
@@ -902,7 +902,7 @@ class ApplicationformspdfsController extends AppController{
 		$export_unit_status = $this->Customfunctions->checkApplicantExportUnit($customer_id);
 		$this->set('export_unit_status',$export_unit_status);
 		
-		$split_customer_id = explode('/',$customer_id);
+		$split_customer_id = explode('/',(string) $customer_id); #For Deprecations
 		$primary_id_code = $split_customer_id[0];
 		
 		// data from DMI Customer Table
@@ -940,7 +940,7 @@ class ApplicationformspdfsController extends AppController{
 		
 		// Take sub commodities
 
-		$sub_commodities_details = explode(',',$firm_detail['sub_commodity']);
+		$sub_commodities_details = explode(',',(string) $firm_detail['sub_commodity']); #For Deprecations
 		$sub_commodities_details = $this->MCommodity->find('list', array('keyField'=>'commodity_code','valueField'=>'commodity_name','conditions'=>array('commodity_code IN'=>$sub_commodities_details)))->toArray();
 		$this->Set('sub_commodities_details',$sub_commodities_details);
 		
@@ -953,7 +953,7 @@ class ApplicationformspdfsController extends AppController{
 		$i=1;
 		foreach($chemist_details as $chemist_detail)
 		{
-			$chemist_commodity_details = explode(',',$chemist_detail['commodity']);
+			$chemist_commodity_details = explode(',',(string) $chemist_detail['commodity']); #For Deprecations
 			$chemist_details_values[$i] = $this->MCommodity->find('list', array('keyField'=>'commodity_code','valueField'=>'commodity_name', 'conditions'=>array('commodity_code IN'=>$chemist_commodity_details)))->toArray();
 			$chemist_commodity_value[$i] = implode(',',$chemist_details_values[$i]);			
 			$i=$i+1;	
@@ -1029,7 +1029,7 @@ class ApplicationformspdfsController extends AppController{
 		$this->set('user_full_name',$user_full_name);	
 				
 		// to show commodities and there selected sub-commodities
-		$sub_commodity_array = explode(',',$customer_firm_data['sub_commodity']);
+		$sub_commodity_array = explode(',',(string) $customer_firm_data['sub_commodity']); #For Deprecations
 		$i=0;
 		foreach($sub_commodity_array as $sub_commodity_id)
 		{		
@@ -1187,7 +1187,7 @@ class ApplicationformspdfsController extends AppController{
 		$this->set('district_value',$district_value['district_name']);
 		
 		// Take sub commodities
-		$sub_commodities_details = explode(',',$firm_detail['sub_commodity']);
+		$sub_commodities_details = explode(',',(string) $firm_detail['sub_commodity']); #For Deprecations
 		$sub_commodities_details = $this->MCommodity->find('list', array('keyField'=>'commodity_code','valueField'=>'commodity_name', 'conditions'=>array('commodity_code IN'=>$sub_commodities_details)))->toArray();
 		$this->Set('sub_commodities_details',$sub_commodities_details);
 		
@@ -1242,7 +1242,7 @@ class ApplicationformspdfsController extends AppController{
 		$export_unit_status = $this->Customfunctions->checkApplicantExportUnit($customer_id);
 		$this->set('export_unit_status',$export_unit_status);
 		
-		$split_customer_id = explode('/',$customer_id);
+		$split_customer_id = explode('/',(string) $customer_id); #For Deprecations
 		$primary_id_code = $split_customer_id[0];
 		
 		$firm_detail = $this->DmiFirms->firmDetails($customer_id);
@@ -1256,7 +1256,7 @@ class ApplicationformspdfsController extends AppController{
 		
 		
 		//fetch commodities by id
-		$selected_commodities = explode(',',$firm_detail['sub_commodity']);
+		$selected_commodities = explode(',',(string) $firm_detail['sub_commodity']); #For Deprecations
 		
 																				//commented the 'display'=>'Y' condition on 22-03-2021, as conflicting the delete status flag between LIMS/DMI for listing commodities
 																				//As in LIMS "Fat Spread" under "BEVO" not used and in DMI we use "Fat Spread" under "BEVO". and 'display' is 'N' for the field.
@@ -1346,7 +1346,7 @@ class ApplicationformspdfsController extends AppController{
 		$pdf_date = date('d-m-Y');
 		$this->set('pdf_date',$pdf_date);
 		
-		$split_customer_id = explode('/',$customer_id);
+		$split_customer_id = explode('/',(string) $customer_id); #For Deprecations
 		$primary_id_code = $split_customer_id[0];		
 		
 		//below query added on 21-07-2017 by Amol
@@ -1367,7 +1367,7 @@ class ApplicationformspdfsController extends AppController{
 		$this->set('district_value',$district_value);	
 		
 		// Take Packing Material Type	
-		$packaging_materials = explode(',',$firm_detail['packaging_materials']);
+		$packaging_materials = explode(',',(string) $firm_detail['packaging_materials']); #For Deprecations
 		$renewal_packaging_type = $this->DmiPackingTypes->find('list', array('valueField'=>array('packing_type'),'keyField'=>array('id'), 'conditions'=>array('id IN'=>$packaging_materials)))->toArray();	
 		$this->set('renewal_packaging_type',$renewal_packaging_type);
 		
@@ -1416,7 +1416,7 @@ class ApplicationformspdfsController extends AppController{
 		$pdf_date = date('d-m-Y');
 		$this->set('pdf_date',$pdf_date);
 		
-		$split_customer_id = explode('/',$customer_id);
+		$split_customer_id = explode('/',(string) $customer_id); #For Deprecations
 		$primary_id_code = $split_customer_id[0];
 		
 		
@@ -1449,7 +1449,7 @@ class ApplicationformspdfsController extends AppController{
 		$this->set('district_value',$district_value);	
 		
 		// Take laboratory commodity list
-		$laboratory_commodity_list = explode(',',$firm_detail['sub_commodity']);
+		$laboratory_commodity_list = explode(',',(string) $firm_detail['sub_commodity']); #For Deprecations
 		$laboratory_commodity_values = $this->MCommodity->find('list', array('keyField'=>'commodity_code', 'valueField'=>'commodity_name', 'conditions'=>array('commodity_code IN'=>$laboratory_commodity_list)))->toArray();
 		$this->Set('laboratory_commodity_values',$laboratory_commodity_values);
 		
@@ -1465,7 +1465,7 @@ class ApplicationformspdfsController extends AppController{
 		$i=1;
 		foreach($chemist_details as $chemist_detail)
 		{
-			$chemist_commodity_details = explode(',',$chemist_detail['commodity']);
+			$chemist_commodity_details = explode(',',(string) $chemist_detail['commodity']); #For Deprecations
 			$chemist_details_values[$i] = $this->MCommodity->find('list', array('keyField'=>'commodity_code', 'valueField'=>'commodity_name', 'conditions'=>array('commodity_code IN'=>$chemist_commodity_details)))->toArray();
 			$chemist_commodity_value[$i] =implode(', ',$chemist_details_values[$i]);								
 			
@@ -1537,7 +1537,7 @@ class ApplicationformspdfsController extends AppController{
 		$this->set('firm_state_name',$firm_state_name);
 		
 		// to show commodities and there selected sub-commodities
-		$sub_commodity_array = explode(',',$customer_firm_data['sub_commodity']);
+		$sub_commodity_array = explode(',',(string) $customer_firm_data['sub_commodity']); #For Deprecations
 
 		$i=0;
 		foreach($sub_commodity_array as $sub_commodity_id)
@@ -1710,7 +1710,8 @@ class ApplicationformspdfsController extends AppController{
 			$this->set('certificate_valid_upto',$certificate_valid_upto);
 
 			//This below line is added for the QR Code genration on Shankhpal [16-08-2022]	
-			$data = [$customer_id,$pdf_date,$certificate_valid_upto];
+			$firm_name_forqr = $firm_data[0]['firm_name'];	
+			$data = [$customer_id,$pdf_date,$certificate_valid_upto,$firm_name_forqr];
 			$result_for_qr = $this->Customfunctions->getQrCode($data);
 			$this->set('result_for_qr',$result_for_qr);
 
@@ -1739,7 +1740,8 @@ class ApplicationformspdfsController extends AppController{
 			}
 			
 			//This below line is added for the QR Code genration on Shankhpal [16-08-2022]	
-			$data = [$customer_id,$pdf_date,$certificate_valid_upto];
+			$firm_name_forqr = $firm_data[0]['firm_name'];	
+			$data = [$customer_id,$pdf_date,$certificate_valid_upto,$firm_name_forqr];
 			$result_for_qr = $this->Customfunctions->getQrCode($data);
 			$this->set('result_for_qr',$result_for_qr);
 			
@@ -1788,7 +1790,7 @@ class ApplicationformspdfsController extends AppController{
 		$this->set('firm_state_name',$firm_state_name);
 		
 		// to show commodities and there selected sub-commodities	
-		$packaging_materials = explode(',',$customer_firm_data['packaging_materials']);				 
+		$packaging_materials = explode(',',(string) $customer_firm_data['packaging_materials']); #For Deprecations
 		$packaging_types = $this->DmiPackingTypes->find('list', array('keyField'=>'id','valueField'=>'packing_type', 'conditions'=>array('id IN'=>$packaging_materials)))->toArray();			 
 		$this->set('packaging_types',$packaging_types);
 					
@@ -1934,7 +1936,8 @@ class ApplicationformspdfsController extends AppController{
 			$this->set('certificate_valid_upto',$certificate_valid_upto);
 			
 			//This below line is added for the QR Code genration on Shankhpal [16-08-2022]	
-			$data = [$customer_id,$pdf_date,$certificate_valid_upto];
+			$firm_name_forqr = $firm_data[0]['firm_name'];	
+			$data = [$customer_id,$pdf_date,$certificate_valid_upto,$firm_name_forqr];
 			$result_for_qr = $this->Customfunctions->getQrCode($data);
 			$this->set('result_for_qr',$result_for_qr);				
 
@@ -1963,7 +1966,8 @@ class ApplicationformspdfsController extends AppController{
 			}
 
 			//This below line is added for the QR Code genration on Shankhpal [16-08-2022]	
-			$data = [$customer_id,$pdf_date,$certificate_valid_upto];
+			$firm_name_forqr = $firm_data[0]['firm_name'];	
+			$data = [$customer_id,$pdf_date,$certificate_valid_upto,$firm_name_forqr];
 			$result_for_qr = $this->Customfunctions->getQrCode($data);
 			$this->set('result_for_qr',$result_for_qr);				
 			
@@ -2016,7 +2020,7 @@ class ApplicationformspdfsController extends AppController{
 		$this->set('firm_state_name',$firm_state_name);
 		
 		// to show commodities and there selected sub-commodities
-		$sub_commodity_array = explode(',',$customer_firm_data['sub_commodity']);
+		$sub_commodity_array = explode(',',(string) $customer_firm_data['sub_commodity']); #For Deprecations
 
 		$i=0;
 		foreach($sub_commodity_array as $sub_commodity_id)
@@ -2167,7 +2171,8 @@ class ApplicationformspdfsController extends AppController{
 			$this->set('certificate_valid_upto',$certificate_valid_upto);
 
 			//This below line is added for the QR Code genration on Shankhpal [16-08-2022]	
-			$data = [$customer_id,$pdf_date,$certificate_valid_upto];
+			$firm_name_forqr = $customer_firm_data['firm_name'];
+			$data = [$customer_id,$pdf_date,$certificate_valid_upto,$firm_name_forqr];
 			$result_for_qr = $this->Customfunctions->getQrCode($data);
 			$this->set('result_for_qr',$result_for_qr);
 
@@ -2195,14 +2200,15 @@ class ApplicationformspdfsController extends AppController{
 			}
 			
 			//This below line is added for the QR Code genration on Shankhpal [16-08-2022]	
-			$data = [$customer_id,$pdf_date,$certificate_valid_upto];
+			$firm_name_forqr = $customer_firm_data['firm_name'];			
+			$data = [$customer_id,$pdf_date,$certificate_valid_upto,$firm_name_forqr];
 			$result_for_qr = $this->Customfunctions->getQrCode($data);
 			$this->set('result_for_qr',$result_for_qr);				
 			
 			$this->generateGrantCerticatePdf('/Applicationformspdfs/grantLaboratoryCertificatePdf'); 
 		}
 			
-		$split_customer_id = explode('/',$customer_id);				
+		$split_customer_id = explode('/',(string) $customer_id); #For Deprecations
 
 		if($split_customer_id[1]==3 && $export_unit_status=='yes'){
 			
@@ -2240,7 +2246,7 @@ class ApplicationformspdfsController extends AppController{
 		{
 		
 			$customer_id = $each_pdf['customer_id'];
-			$split_customer_id = explode('/',$customer_id);				
+			$split_customer_id = explode('/',(string) $customer_id); #For Deprecations
 			$district_code = $split_customer_id[2]; //added on 06-03-2018 by Amol to get application district code.
 			
 			//updated and added code to get Office table details from appl mapping Model
@@ -2380,6 +2386,9 @@ class ApplicationformspdfsController extends AppController{
 				elseif($current_level=='level_3'){$desg = "\n".'(Regional Officer)';}
 				
 				$esigner = $this->Session->read('f_name').' '.$this->Session->read('l_name');
+	
+				//added condition on 13-10-2022 by AMol, to masked chemist name from replica allotment letter
+				if ($pdf_for=="replica") {$esigner = 'Authorized Chemist';}
 			}
 			
 			//start to add bg image for the 'esigned by' cell on document
@@ -2468,7 +2477,7 @@ class ApplicationformspdfsController extends AppController{
 		$this->set('firm_state_name',$firm_state_name);		
 		
 		// to show commodities and there selected sub-commodities
-		$sub_commodity_array = explode(',',$customer_firm_data['sub_commodity']);
+		$sub_commodity_array = explode(',',(string) $customer_firm_data['sub_commodity']); #For Deprecations
 
 		$i=0;
 		foreach($sub_commodity_array as $sub_commodity_id)
@@ -2558,7 +2567,7 @@ class ApplicationformspdfsController extends AppController{
 		$this->set('firm_state_name',$firm_state_name);
 		
 		// to show commodities and there selected sub-commodities
-		$sub_commodity_array = explode(',',$firm_details['sub_commodity']);
+		$sub_commodity_array = explode(',',(string) $firm_details['sub_commodity']); #For Deprecations
 
 		$i=0;
 		foreach($sub_commodity_array as $sub_commodity_id)
@@ -2627,7 +2636,7 @@ class ApplicationformspdfsController extends AppController{
 		$this->set('firm_state_name',$firm_state_name);		
 		
 		// to show commodities and there selected sub-commodities
-		$sub_commodity_array = explode(',',$customer_firm_data['sub_commodity']);
+		$sub_commodity_array = explode(',',(string) $customer_firm_data['sub_commodity']); #For Deprecations
 
 		$i=0;
 		foreach($sub_commodity_array as $sub_commodity_id)
@@ -2717,7 +2726,7 @@ class ApplicationformspdfsController extends AppController{
 		$this->set('firm_state_name',$firm_state_name);
 		
 		// to show commodities and there selected sub-commodities
-		$sub_commodity_array = explode(',',$firm_details['sub_commodity']);
+		$sub_commodity_array = explode(',',(string) $firm_details['sub_commodity']); #For Deprecations
 
 		$i=0;
 		foreach($sub_commodity_array as $sub_commodity_id)
@@ -2751,7 +2760,7 @@ class ApplicationformspdfsController extends AppController{
 			}
 			
 			
-			$splitEcode = explode('-',$lastECode);
+			$splitEcode = explode('-',(string) $lastECode); #For Deprecations
 			$newEcode = 'E-'.$splitEcode[1]+1;
 			
 			//enter new eocde record in table for current applicant

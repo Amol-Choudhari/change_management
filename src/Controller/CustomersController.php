@@ -128,7 +128,7 @@ class CustomersController extends AppController {
 
                 if (substr_count($this->request->getData('customer_id'), "/") != 0) {
 
-                    $split_customer_id = explode('/', $this->request->getData('customer_id'));
+                    $split_customer_id = explode('/',(string) $this->request->getData('customer_id')); #For Deprecations
 
                     //added below conditions on 15-02-2018 by Amol
                     if ($split_customer_id[1] == 1 && $this->getRequest()->getSession()->read('login_to') != 'ca') {
@@ -278,7 +278,7 @@ class CustomersController extends AppController {
         $this->loadModel('DmiDocumentLists');
         $this->loadModel('DmiCustomers');
         $this->loadModel('DmiCustomersHistoryLogs');
-        $this->loadModel('DmiSmsEmailTemplates');
+    
         //Set the Layout
         $this->viewBuilder()->setLayout('form_layout');
 
@@ -449,12 +449,13 @@ class CustomersController extends AppController {
                         $this->set('new_customer_id', $new_customer_id);
                         $this->set('htmlencodedemail', $htmlencodedemail);
 
-                        //added on 22-08-2017 by Pravin to send SMS/Email //call custom function from Model with message id
-                        //$this->DmiSmsEmailTemplates->sendMessage(1, $new_customer_id);
+                        #SMS: New Customer Registered
+                        $this->DmiSmsEmailTemplates->sendMessage(1, $new_customer_id);
 
                         //saving log for passes attempts of aadhar authentication //added on 16-06-2020 by Amol, on suggestion from Tarun Sir to take logs
                         if (!empty($this->request->getData('once_card_no')) && $this->request->getData('aadhar_auth_check') == 1) {
 
+                            $aadhar_txn_id=null;
                             $this->loadModel('DmiOnceTokenDetails');
                             $onceTokenEntity = $this->DmiOnceTokenDetails->newEntity(array(
                                 'user_id' => $new_customer_id,
@@ -518,7 +519,7 @@ class CustomersController extends AppController {
 
         if ($this->getRequest()->getSession()->read('username') == null) {
 
-            echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+			$this->customAlertPage("Sorry You are not authorized to view this page..");
             exit;
 
         } else {//this else portion added on 10-07-2017 by Amol to allow only logged in Applicant
@@ -528,7 +529,7 @@ class CustomersController extends AppController {
                 //Give Permission
             } else {
 
-                echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+                $this->customAlertPage("Sorry You are not authorized to view this page..");
 				exit;
             }
         }
@@ -600,7 +601,7 @@ class CustomersController extends AppController {
             foreach ($firms_details as $firms_detail) {
 
                 $customer_id = $firms_detail['customer_id'];
-                $split_customer_id = explode('/', $customer_id);
+                $split_customer_id = explode('/',(string) $customer_id); #For Deprecations
 
                 //added on 05/05/2017 by Amol(to show delete firm button) //check this applicant id is final submitted or not to show dlete firm button
                 $final_submit_done[$i] = $this->DmiFinalSubmits->find('all', array('conditions' => array('customer_id IS' => $customer_id)))->first();
@@ -648,7 +649,7 @@ class CustomersController extends AppController {
 
         if (empty($_GET['$key']) || empty($_GET['$id'])) {
 
-            echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+			$this->customAlertPage("Sorry You are not authorized to view this page..");
             exit;
 
         } else {
@@ -670,7 +671,7 @@ class CustomersController extends AppController {
 
             } else {
 
-                echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+                $this->customAlertPage("Sorry You are not authorized to view this page..");
 				exit;
             }
 
@@ -689,10 +690,9 @@ class CustomersController extends AppController {
                 if ($this->request->is('post')) {
 
                     $randsalt = $this->Session->read('randSalt');
-                    $captchacode1 = $this->Session->read('code');
-                    $changepassdata = $this->request->getData();
                     $username = $this->request->getData('customer_id');
                     $countspecialchar = substr_count($username, "/");
+                    $postdata = $this->request->getData();
 
                     if ($countspecialchar == 1) {
                         $table = 'DmiCustomers';
@@ -706,13 +706,13 @@ class CustomersController extends AppController {
                     }
 
                     $newpassdata = $this->request->getData('new_password');
-                    $confpassdata = $this->request->getData('confirm_password');
-
+					
                     // calling reset password library function
-                    $reset_pass_result = $this->Authentication->resetPasswordLib($table, $username, $newpassdata, $randsalt);
-
+                    $reset_pass_result = $this->Authentication->resetPasswordLib($table, $username, $newpassdata, $randsalt,$postdata);
+					
                     if ($reset_pass_result == 1) {
 
+						$this->Customfunctions->saveActionPoint('Reset Password (Email Not Matched)','Failed',$user_id); #Action
                         $email_id_not_matched_msg = 'Email id & User Id not Matched.';
                         $this->set('email_id_not_matched_msg', $email_id_not_matched_msg);
                         return null;
@@ -720,6 +720,7 @@ class CustomersController extends AppController {
 
                     } elseif ($reset_pass_result == 2) {
 
+						$this->Customfunctions->saveActionPoint('Reset Password (Incorrect Captcha)','Failed',$user_id); #Action
                         $incorrect_captcha_msg = 'Incorrect Captcha code entered.';
                         $this->set('incorrect_captcha_msg', $incorrect_captcha_msg);
                         return null;
@@ -727,20 +728,24 @@ class CustomersController extends AppController {
 
                     } elseif ($reset_pass_result == 3) {
 
+						$this->Customfunctions->saveActionPoint('Reset Password (Password Not Macthed)','Failed',$user_id); #Action
                         $comfirm_pass_msg = 'Confirm password not matched';
                         $this->set('comfirm_pass_msg', $comfirm_pass_msg);
-                        return false;
+                        return null;
                         exit;
 
                     } elseif ($reset_pass_result == 4) {
 
+						$this->Customfunctions->saveActionPoint('Reset Password (Password is Same as Last)','Failed',$user_id); #Action
                         // SHOW ERROR MESSAGE IF NEW PASSWORD FOUND UNDER LAST THREE PASSWORDS OF USER // By Aniket Ganvir dated 16th NOV 2020
                         $comfirm_pass_msg = 'This password matched with your last three passwords, Please enter different password';
                         $this->set('comfirm_pass_msg', $comfirm_pass_msg);
-                        return false;
+                        return null;
                         exit;
 
                     } else {
+                        
+						$this->Customfunctions->saveActionPoint('Reset Password','Success',$user_id); #Action
                         //update link key table status to 1 for successfully
                         $this->DmiApplicantsResetpassKeys->updateKeySuccess($user_id, $key_id);
                         $message = 'Password Changed Successfully';
@@ -789,63 +794,63 @@ class CustomersController extends AppController {
 
                 $countspecialchar = substr_count($username, "/");
 
-                    if ($countspecialchar == 1) {
-                        $table = 'DmiCustomers';
-                    } elseif ($countspecialchar == 3) {
-                        $table = 'DmiFirms';
-                    } elseif ($countspecialchar == 2) {
-                        $table = 'DmiChemistRegistrations';
-                    } else {
-                        $message = 'Sorry...User Id entered is not valid';
-                        $message_theme = 'failed';
-                        $redirect_to = 'forgot_password';
-                    }
+                if ($countspecialchar == 1) {
+                    $table = 'DmiCustomers';
+                } elseif ($countspecialchar == 3) {
+                    $table = 'DmiFirms';
+                } elseif ($countspecialchar == 2) {
+                    $table = 'DmiChemistRegistrations';
+                } else {
+                    $message = 'Sorry...User Id entered is not valid';
+                    $message_theme = 'failed';
+                    $redirect_to = 'forgot_password';
+                }
 
-                    $this->loadModel($table);
+                $this->loadModel($table);
 
-                    $emailforrecovery = $this->request->getData('email');
+                $emailforrecovery = $this->request->getData('email');
 
-                    // For chemist module, Done by Pravin Bhakare 4/08/2021
-                    //check if Customer ID & Email Match in record.
-                    if($countspecialchar == 2){
+                // For chemist module, Done by Pravin Bhakare 4/08/2021
+                //check if Customer ID & Email Match in record.
+                if($countspecialchar == 2){
 
-                        $check_valid_record = $this->$table->find('all', array('conditions' => array('email IS' => base64_encode($emailforrecovery), 'chemist_id IS' => $username)))->first();
-				   
-                    } else {
-						 
-                        $check_valid_record = $this->$table->find('all', array('conditions' => array('email IS' => base64_encode($emailforrecovery), 'customer_id IS' => $username)))->first();
-                    }
+                    $check_valid_record = $this->$table->find('all', array('conditions' => array('email IS' => base64_encode($emailforrecovery), 'chemist_id IS' => $username)))->first();
+                
+                } else {
+                        
+                    $check_valid_record = $this->$table->find('all', array('conditions' => array('email IS' => base64_encode($emailforrecovery), 'customer_id IS' => $username)))->first();
+                }
 
-                    if (empty($check_valid_record)) {
+                if (empty($check_valid_record)) {
 
-                        $message = 'Sorry... Provided Applicant ID & Email Id does not Matched.';
-                        $message_theme = 'failed';
-                        $redirect_to = 'forgot_password';
-
-                    } else {
-
-                        $forgot_password_result = $this->Authentication->forgotPasswordLib($table, $emailforrecovery, $username);//added new parameter username on 25-10-2018
-
-                        // show forgot password failed messgae (by pravin 27/05/2017)
-                        if ($forgot_password_result == 1) {
-
-                            $message = 'Sorry Restricted... This email is not authorized';
-                            $message_theme = 'failed';
-                            $redirect_to = 'forgot_password';
-
-                        } elseif ($forgot_password_result == 2) {
-
-                            //get applicant email id and apply masking before showing in message by Amol on 25-02-2021
-                            $emailforrecovery = $this->Customfunctions->getMaskedValue($emailforrecovery, 'email');
-                            $message = 'Change password link sent on ' . $emailforrecovery;
-                            $message_theme = 'success';
-                            $redirect_to = 'forgot_password';
-
-                        }
-
-                    }
+                    $message = 'Sorry... Provided Applicant ID & Email Id does not Matched.';
+                    $message_theme = 'failed';
+                    $redirect_to = 'forgot_password';
 
                 } else {
+
+                    $forgot_password_result = $this->Authentication->forgotPasswordLib($table, $emailforrecovery, $username);//added new parameter username on 25-10-2018
+
+                    // show forgot password failed messgae (by pravin 27/05/2017)
+                    if ($forgot_password_result == 1) {
+
+                        $message = 'Sorry Restricted... This email is not authorized';
+                        $message_theme = 'failed';
+                        $redirect_to = 'forgot_password';
+
+                    } elseif ($forgot_password_result == 2) {
+
+                        //get applicant email id and apply masking before showing in message by Amol on 25-02-2021
+                        $emailforrecovery = $this->Customfunctions->getMaskedValue($emailforrecovery, 'email');
+                        $message = 'Change password link sent on ' . $emailforrecovery;
+                        $message_theme = 'success';
+                        $redirect_to = 'forgot_password';
+
+                    }
+
+                }
+
+            } else {
 
                 $message = 'Sorry...Wrong Captcha Code Entered';
                 $message_theme = 'failed';
@@ -875,11 +880,10 @@ class CustomersController extends AppController {
         $this->loadModel('DmiDistricts');
         $this->loadModel('DmiDocumentLists');
         $this->loadModel('DmiCustomersHistoryLogs');
-        $this->loadModel('DmiSmsEmailTemplates');
 
         if ($this->getRequest()->getSession()->read('username') == null) {
 
-            echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+			$this->customAlertPage("Sorry You are not authorized to view this page..");
             exit;
 
         } else {//this else portion added on 10-07-2017 by Amol to allow only logged in Applicant
@@ -889,7 +893,7 @@ class CustomersController extends AppController {
                 //Give Permission
             } else {
 
-                echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+                $this->customAlertPage("Sorry You are not authorized to view this page..");
                 exit;
             }
 
@@ -1122,10 +1126,9 @@ class CustomersController extends AppController {
                         }
 
 
-                        //added on 22-08-2017 by Pravin to send SMS/Email
-                        //call custom function from Model with message id
-                        // $this->DmiSmsEmailTemplates->sendMessage(2,$customer_id); // needtoremove
-						
+                        #SMS: Customer Profile Update
+                        $this->DmiSmsEmailTemplates->sendMessage(2,$customer_id);
+					
 						//Added this call to save the user action log on 01-03-2022
 						$this->Customfunctions->saveActionPoint('Profile Update','Success');
                         $message = 'Your details are updated successfully';
@@ -1184,7 +1187,7 @@ class CustomersController extends AppController {
 
         if ($customer_id == null) {
 
-            echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+			$this->customAlertPage("Sorry You are not authorized to view this page..");
             exit;
 
         } else {//this else portion added on 10-07-2017 by Amol to allow only logged in Applicant
@@ -1194,7 +1197,7 @@ class CustomersController extends AppController {
                 //Give Permission
             } else {
 
-                echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+                $this->customAlertPage("Sorry You are not authorized to view this page..");
                 exit;
             }
         }

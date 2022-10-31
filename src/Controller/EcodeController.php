@@ -54,20 +54,34 @@ class EcodeController extends AppController {
 			$this->loadModel('DmiAllTblsDetails');
 			$this->loadModel('DmiPackingTypes');
 			$this->loadModel('DmiReplicaUnitDetails');
-
+			$this->loadModel('DmiCaPpLabMapings'); // added by shankhpal shende on 18/10/2022
 			$message = '';
 			$message_theme = '';
 			$redirect_to = '';
-
 			
-			
+			// added by Amol on 21-10-2022 as per replica controller
+			$attached_lab = $this->DmiCaPpLabMapings->find('list',array('keyField'=>'id','valueField'=>'lab_id','conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id asc'))->toList();
+			//get printing list
+			$attached_pp = $this->DmiCaPpLabMapings->find('list',array('keyField'=>'id','valueField'=>'pp_id','conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id asc'))->toList();     
+				
+			//get array
+			$attached_lab_data = $this->DmiCaPpLabMapings->find('all',array('conditions'=>array('customer_id IS'=>$customer_id, 'lab_id IS NOT NULL'),'order'=>'id asc'))->first();
+			$attached_pp_data = $this->DmiCaPpLabMapings->find('all',array('conditions'=>array('customer_id IS'=>$customer_id, 'pp_id IS NOT NULL'),'order'=>'id asc'))->first();
+		
 			//first check if this packer have any chemist incharge or not, elae show alert
 			$this->loadModel('DmiChemistAllotments');
+			$this->loadModel('CommGrade');
+			
 			$check_che_incharge = $this->DmiChemistAllotments->find('all',array('fields'=>'chemist_id','conditions'=>array('customer_id IS'=>$customer_id,'status'=>1,'incharge'=>'yes')))->first();
-			if(empty($check_che_incharge)){
+			if (empty($check_che_incharge) || empty($attached_pp_data) || empty($attached_lab_data)) {
 				
-				$message = 'Sorry.. You do not have any registered chemist In-charge, Please register your chemist and set as in-charge';
-				$message_theme = 'failed';
+				$message_var = '<b>Note: Before Replica Self Generation following must be done.</b>
+								<br>1. You need to register a Chemist from "Apply For-><b>Chemist Registration</b>" then login with Chemist id, fill forms and submit for approval, Once approved set the chemist incharge.
+								<br>2. You need to attach Printing Press and Laboratory from the menu "Apply For-><b>Attach Printing Press/Lab</b>".
+								<br>3. You need to Apply for the Advance Payment from the menu "Apply For-><b>Advance Payment</b>".';
+				
+				$message = $message_var;
+				$message_theme = 'info';
 				$redirect_to = '../customers/secondary_home';
 				
 			}else{
@@ -83,17 +97,35 @@ class EcodeController extends AppController {
 				$this->set('firm_details',$firm_details);
 				
 				//list of authorized laboratory
-				$lab_list = $this->DmiFirms->find('list',array('keyField'=>'id','valueField'=>'firm_name','conditions'=>array('customer_id like'=>'%'.'/3/'.'%','delete_status IS Null'),'order'=>'firm_name asc'))->toArray();
+				
+				//$lab_list = $this->DmiFirms->find('list',array('keyField'=>'id','valueField'=>'firm_name','conditions'=>array('customer_id like'=>'%'.'/3/'.'%','delete_status IS Null'),'order'=>'firm_name asc'))->toArray();
+				
+				// added by shankhpal shende for display only attached lab on 18/10/2022
+				$lab_list = $this->DmiFirms->find('list',array('keyField'=>'id','valueField'=>'firm_name','conditions'=>array('customer_id like'=>'%'.'/3/'.'%','delete_status IS NULL','id IN'=>$attached_lab),'order'=>'firm_name asc'))->toArray();
+				
 				$this->set('lab_list',$lab_list);
 			
 				//get packer wise commodity list
-				$commodity_ids = explode(',',$firm_details['sub_commodity']);		
+				$commodity_ids = explode(',',(string) $firm_details['sub_commodity']); #For Deprecations
 				$commodity_list = $this->MCommodity->find('list',array('keyField'=>'commodity_code','valueField'=>'commodity_name','conditions'=>array('commodity_code IN'=>$commodity_ids)))->toArray();
-				$grade_list = $this->MGradeDesc->find('list',array('keyField'=>'grade_code','valueField'=>'grade_desc','conditions'=>array('display'=>'Y'),'order'=>'grade_code asc'))->toArray();
+				
+				// commented by shankhpal Shende on 26/10/2022 for [On loading Set Grade for selected commodity]
+				//$grade_list = $this->MGradeDesc->find('list',array('keyField'=>'grade_code','valueField'=>'grade_desc','conditions'=>array('display'=>'Y'),'order'=>'grade_code asc'))->toArray();
+				
+				$get_grade = $this->CommGrade->find('all',array('fields'=>'grade_code','conditions'=>array('commodity_code IN'=>$commodity_ids),'group'=>'grade_code'))->toArray();
+			
+				foreach($get_grade as $val)
+				{
+					$get_grade_desc = $this->MGradeDesc->find('all',array('fields'=>array('grade_code','grade_desc'),'conditions'=>array('grade_code IN'=>$val['grade_code']),'group'=>array('grade_code','grade_desc')))->first();
+					$grade_list[$get_grade_desc['grade_code']] = $get_grade_desc['grade_desc'];
+				}
 				$tbl_list = $this->DmiAllTblsDetails->find('list',array('keyField'=>'id','valueField'=>'tbl_name','conditions'=>array('customer_id IS'=>$customer_id,'delete_status IS Null'),'order'=>'id asc'))->toArray();
 				$packaging_material_list = $this->DmiPackingTypes->find('list',array('keyField'=>'id','valueField'=>'packing_type','conditions'=>array('delete_status IS Null'),'order'=>'id asc'))->toArray();
-				$printers_list = $this->DmiFirms->find('list',array('keyField'=>'id','valueField'=>'firm_name','conditions'=>array('customer_id like'=>'%'.'/2/'.'%','delete_status IS Null'),'order'=>'firm_name asc'))->toArray();
 				
+				// commented by shankhpal shende on 18/10/2022
+				//$printers_list = $this->DmiFirms->find('list',array('keyField'=>'id','valueField'=>'firm_name','conditions'=>array('customer_id like'=>'%'.'/2/'.'%','delete_status IS Null'),'order'=>'firm_name asc'))->toArray();
+				
+				$printers_list = $this->DmiFirms->find('list',array('keyField'=>'id','valueField'=>'firm_name','conditions'=>array('customer_id like'=>'%'.'/2/'.'%','delete_status IS Null','id IN'=>$attached_pp),'order'=>'firm_name asc'))->toArray();
 
 				//fetch last reocrds from table, if empty set default value
 				$dataArray = $this->DmiECodeAllotmentDetails->getSectionData($customer_id);
@@ -165,7 +197,7 @@ class EcodeController extends AppController {
 								'rowspan' 	=> '2'
 							),
 							'10' => array(
-								'col' 		=> 'Total Label Charges(Rs.) (Kg/Ltr)',
+								'col' 		=> 'Total Label Charges(Rs.)',
 								'colspan' 	=> '1',
 								'rowspan' 	=> '2'
 							),
@@ -438,16 +470,16 @@ class EcodeController extends AppController {
 					$postData['ca_unique_no'] = $this->getCaUniqueid($firm_details['id']);
 
 					if($this->DmiECodeAllotmentDetails->saveFormDetails($postData,$firm_details['e_code'],$firm_details['e_code'])==true){
-						
-						//to send sms and email
-						$this->loadModel('DmiSmsEmailTemplates');
-						//$this->DmiSmsEmailTemplates->sendmessage(101,$customer_id); //to send SMS/email to Packer
+					
 						
 						//get chemist in-charge id to send SMS/email
 						$this->loadModel('DmiChemistAllotments');
 						$chemist_incharge = $this->DmiChemistAllotments->find('all',array('fields'=>'chemist_id','conditions'=>array('customer_id IS'=>$customer_id,'status'=>1,'incharge'=>'yes')))->first();
 						$chemist_id = $chemist_incharge['chemist_id'];
-						//$this->DmiSmsEmailTemplates->sendmessage(102,$chemist_id); //to send SMS/email to chemist
+
+						#SMS: Applicant registered for E Code
+						//$this->DmiSmsEmailTemplates->sendmessage(81,$customer_id); #Packer
+						//$this->DmiSmsEmailTemplates->sendmessage(82,$chemist_id); #Chemist
 					
 						$message = 'The application for E-Code Replica is saved successfully. It is now available to Chemist for confirmation';
 						$redirect_to = 'replica_application';					
@@ -497,6 +529,35 @@ class EcodeController extends AppController {
 		}
 		exit;
 					
+	}
+    
+	//to get grade as per commodity for replica serial number, when unit selected in row
+	// added by shankhpal shende on 22/08/2022	
+	public function getCommodityWiseGrade() {
+		$this->autoRender = false;
+		$commodity_id = $_POST['commodity_id'];
+		$this->loadModel('CommGrade');
+		$this->loadModel('MGradeDesc');
+		$get_grade = $this->CommGrade->find('all',array('fields'=>'grade_code','conditions'=>array('commodity_code IS'=>$commodity_id),'group'=>'grade_code'))->toArray();
+
+		foreach($get_grade as $val)
+		{
+			
+			$get_grade_desc = $this->MGradeDesc->find('all',array('fields'=>array('grade_code','grade_desc'),'conditions'=>array('grade_code IN'=>$val['grade_code']),'group'=>array('grade_code','grade_desc')))->first();
+	        $desc[$get_grade_desc['grade_code']] = $get_grade_desc['grade_desc'];
+		
+		}
+		if (!empty($desc)) {
+          
+			$result = array('Grade'=>$desc);
+		
+			
+			echo '~'.json_encode($result).'~';
+		
+		} else {
+			echo '~No Grade~';
+		}
+		exit;
 	}
 
 
@@ -870,6 +931,13 @@ class EcodeController extends AppController {
 		//to eb used this session after successful esigned, to updated transaction table
 		$this->Session->write('overall_total_chrg',$overall_charges);
 		
+		//added by shankhpal shende on 14/10/2022 for implimenting QR code for replica EsignedChemist
+		$data = [$chemist_name,$firm_details['firm_name']];
+		$result_for_qr = $this->Customfunctions->getQrCode($data,'CHM');
+		
+		$this->set('result_for_qr',$result_for_qr);
+		//end for QR code
+		
 		$this->generateReplicaAllotmentPdf();
 		
 	}
@@ -901,7 +969,7 @@ class EcodeController extends AppController {
 		$current_pdf_version = $last_pdf_version+1; //increment last version by 1
 		
 		//creating filename and file path to save
-		$split_customer_id = explode('/',$customer_id);
+		$split_customer_id = explode('/',(string) $customer_id); #For Deprecations
 		$rearranged_id = 'Rep-EC-'.$split_customer_id[0].'-'.$split_customer_id[1].'-'.$split_customer_id[2].'-'.$split_customer_id[3];
 		$filename = $rearranged_id.'('.$current_pdf_version.')'.'.pdf';
 		$file_path = '/writereaddata/DMI/temp/'.$filename;				
@@ -942,7 +1010,7 @@ class EcodeController extends AppController {
 		
 		$cur_total_amt = $this->Session->read('overall_total_chrg');
 		$cur_bal_amt = $last_bal_amt - $cur_total_amt;
-		$split_trans_id =  explode('/',$last_trans_id);//substr($last_trans_id,-4)+1;
+		$split_trans_id =  explode('/',(string) $last_trans_id);//substr($last_trans_id,-4)+1; #For Deprecations
 		$cur_trans_id = $split_trans_id[2]+1;
 		$cur_trans_id = 'ADP/'.date('m').'/'.$cur_trans_id;
 		
@@ -1012,17 +1080,16 @@ class EcodeController extends AppController {
 		$this->Session->delete('overall_total_chrg');
 		$this->Session->delete('replica_for');
 		
-		//to send sms and email
-		$this->loadModel('DmiSmsEmailTemplates');
-		//$this->DmiSmsEmailTemplates->sendMessage(103,$customer_id); //to send SMS/email to Packer
 		
 		//get chemist in-charge id to send SMS/email
 		$this->loadModel('DmiChemistAllotments');
 		$chemist_incharge = $this->DmiChemistAllotments->find('all',array('fields'=>'chemist_id','conditions'=>array('customer_id IS'=>$customer_id,'status'=>1,'incharge'=>'yes')))->first();
 		$chemist_id = $chemist_incharge['chemist_id'];
-		//$this->DmiSmsEmailTemplates->sendmessage(104,$chemist_id); //to send SMS/email to chemist
 		
-		//$this->DmiSmsEmailTemplates->sendmessage(105,$customer_id); //to send SMS/email to RO/SO
+		#SMS: Approve and Allotment of  E Code
+		//$this->DmiSmsEmailTemplates->sendMessage(83,$customer_id); #Packer
+		//$this->DmiSmsEmailTemplates->sendmessage(84,$chemist_id); #Chemist
+		//$this->DmiSmsEmailTemplates->sendmessage(85,$customer_id); #RO/SO
 		
 		//get lab and printer for last allotment to send SMS/email
 		$get_allotments = $this->DmiECodeAllotmentDetails->find('all',array('fields'=>array('authorized_printer','grading_lab'),'conditions'=>array('version IS'=>$current_pdf_version)))->toArray();
@@ -1041,7 +1108,8 @@ class EcodeController extends AppController {
 		$lab_details = $this->DmiFirms->find('all',array('fields'=>'customer_id','conditions'=>array('id IS'=>$lab_id)))->first();
 		$lab_cust_id = $lab_details['customer_id'];
 		
-		//$this->DmiSmsEmailTemplates->sendmessage(106,$lab_cust_id); //to send SMS/email to respective Laboratory
+		#SMS: Approve and Allotment of  E Code
+		$this->DmiSmsEmailTemplates->sendmessage(86,$lab_cust_id); #Laboratory
 		
 		//check if multiple printers selected, to send SMS/email
 		$id='';
@@ -1052,7 +1120,9 @@ class EcodeController extends AppController {
 				//get printer details
 				$printer_details = $this->DmiFirms->find('all',array('fields'=>'customer_id','conditions'=>array('id IS'=>$each)))->first();
 				$printer_cust_id = $printer_details['customer_id'];
-				//$this->DmiSmsEmailTemplates->sendmessage(107,$printer_cust_id); //to send SMS/email to respective printer
+
+				#SMS: Approve and Allotment of  E Code
+				$this->DmiSmsEmailTemplates->sendmessage(87,$printer_cust_id); #Printer
 			}
 			
 			$id = $each;

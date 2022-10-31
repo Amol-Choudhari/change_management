@@ -69,7 +69,7 @@
 		var commodity = $("#commodity_category").val();
 
 		//applied check on 08-06-2021 by Amol, CA export can not apply for BEVO category -> THIS MESSAGE AND CONDITION IS CHANGED FOR THE EXPORT FLOW UPADTES (AKASH [30-08-2022])
-		if($('#certification_type option:selected').val()=='1' && $('#radioSuccess1').is(':checked') && commodity != '14'){
+		if(/*$('#certification_type option:selected').val()=='1' && */$('#radioSuccess1').is(':checked') && commodity != '14'){
 			$.alert('As you have selected the Export option, you can not select category other than <b>Fruits & Vegetable</b>.');
 			return false;
 		}

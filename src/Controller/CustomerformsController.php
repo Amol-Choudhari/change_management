@@ -1,7 +1,5 @@
 <?php
-//session_start();
 namespace App\Controller;
-
 use Cake\Event\EventInterface;
 use Cake\Network\Session\DatabaseSession;
 use App\Network\Email\Email;
@@ -27,7 +25,7 @@ class CustomerformsController extends AppController{
 	
 		if ($this->Session->read('username') == null) {
 					
-			echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->getRequest()->getAttribute('webroot');?>">Please Login</a><?php
+			$this->customAlertPage("Sorry You are not authorized to view this page..");
 			exit();
 					
 		} else {//to allow only logged in Applicant
@@ -46,12 +44,13 @@ class CustomerformsController extends AppController{
 					{						
 						//Give Permission
 					} else {
-						echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->getRequest()->getAttribute('webroot');?>">Please Login</a><?php
+						$this->customAlertPage("Sorry You are not authorized to view this page..");
 						exit();
 					}
 
 				//for secondary Applicant	
 				} else {
+
 					//checking applicant id pattern ex.102/1/PUN/006
 					if (preg_match("/^[0-9]+\/[0-9]+\/[A-Z]+\/[0-9]+$/", $this->Session->read('username'),$matches)==1)
 					{	
@@ -60,21 +59,21 @@ class CustomerformsController extends AppController{
 						if (!empty($check_applicant_is_new)) {
 							//Give Permission
 						} else {
-							echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->getRequest()->getAttribute('webroot');?>">Please Login</a><?php
+							$this->customAlertPage("Sorry You are not authorized to view this page..");
 							exit();
 						}
 						
 					} else {
-						echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->getRequest()->getAttribute('webroot');?>">Please Login</a><?php
+						$this->customAlertPage("Sorry You are not authorized to view this page..");
 						exit();
 					}
 					
 					// To check valid CA applicant (by Pravin 24-07-2017)
-					$valid_applicant_type = explode('/',$this->Session->read('username'));
+					$valid_applicant_type = explode('/',(string) $this->Session->read('username')); #For Deprecations
 					 
 					if ($valid_applicant_type[1]!=1) {
 					 
-					 echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->getRequest()->getAttribute('webroot');?>">Please Login</a><?php
+					$this->customAlertPage("Sorry You are not authorized to view this page..");
 					 exit();
 					 
 					}
@@ -132,7 +131,6 @@ class CustomerformsController extends AppController{
 		$this->loadModel('DmiRoOffices');
 		$this->loadModel('DmiOldApplicationCertificateDetails');
 		$this->loadModel('DmiOldApplicationRenewalDates');
-		$this->loadModel('DmiSmsEmailTemplates');
 		$this->loadModel('DmiFirmHistoryLogs');
 		$this->loadModel('MCommodity');
 		$this->loadModel('DmiSponsoredPrintingFirms');
@@ -188,7 +186,7 @@ class CustomerformsController extends AppController{
 		
 		//taking id of multiple sub commodities	to show names in list	
 		
-		$sub_comm_id = explode(',',$added_firm_field['sub_commodity']);
+		$sub_comm_id = explode(',',(string) $added_firm_field['sub_commodity']); #For Deprecations
 	
 		$sub_commodity_value = $this->MCommodity->find('list',array('valueField'=>'commodity_name', 'conditions'=>array('commodity_code IN'=>$sub_comm_id)))->toList();
 			
@@ -197,7 +195,7 @@ class CustomerformsController extends AppController{
 			
 		//taking id of multiple Packaging Materials types to show names in list	
 		
-		$packaging_type_id = explode(',',$added_firm_field['packaging_materials']);
+		$packaging_type_id = explode(',',(string) $added_firm_field['packaging_materials']); #For Deprecations
 		
 		$packaging_materials_value = $this->DmiPackingTypes->find('list',array('valueField'=>'packing_type', 'conditions'=>array('id IN'=>$packaging_type_id)))->toList();
 			
@@ -360,9 +358,8 @@ class CustomerformsController extends AppController{
 						$message = '& your Email Id is Changed. New password reset link sent on new email id.';
 					}
 					
-					//added on 22-08-2017 by Pravin to send SMS/Email
-					//call custom function from Model with message id
-					//$this->DmiSmsEmailTemplates->sendMessage(4,$firm_id);
+					#SMS: Firm Updated
+					$this->DmiSmsEmailTemplates->sendMessage(4,$firm_id);
 				
 					//Added this call to save the user action log on 01-03-2022
 					$this->Customfunctions->saveActionPoint('Update Firm Details','Success');
@@ -413,7 +410,6 @@ class CustomerformsController extends AppController{
 		$this->loadModel('DmiRoOffices');
 		$this->loadModel('DmiOldApplicationCertificateDetails');
 		$this->loadModel('DmiOldApplicationRenewalDates');
-		$this->loadModel('DmiSmsEmailTemplates');
 		$this->loadModel('DmiFirmHistoryLogs');
 		
 		//$commodities = $this->Dmi_commodity->find('list',array('fields'=>'commodity_name','conditions'=>array('display'=>'Y')));
@@ -508,7 +504,7 @@ class CustomerformsController extends AppController{
 			
 						$customer_primary_id 		= 	$_SESSION['username'];
 						
-						$split_primary_id			= 	explode('/',$customer_primary_id);	
+						$split_primary_id			= 	explode('/',(string) $customer_primary_id); #For Deprecations
 						
 						$splited_primary_id_value	= 	$split_primary_id[0];
 						
@@ -540,7 +536,7 @@ class CustomerformsController extends AppController{
 							
 							$fetch_last_secondary_id = $max_customer_id['customer_id'];
 									
-							$split_secondary_id	= explode('/',$fetch_last_secondary_id);
+							$split_secondary_id	= explode('/',(string) $fetch_last_secondary_id); #For Deprecations
 							
 							$splited_secondary_id_value	= $split_secondary_id[3];
 						
@@ -556,7 +552,7 @@ class CustomerformsController extends AppController{
 			
 						//if certification type is printing press the no commodity	
 						
-						$split_new_generated_id = explode('/',$customer_secondary_id);
+						$split_new_generated_id = explode('/',(string) $customer_secondary_id); #For Deprecations
 							
 						if ($split_new_generated_id[1] != 2) {
 
@@ -601,7 +597,8 @@ class CustomerformsController extends AppController{
 							$sub_commodities_values = ltrim($sub_commodities_values, ',');
 						}
 						
-						if (substr($packaging_materials_values, 0, 1) === ',') {
+						// added the (string) type-cast to fix the PHP8.1.4 Depractions - Akash [06-10-2022]
+						if (substr((string) $packaging_materials_values, 0, 1) === ',') {
 							
 							$packaging_materials_values = ltrim($packaging_materials_values, ',');
 						}
@@ -923,9 +920,8 @@ class CustomerformsController extends AppController{
 							//This function is used to save Application with RO mapping record while new firm added.
 							$this->DmiApplWithRoMappings->saveRecord($customer_secondary_id,$district_ro_id);
 							
-							//added on 22-08-2017 by Pravin to send SMS/Email
-							//call custom function from Model with message id
-							//$this->DmiSmsEmailTemplates->sendMessage(3,$customer_secondary_id);
+							#SMS: Firm Created
+							$this->DmiSmsEmailTemplates->sendMessage(3,$customer_secondary_id);
 							
 							//Added this call to save the user action log on 01-03-2022
 							$this->Customfunctions->saveActionPoint('Add Firm','Success');

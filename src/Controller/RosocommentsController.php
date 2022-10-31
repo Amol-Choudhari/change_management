@@ -26,7 +26,7 @@ use Cake\Utility\Hash;
 				
 			if($this->Session->read('username') == null){
 						
-				echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot');?>users/login_user">Please Login</a><?php
+				$this->customAlertPage("Sorry You are not authorized to view this page..");
 				exit();
 						
 			}
@@ -311,21 +311,21 @@ use Cake\Utility\Hash;
 							
 						if($this->$ro_so_comments_table->save($ro_so_comments_entity)){
 							
-								//update allocation current level
-								$this->$allocation_table->updateAll(array('current_level' => "$comment_to_email_id"),array('customer_id IS' => $customer_id, $grantDateCondition));
-								
-								//Update record in all applications current position table
-								$user_email_id = $comment_to_email_id;										
-								$this->$appl_current_pos_table->currentUserUpdate($customer_id,$user_email_id,$comment_to_level);//call to custom function from model
-								
-								//call custom function from Model with message id
-								//$this->DmiSmsEmailTemplates->sendMessage($sms_id,$customer_id);
-								
-								$this->Session->write('application_mode','view');
-								
-								$message = 'Your Comment is successfully sent';
-								$message_theme = 'success';
-								$redirect_to = '../rosocomments/ro_so_mo_comments';
+							//update allocation current level
+							$this->$allocation_table->updateAll(array('current_level' => "$comment_to_email_id"),array('customer_id IS' => $customer_id, $grantDateCondition));
+							
+							//Update record in all applications current position table
+							$user_email_id = $comment_to_email_id;										
+							$this->$appl_current_pos_table->currentUserUpdate($customer_id,$user_email_id,$comment_to_level);//call to custom function from model
+							
+							//call custom function from Model with message id
+							//$this->DmiSmsEmailTemplates->sendMessage($sms_id,$customer_id);
+							
+							$this->Session->write('application_mode','view');
+							
+							$message = 'Your Comment is successfully sent';
+							$message_theme = 'success';
+							$redirect_to = '../rosocomments/ro_so_mo_comments';
 												
 						}
 					}				
@@ -392,14 +392,16 @@ use Cake\Utility\Hash;
 					
 					// Send to current application postion entry to all_applications_current_position Table	
 					$this->$appl_current_pos_table->currentUserUpdate($customer_id,$user_email_id,$current_level); //call to custom function from model	
-					//$this->DmiSmsEmailTemplates->sendMessage(20,$customer_id);		
+
+					#SMS: RO forwarded to HO
+					$this->DmiSmsEmailTemplates->sendMessage(20,$customer_id);
 					
 					$this->Session->write('application_mode','view');
 					
 					$message = $firm_type_text.' - '.' Approved and Forwarded to HO successfully';
 					$message_theme = 'success';
 					$redirect_to = '../rosocomments/ro_so_mo_comments';
-					//$this->view = '/Element/message_boxes';	
+					
 				}
 				
 			// To grant the current application		

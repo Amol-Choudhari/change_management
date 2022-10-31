@@ -345,7 +345,8 @@ $("#all_count_box").click(function(){
 				(function(p) {
 					
 					//for scrutiny allocation
-					$('#allocate-scrutiny'+p).click(function(){
+				//	$('#allocate-scrutiny'+p).click(function(){
+					$('#common_app_list_table').on('click', '#allocate-scrutiny'+p, function(){
 						
 						var appl_type = $("#appl_type"+p).val();
 						var customer_id = $("#customer_id"+p).val();
@@ -374,7 +375,8 @@ $("#all_count_box").click(function(){
 					
 					
 					//for Inspection allocation
-					$('#allocate-inspection'+p).click(function(){
+				//	$('#allocate-inspection'+p).click(function(){
+					$('#common_app_list_table').on('click', '#allocate-inspection'+p, function(){
 						
 						var appl_type = $("#appl_type"+p).val();
 						var customer_id = $("#customer_id"+p).val();
@@ -413,7 +415,8 @@ $("#all_count_box").click(function(){
 					});
 					
 					
-					$("#change_date"+p).click(function(){
+				//	$("#change_date"+p).click(function(){
+					$('#common_app_list_table').on('click', '#change_date'+p, function(){
 						
 						var appl_type = $("#appl_type"+p).val();
 						var customer_id = $("#customer_id"+p).val();
@@ -451,7 +454,8 @@ $("#all_count_box").click(function(){
 					
 					
 					//for Rejection of Application
-					$('#reject_appln'+p).click(function(){
+				//	$('#reject_appln'+p).click(function(){
+					$('#common_app_list_table').on('click', '#reject_appln'+p, function(){
 						
 						var appl_type = $("#appl_type"+p).val();
 						var customer_id = $("#customer_id"+p).val();

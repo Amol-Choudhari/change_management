@@ -25,11 +25,14 @@
 				}
 
 				echo $this->Form->submit('Final Submit', array('name'=>'final_submit', 'id'=>'final_submit_btn', 'class'=>'dnone btn btn-success float-left ml-2', 'title'=>'Be sure all fields and details are properly filled for application before final submission', 'label'=>false));
+			
+				//Below Condition is added to hide these buttons on the Applicant side - Akash [17-10-2022]
+				if (filter_var(base64_decode($_SESSION['username']), FILTER_VALIDATE_EMAIL)) {
+									
+					echo $this->Form->submit('Forward to '.$forward_to_btn, array('name'=>'accepted_forward', 'id'=>'accepted_forward_btn', 'class'=>'dnone bt btn-info float-left ml-2', 'label'=>false));
 
-				echo $this->Form->submit('Forward to '.$forward_to_btn, array('name'=>'accepted_forward', 'id'=>'accepted_forward_btn', 'class'=>'dnone bt btn-info float-left ml-2', 'label'=>false));
-
-				echo $this->Form->submit('Final Granted', array('name'=>'final_granted', 'id'=>'final_granted_btn', 'class'=>'dnone btn btn-success float-left ml-2', 'label'=>false));
-
+					echo $this->Form->submit('Final Granted', array('name'=>'final_granted', 'id'=>'final_granted_btn', 'class'=>'dnone btn btn-success float-left ml-2', 'label'=>false));
+				}
 				?>
 				<?php if (!empty($nextbtnid)) { ?>
 					<a id="next_btn" href="<?php echo $this->getRequest()->getAttribute('webroot');?>application/section/<?php echo $nextbtnid; ?>" class="btn btn-info float-right ml-2">Next Section <i class="fa fa-arrow-right"></i></a>

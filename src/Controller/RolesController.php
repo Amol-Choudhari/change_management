@@ -764,8 +764,12 @@ class RolesController extends AppController{
 			//check user id in allocation and renewal allocation table and application grant table before remove MO/SMO role from user
 
 			//get flow wise tables
+			$applTypeArray = $this->Session->read('applTypeArray');
+			//Index 1, Now Renewal application will not list except DDO dashboard, any where in list. on 20-10-2022
+			unset($applTypeArray['1']);
+				
 			$this->loadModel('DmiFlowWiseTablesLists');
-			$flow_wise_tables = $this->DmiFlowWiseTablesLists->find('all',array('conditions'=>array('application_type IN'=>$this->Session->read('applTypeArray')),'order'=>'id ASC'))->toArray();
+			$flow_wise_tables = $this->DmiFlowWiseTablesLists->find('all',array('conditions'=>array('application_type IN'=>$applTypeArray),'order'=>'id ASC'))->toArray();
 
 			//for MO work
 			$this->Randomfunctions->checkPendingWorkForMoIo($flow_wise_tables,'MO',$user_id);

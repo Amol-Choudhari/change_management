@@ -238,6 +238,19 @@ class DmiRoOfficesTable extends Table{
 		return $io_user_list;
 	}
 
+
+	public function getOic($id) {
+
+		$DmiUsers = TableRegistry::getTableLocator()->get('DmiUsers');
+		$getEmail = $this->find('all')->select(['ro_email_id'])->where(['id IS' => $id,'delete_status IS NULL'])->first();
+		$get_user_details = $DmiUsers->find('all')->select(['id'])->where(['email IS'=>$getEmail['ro_email_id'],'role' =>'RAL/CAL OIC','status !='=>'disactive'])->first();
+		if(!empty($get_user_details)){
+			$oic = $get_user_details['id'];
+		}else{
+			$oic=null;
+		}
+		return $oic;
+	}
 }
 
 ?>

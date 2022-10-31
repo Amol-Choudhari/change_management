@@ -293,7 +293,7 @@
 									<div class="col-sm-6">
 										<label>Current Comment <span class="cRed">*</span></label>
 										<div class="remark-current">
-										<?php echo $this->Form->control('approval_comment', array('type'=>'textarea', 'id'=>'approval_comment', 'escape'=>false, 'label'=>false, 'class'=>'form-control','required'=>true)); ?>
+											<?php echo $this->Form->control('approval_comment', array('type'=>'textarea', 'id'=>'approval_comment', 'escape'=>false, 'label'=>false, 'class'=>'form-control','required'=>true)); ?>
 										</div>
 										<div id="error_approval_comment"></div>
 									</div>

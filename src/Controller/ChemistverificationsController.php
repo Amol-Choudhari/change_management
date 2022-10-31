@@ -43,7 +43,7 @@ use phpDocumentor\Reflection\Types\This;
 
             if ($this->Session->read('username') == null) {
 
-                echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot');?>users/login_user">Please Login</a><?php
+                $this->customAlertPage("Sorry You are not authorized to view this page..");
                 exit();
 
             } else {
@@ -53,7 +53,7 @@ use phpDocumentor\Reflection\Types\This;
 
                 if (empty($user_access)) {
 
-                    echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+                    $this->customAlertPage("Sorry You are not authorized to view this page..");
 				    exit;
 
                 }

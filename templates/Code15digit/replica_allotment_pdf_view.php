@@ -95,7 +95,7 @@
 				<th>Unit</th>
 				<th>No of Packets</th>
 				<th>Alloted Code</th>
-				<th>Total Charge Rs. (Kg/Ltr)</th>
+				<th>Total Charge (Rs.)</th>
 			</tr>
 			
 			<?php
@@ -196,8 +196,9 @@
     <table align="right" style="margin-top: 20px">
         <tr>
             <td>
-				<strong>Esigned By: <?php echo $chemist_name; ?></strong><br>
-				(Chemist In-charge)<br> <?php echo $firm_details['firm_name']; ?><br>
+				<img width="100" height="100" src="<?php echo $result_for_qr['qr_code_path']; ?>">
+                <p><strong>It is computer generated Replica number and signature is not required</strong></p><br>
+                <!-- QR Code added by shankhpal shende on 14-10/2022 -->
 			</td>
         </tr>
     </table>

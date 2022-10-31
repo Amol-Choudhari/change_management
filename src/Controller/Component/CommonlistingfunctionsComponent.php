@@ -1216,6 +1216,7 @@
 		public function fetchRecords($for_level,$for_status,$sub_tab=null){
 			
 			$conn = ConnectionManager::get('default');
+			$applTypeArray = $this->Session->read('applTypeArray');
 			
 			//this cond. ia only for PAO/DDO user dashboard.
 			if($for_level=='pao'){
@@ -1224,6 +1225,9 @@
 				}elseif($for_status=='approved'){
 					$for_status='confirmed';
 				}
+			}else{
+				//Index 1, Now Renewal application will not list except DDO dashboard, any where in list. on 20-10-2022
+				unset($applTypeArray['1']);
 			}
 			
 			$username = $this->Session->read('username');

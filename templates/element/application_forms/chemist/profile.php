@@ -23,7 +23,6 @@
 					</div>
 				</div>
 			</div>
-
 		</div>
 	</div>
 	<div class="form-horizontal">
@@ -111,7 +110,7 @@
 					</div>
 					<div class="col-md-4">
 						<?php $options = array('male' => 'Male',  'female' => 'Female');
-							  $attributes = array('legend' => false,'name'=>'gender','value' =>$section_form_details[0]['gender']);
+							  $attributes = array('legend' => false,'name'=>'gender','value' =>$section_form_details[0]['gender'],'class'=>'cvOn cvReq');
 							  echo $this->Form->radio('type', $options, $attributes); ?>
 						<div class="err_cv"></div>
 					</div>
@@ -119,7 +118,7 @@
 						<label for="field3"><span>ID (Select any one). <span class="cRed">*</span></span></label>
 					</div>
 					<div class="col-md-2">
-						<?php echo $this->Form->control('document', array('type'=>'select', 'id'=>'document', 'options'=>$document_lists, 'value'=>$section_form_details[0]['document'],'empty'=>'Select Document Type', 'label'=>false, 'class'=>'form-control')); ?>
+						<?php echo $this->Form->control('document', array('type'=>'select', 'id'=>'document', 'options'=>$document_lists, 'value'=>$section_form_details[0]['document'],'empty'=>'Select Document Type', 'label'=>false, 'class'=>'cvOn cvReq form-control')); ?>
 						<div class="err_cv"></div>
 					</div>
 					<div class="col-md-2">
@@ -160,20 +159,20 @@
 						<label for="field3"><span>Profile Photo Upload<span class="cRed">*</span></span>	</label>
 					</div>
 					<div class="col-md-4">
-						<?php echo $this->Form->control('profile_photo',array('type'=>'file', 'id'=>'profile_photo', 'multiple'=>'multiple', 'label'=>false)); ?>
+						<?php echo $this->Form->control('profile_photo',array('type'=>'file', 'id'=>'profile_photo', 'multiple'=>'multiple','class'=>'cvOn cvReq form-control', 'label'=>false)); ?>
 						<?php echo $this->Form->control('profile_photo_hidden',array('type'=>'hidden', 'class'=>'hidden_doc', 'value'=>$section_form_details[0]['profile_photo'], 'label'=>false)); ?>
-						<p class="file_limits">File type: jpg & Max-size:2mb</p>
 						<div class="err_cv"></div>
+						<p class="file_limits">File type: jpg & Max-size:2mb</p>
 					</div>
 
 					<div class="col-md-2">
 						<label for="field3"><span>Signature Upload <span class="cRed">*</span></span>	</label>
 					</div>
 					<div class="col-md-4">
-						<?php echo $this->Form->control('signature_photo',array('type'=>'file', 'id'=>'signature_photo', 'multiple'=>'multiple', 'label'=>false)); ?>
+						<?php echo $this->Form->control('signature_photo',array('type'=>'file', 'id'=>'signature_photo', 'multiple'=>'multiple','class'=>'cvOn cvReq form-control', 'label'=>false)); ?>
 						<?php echo $this->Form->control('signature_photo_hidden',array('type'=>'hidden', 'class'=>'hidden_doc', 'value'=>$section_form_details[0]['signature_photo'], 'label'=>false)); ?>
-						<p class="file_limits">File type: jpg & Max-size:2mb</p>
 						<div class="err_cv"></div>
+						<p class="file_limits">File type: jpg & Max-size:2mb</p>
 					</div>
 				</div>
 			</div>

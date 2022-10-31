@@ -1106,7 +1106,7 @@
 	//created on 07-08-2017 by Amol
 	//This function is used for Premises profile Section
 	function premises_profile_report(){
-		
+	
 		var path = window.location.pathname;
 		var paths = path.split("/");
 		var controller = paths[2];
@@ -1114,7 +1114,8 @@
 		
 		var check_save_reply = $("#check_save_reply").val();
 		var value_return = 'true';
-		
+		var inspection_pics = $("#inspection_pics").val();
+
 		if(action == 'view_premises_profile'){
 
 			if(check_whitespace_validation_textarea(check_save_reply).result == false){
@@ -1133,7 +1134,19 @@
 			$("#directors_details_table").click(function(){$("#error_directors_details").hide().text; $("#directors_details_table").removeClass("is-invalid");});
 			value_return = 'false';
 		}
+
 		
+		if($("#inspection_pics_value").text() == ''){
+						
+			// Change Condition for validation and error message by pravin 10-07-2017
+			if(check_file_upload_validation(inspection_pics).result == false){
+				
+				$("#error_inspection_pics").show().text(check_file_upload_validation(inspection_pics).error_message);
+				$("#inspection_pics").addClass("is-invalid");
+				$("#inspection_pics").click(function(){$("#error_inspection_pics").hide().text; $("#inspection_pics").removeClass("is-invalid");});
+				value_return = 'false';
+			}
+		}
 		
 		if(value_return == 'false'){
 			var msg = "Please check some fields are missing or not proper.";

@@ -24,7 +24,7 @@ class CmsController extends AppController{
 		$username = $this->getRequest()->getSession()->read('username');
 
 		if ($username == null) {
-			echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->getRequest()->getAttribute('webroot');?>users/login_user">Please Login</a><?php
+			$this->customAlertPage("Sorry You are not authorized to view this page..");
 			exit();
 		} else {
 			$this->loadModel('DmiUsers');
@@ -32,7 +32,7 @@ class CmsController extends AppController{
 			$check_user = $this->DmiUsers->find('all',array('conditions'=>array('email IS'=>$this->Session->read('username'))))->first();
 
 			if (empty($check_user)) {
-				echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->getRequest()->getAttribute('webroot');?>users/login_user">Please Login</a><?php
+				$this->customAlertPage("Sorry You are not authorized to view this page..");
 				exit();
 			}
 		}
@@ -47,7 +47,7 @@ class CmsController extends AppController{
 		if (!empty($user_access)) {
 			//proceed
 		} else {
-			echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+			$this->customAlertPage("Sorry You are not authorized to view this page..");
 			exit;
 		}
 	}
@@ -274,7 +274,7 @@ class CmsController extends AppController{
 		if (!empty($user_access)) {
 			//proceed
 		} else {
-			echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+			$this->customAlertPage("Sorry You are not authorized to view this page..");
 			exit;
 		}
 
@@ -458,7 +458,7 @@ class CmsController extends AppController{
 		if (!empty($user_access)) {
 			//proceed
 		} else {
-			echo "Sorry You are not authorized to view this page.."; ?><a href="<?php echo $this->request->getAttribute('webroot'); ?>"> Please Login</a><?php
+			$this->customAlertPage("Sorry You are not authorized to view this page..");
 			exit;
 		}
 

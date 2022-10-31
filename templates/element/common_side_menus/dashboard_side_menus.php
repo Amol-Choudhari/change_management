@@ -357,7 +357,7 @@
 						<li class="nav-item">
 							<a href="<?php echo $this->request->getAttribute('webroot');?>authprocessedoldapp/home" class="nav-link <?php echo $menu_granted_application; ?>">
 							<i class="fas fa-file-invoice nav-icon"></i>
-							<p class="badge">Authorized Old Applications</p>
+							<p class="badge">Backlog Applications Entry</p>
 							</a>
 						</li>
 

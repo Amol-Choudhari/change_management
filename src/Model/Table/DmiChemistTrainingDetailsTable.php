@@ -160,7 +160,7 @@ class DmiChemistTrainingDetailsTable extends Table{
 					'name'		=> 'from_dt',
 					'type'		=> 'text',
 					'valid'		=> 'text',
-					'value'		=> chop($row['from_dt'],"00:00:00"), // added to trim the "H:i:s" from the date on 08-06-2022 By Akash
+					'value'		=> chop((string) $row['from_dt'],"00:00:00"), // added to trim the "H:i:s" from the date on 08-06-2022 By Akash
 					'class'		=> 'cvOn cvNotReq cvDate cvMaxLen',
 					'id'		=> 'from_dt'
 				),
@@ -168,7 +168,7 @@ class DmiChemistTrainingDetailsTable extends Table{
 					'name'		=> 'to_dt',
 					'type'		=> 'text',
 					'valid'		=> 'text',
-					'value'		=> chop($row['to_dt'],"00:00:00"), // added to trim the "H:i:s" from the date on 08-06-2022 By Akash
+					'value'		=> chop((string) $row['to_dt'],"00:00:00"), // added to trim the "H:i:s" from the date on 08-06-2022 By Akash
 					'class'		=> 'cvOn cvNotReq cvDate cvMaxLen',
 					'id'		=> 'to_dt'
 				)
