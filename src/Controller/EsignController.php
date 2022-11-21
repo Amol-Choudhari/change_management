@@ -788,6 +788,10 @@ class EsignController extends AppController {
 		$xmlTool->sign($xml);	
 		$xml_string = $xml->saveXML(); 
 		
+		//save details in logs table
+		$this->saveRequestLog(null,$this->Session->read('username'),$pdf_file_name,$current_level,$time_stamp,$txn_id,$asp_id,
+											$document_hashed,$response_url,null,null);
+		
 		//updated on 31-05-2021 for Form Based Esign method
 		$result_arr = array('xml'=>$xml_string,'txnid'=>$txn_id);
 		
@@ -843,7 +847,7 @@ public function renewalRequestReEsign(){
 			
 			
 			$main_domain_url = 'https://10.153.72.52/DMI/';
-			$url_to_redirect = 	$main_domain_url.'hoinspections/grant_certificates_list';
+			$url_to_redirect = 	$main_domain_url.'hoinspections/redirectGrantedApplications/1';
 			$this->Session->delete('pdf_file_name');
 			$this->Session->delete('re_esigning');
 			$this->Session->delete('re_esign_grant_date');
@@ -854,6 +858,14 @@ public function renewalRequestReEsign(){
 			
 			//Renaming the existing grant pdf file for backup, bcoz after moving it will be repalced
 			rename($destination.$pdf_file_name,$destination.'Old-'.$pdf_file_name);
+			
+			//update pdf path in the grant table as per new structure, applied on 01-11-2022
+			$splitId1 = explode('(',$pdf_file_name);
+			$splitId2 = explode(')',$splitId1[1]);
+			$pdfversion = $splitId2[0];
+			$newpath = '/writereaddata/DMI/certificates/'.$folderName.'/'.$pdf_file_name;
+			$this->LoadModel('DmiGrantCertificatesPdfs');
+			$this->DmiGrantCertificatesPdfs->updateAll(array('pdf_file'=>$newpath),array('pdf_version'=>$pdfversion,'customer_id'=>$customer_id));
 			
 			$objMoveFile = new ApplicationformspdfsController();//creating object for class of another controller
 			$objMoveFile->moveFile($pdf_file_name,$source,$destination);

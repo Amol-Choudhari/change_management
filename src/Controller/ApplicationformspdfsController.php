@@ -91,7 +91,10 @@ class ApplicationformspdfsController extends AppController{
 		
 		}elseif($application_type==6){
 			$pdfPrefix = 'EC-';
+		}elseif($application_type==8){ //added by shankhpal shende on 15-11-2022
+			$pdfPrefix = 'LAB-';
 		}
+
 	
 		$rearranged_id = $pdfPrefix.$split_customer_id[0].'-'.$split_customer_id[1].'-'.$split_customer_id[2].'-'.$split_customer_id[3];				
 	
@@ -1258,8 +1261,8 @@ class ApplicationformspdfsController extends AppController{
 		//fetch commodities by id
 		$selected_commodities = explode(',',(string) $firm_detail['sub_commodity']); #For Deprecations
 		
-																				//commented the 'display'=>'Y' condition on 22-03-2021, as conflicting the delete status flag between LIMS/DMI for listing commodities
-																				//As in LIMS "Fat Spread" under "BEVO" not used and in DMI we use "Fat Spread" under "BEVO". and 'display' is 'N' for the field.
+		//commented the 'display'=>'Y' condition on 22-03-2021, as conflicting the delete status flag between LIMS/DMI for listing commodities
+		//As in LIMS "Fat Spread" under "BEVO" not used and in DMI we use "Fat Spread" under "BEVO". and 'display' is 'N' for the field.
 		$commodities = $this->MCommodity->find('list',array('keyField'=>'commodity_code','valueField'=>'commodity_name', 'conditions'=>array('commodity_code IN'=>$selected_commodities,/*'display'=>'Y'*/)))->toArray();
 		$this->set('commodities',$commodities);	
 		
@@ -2658,7 +2661,86 @@ class ApplicationformspdfsController extends AppController{
 		// $this->redirect(array('controller'=>'customers','action'=>'secondary_home'));	
 		
 	}
+
+
+	// This function added by shankhpal shende for pdf generation of ADP Module on 15-11-2022
+	public function applPdfAdp(){
+
+		$this->loadModel('DmiFirms');
+		$this->loadModel('DmiDistricts');
+		$this->loadModel('DmiStates');
+		$this->loadModel('MCommodity');
+		$this->loadModel('MCommodityCategory');
+		$this->loadModel('DmiLaboratoryOtherDetails');
+		$this->loadModel('DmiAdpPersonDetails');
+		
+		
+		//added on 27-03-2018, to set default value
+		$show_esigned_by = $this->Session->read('with_esign');
+		
+		$this->set('show_esigned_by',$show_esigned_by);		
+
+		$customer_id = $this->Session->read('username');
+		
+		$this->set('customer_id',$customer_id);
+		
+		//get nodal office of the applied CA
+		$this->loadModel('DmiApplWithRoMappings');
+		$get_office = $this->DmiApplWithRoMappings->getOfficeDetails($customer_id);
+		$this->set('get_office',$get_office);
+		
+		$pdf_date = date('d-m-Y');
+		$this->set('pdf_date',$pdf_date);					
+		
+		// data from DMI firm Table					
+		$fetch_customer_firm_data = $this->DmiFirms->find('all',array('conditions'=>array('customer_id IS'=>$customer_id)))->first();
+		$customer_firm_data = $fetch_customer_firm_data;
+		$this->set('customer_firm_data',$customer_firm_data);		
+		
+		// select data from laboratory_other_details table for Lab-Incharge by shankhpal shende
+		$lab_incharge_data = $this->DmiLaboratoryOtherDetails->find('all',array('conditions'=>array('customer_id IS'=>$customer_id)))->first();
+		$this->set('lab_incharge_data',$lab_incharge_data);	
+
+		// to show firm address name form id	
+		$fetch_district_name = $this->DmiDistricts->find('all',array('fields'=>'district_name','conditions'=>array('id IS'=>$customer_firm_data['district'], 'OR'=>array('delete_status IS NULL','delete_status ='=>'no'))))->first();
+		$firm_district_name = $fetch_district_name['district_name'];
+		$this->set('firm_district_name',$firm_district_name);
+		
+		$fetch_state_name = $this->DmiStates->find('all',array('fields'=>'state_name','conditions'=>array('id IS'=>$customer_firm_data['state'], 'OR'=>array('delete_status IS NULL','delete_status ='=>'no'))))->first();
+		$firm_state_name = $fetch_state_name['state_name'];
+		$this->set('firm_state_name',$firm_state_name);		
+		
+		// to show commodities and there selected sub-commodities
+		$sub_commodity_array = explode(',',$customer_firm_data['sub_commodity']);
+
+		$i=0;
+		foreach($sub_commodity_array as $sub_commodity_id)
+		{			
+			$fetch_commodity_id = $this->MCommodity->find('all',array('conditions'=>array('commodity_code IS'=>$sub_commodity_id)))->first();
+			$commodity_id[$i] = $fetch_commodity_id['category_code'];			
+			$sub_commodity_data[$i] =  $fetch_commodity_id;			
+			$i=$i+1;
+		}
+
+		$unique_commodity_id = array_unique($commodity_id);		
+		$commodity_name_list = $this->MCommodityCategory->find('all',array('conditions'=>array('category_code IN'=>$unique_commodity_id, 'display'=>'Y')))->toArray();
+		$this->set('commodity_name_list',$commodity_name_list);		
+		$this->set('sub_commodity_data',$sub_commodity_data);
+		
+		//List of the designated persons to be approved
+		//$designated_person = $this->DmiAdpPersonDetails->find('list',array('keyField'=>'id','valueField'=>'person_name','conditions'=>array('customer_id IS'=>$customer_id, 'OR'=>array('delete_status IS NULL','delete_status ='=>'no'))))->toList();
+		$designated_person = $this->DmiAdpPersonDetails->find('all',array('conditions'=>array('customer_id IS'=>$customer_id, 'OR'=>array('delete_status IS NULL','delete_status ='=>'no'))))->toArray();
+		//pr($designated_person);die;
+		$this->set('designated_person',$designated_person);	
+		
+		$this->generateApplicationPdf('/Applicationformspdfs/applPdfAdp');	
+		
+		// $this->redirect(array('controller'=>'customers','action'=>'secondary_home'));	
+		
+	}
+
 	
+
 	//Report pdf for approval to use E-code
 	public function reportPdfECode(){
 		
@@ -2787,6 +2869,66 @@ class ApplicationformspdfsController extends AppController{
 		$this->redirect(array('controller'=>'hoinspections','action'=>'grantCertificatesList'));
 
 	}
+	
+	
+	//grant certificate for Adp application added by shankhpal shende on 17/11/2022
+	public function grantAdpCertificate(){
+				
+		$this->loadModel('DmiFirms');		
+		$this->loadModel('DmiUsers');
+		$this->loadModel('DmiStates');
+		$this->loadModel('DmiLaboratoryOtherDetails');
+		$this->loadModel('DmiAdpPersonDetails');
+		$this->loadModel('DmiApplWithRoMappings');
+
+		$customer_id = $this->Session->read('customer_id');
+		$this->set('customer_id',$customer_id);
+			
+		// select data from laboratory_other_details table for Lab-Incharge by shankhpal shende
+		$lab_incharge_data = $this->DmiLaboratoryOtherDetails->find('all',array('conditions'=>array('customer_id IS'=>$customer_id)))->first();
+		$this->set('lab_incharge_data',$lab_incharge_data);	
+		//get nodal office of the applied CA
+		
+		$get_office = $this->DmiApplWithRoMappings->getOfficeDetails($customer_id);
+		$this->set('get_office',$get_office);
+        // data from DMI firm Table					
+		$fetch_customer_firm_data = $this->DmiFirms->find('all',array('conditions'=>array('customer_id IS'=>$customer_id)))->first();
+		$customer_firm_data = $fetch_customer_firm_data;
+		$this->set('customer_firm_data',$customer_firm_data);		
+        
+		$designated_person = $this->DmiAdpPersonDetails->find('all',array('conditions'=>array('customer_id IS'=>$customer_id, 'OR'=>array('delete_status IS NULL','delete_status ='=>'no'))))->toArray();
+		$this->set('designated_person',$designated_person);
+		
+		$fetch_state_name = $this->DmiStates->find('all',array('fields'=>'state_name','conditions'=>array('id IS'=>$customer_firm_data['state'], 'OR'=>array('delete_status IS NULL','delete_status ='=>'no'))))->first();
+		$firm_state_name = $fetch_state_name['state_name'];
+		$this->set('firm_state_name',$firm_state_name);		
+
+		$pdf_date = date('d-m-Y');
+		$this->set('pdf_date',$pdf_date);
+
+		// Fetch grant date conditions get latest records.
+		$grantDateCondition = $this->Customfunctions->returnGrantDateCondition($customer_id);
+		
+		
+		// Fetch data from DMI firm Table					
+		$firm_details = $this->DmiFirms->firmDetails($customer_id);
+		$this->set('firm_details',$firm_details);	
+			
+		// to show firm address name form id		
+		$firm_district_name = $this->Mastertablecontent->districtValueById($firm_details['district']);
+		$this->set('firm_district_name',$firm_district_name['district_name']);
+		
+		$firm_state_name = $this->Mastertablecontent->stateValueById($firm_details['state']);
+		$this->set('firm_state_name',$firm_state_name);
+		
+		$this->generateGrantCerticatePdf('/Applicationformspdfs/grantAdpCertificate'); 
+
+		$this->redirect(array('controller'=>'hoinspections','action'=>'grantCertificatesList'));
+
+	}
+
+
+
 	
 	
 }	

@@ -27,7 +27,7 @@
 		echo $this->Html->css('custom-style');
 		echo $this->Html->css('../select2/css/select2.min');
 		echo $this->Html->css('jquery-confirm.min');
-
+		echo $this->Html->css('element/line');
 		// new template css end
 
 		//echo $this->Html->script('jquery.min');

@@ -1577,11 +1577,18 @@ class MastersController extends AppController {
 		// find districts list if "pao_id= null or 1" (Updated Date : 02/05/2018 Pravin)
 		$districts = $this->DmiDistricts->find('all', array('fields'=>array('id','district_name'), 'conditions'=>array('state_id IN'=>$split_state_id,'OR'=>array(array('pao_id'=>1), $current_pao_id, array('pao_id IS NULL')),'delete_status IS NULL'),'order'=>'district_name'))->toList();
 
-		foreach ($districts as $district) { ?>
-
-			<option value="<?php echo $district['id']; ?>">  <?php echo $district['district_name']; ?></option>
-
-		<?php	}
+		foreach ($districts as $district) { 
+		
+			//added below query and condition on 31-10-2022 by Amol, to set "selected" property to option field for already assigned district to that Pao
+			//This is required when user select any other state from state list and district list refreshed with new district, in multi select.
+			$checkIfAlreadyAssigned = $this->DmiDistricts->find('all', array('fields'=>array('pao_id'), 'conditions'=>array('id'=>$district['id'])))->first();
+			
+			if($checkIfAlreadyAssigned['pao_id']==$pao_id) { ?>
+				<option value="<?php echo $district['id']; ?>" selected="selected">  <?php echo $district['district_name']; ?></option>		
+			<?php }else{ ?>
+				<option value="<?php echo $district['id']; ?>">  <?php echo $district['district_name']; ?></option>
+			<?php	}
+		}
 
 		exit;
 	}
@@ -1596,7 +1603,7 @@ class MastersController extends AppController {
 		$added_appl = $this->DmiApplAddedForReEsigns->find('all')->toArray();
 		$this->set('added_appl',$added_appl);
 
-	//	if (null !== ($this->request->getData('add_appl'))) {
+		//	if (null !== ($this->request->getData('add_appl'))) {
 		if ($this->request->is('post')) {//changed on 08-04-2022 to 'post'
 
 			//check if already added for re-esigned
@@ -1628,7 +1635,7 @@ class MastersController extends AppController {
 
 						///Added this call to save the user action log on 21-02-2022 by Akash
 						$this->Customfunctions->saveActionPoint('Re-Esign Request', 'Success');
-						$this->message = 'New Application Added for Re_esign the Renewal Certificate.';
+						$this->message = 'New Application Added for Re-Esign the Renewal Certificate.';
 						$this->message_theme = 'success';
 					}
 

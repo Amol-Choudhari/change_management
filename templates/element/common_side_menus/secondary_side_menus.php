@@ -94,17 +94,27 @@ if ($current_menu == 'menu_register') {
 					  </li>
 					<?php } ?>
 					 <!-- <li class="nav-item">
-						<a href="#" class="nav-link <?php echo $menu_susp; ?>">
+						<a href="#" class="nav-link <?php //echo $menu_susp; ?>">
 						  <i class="far fa-clock nav-icon"></i>
 						  <p>Suspension</p>
 						</a>
 					  </li>
 					  <li class="nav-item">
-						<a href="<?php echo $this->request->getAttribute("webroot");?>application/application-type/3" class="nav-link <?php echo $menu_mod; ?>">
+						<a href="<?php //echo $this->request->getAttribute("webroot");?>application/application-type/3" class="nav-link <?php //echo $menu_mod; ?>">
 						  <i class="fa fa-wrench nav-icon"></i>
 						  <p>Modification</p>
 						</a>
 					  </li> -->
+					  <!-- condition added by Shankhpal Shende on 08/11/2022
+                    When user login with export lab, then it show on left menu. -->
+					<?php if($split_user_name[1] == 3 && $export_unit_status == "yes" && $IsApproved=='yes') {   ?> 
+						<li class="nav-item">
+							<a href="<?php echo $this->request->getAttribute("webroot");?>application/application-type/8" class="nav-link">
+								<i class="nav-icon fas fa-user-check"></i>
+								<p class="nav-icon-p">Approval of Designated Person</p>
+							</a>
+						</li>
+						<?php } ?>		
 					  <?php if($split_user_name[1] == 1 && $IsApproved=='yes') { ?>
 
 							<li class="nav-item">

@@ -397,9 +397,9 @@ class SampleInwardTable extends Table
 		$conn = ConnectionManager::get('default');
 		$q = $conn->execute("SELECT DISTINCT(wf.org_sample_code), si.org_sample_Code,si.commodity_code,si.received_date,wf.tran_date
 		FROM sample_inward si
-		INNER JOIN workflow wf ON si.org_sample_code = wf.org_sample_code AND wf.dst_loc_id = '$ral_lab_no' AND wf.stage_smpl_flag = 'FG'
+		INNER JOIN workflow wf ON si.org_sample_code = wf.org_sample_code AND (wf.dst_loc_id = '$ral_lab_no' OR wf.src_loc_id = '$ral_lab_no')  AND wf.stage_smpl_flag = 'FG'
 		WHERE si.commodity_code = '$commodity' AND wf.tran_date BETWEEN '$from_date' AND '$to_date'");
-		pr($q);
+	
 		$records = $q->fetchAll('assoc');
 
 		$data = array();
@@ -412,4 +412,32 @@ class SampleInwardTable extends Table
 		return $data;
 	}
 
+
+	// getSampleDetails
+	// Description : Return the Details of sample in beahlf of org_sample_code form session.
+	// Author : Akash Thakre
+	// Date : 22-06-2022
+
+    public function getSampleDetails(){
+		
+        $SampleInwardDetails = TableRegistry::getTableLocator()->get('SampleInwardDetails');
+
+		$details = $this->find('all')->where(['org_sample_code' => $_SESSION['org_sample_code']])->first();
+		
+		return $details;
+    }
+
+	// getSampleDetails
+	// Description : Return the Details of sample in beahlf of org_sample_code form session.
+	// Author : Akash Thakre
+	// Date : 22-06-2022
+
+    public function getSampleDetailsByCode($code){
+		
+        $SampleInwardDetails = TableRegistry::getTableLocator()->get('SampleInwardDetails');
+
+		$details = $this->find('all')->where(['org_sample_code' => $code])->first();
+		
+		return $details;
+    }
 }

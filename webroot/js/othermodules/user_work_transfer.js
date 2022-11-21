@@ -70,7 +70,7 @@ $(document).ready(function () {
 
 													title: 'Alert!',
 													columnClass: 'medium',
-													content: 'The New Selected User id "' + allocate_to + '" has been Reallocated on Place of "' + for_user_id + '" for Application id "' + appl_id + '" on ' + rels_from,
+													content: 'The New Selected User id "' + atob(allocate_to) + '" has been Reallocated on Place of "' + atob(for_user_id) + '" for Application id "' + appl_id + '" on ' + rels_from,
 													buttons: {
 														Okay: { 
 															btnClass: 'btn-blue',

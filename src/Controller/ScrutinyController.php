@@ -584,7 +584,8 @@ class ScrutinyController extends AppController{
 
 				//applied this condition for lab export, on 01-09-2017 by Amol
 				//if all Sections scrutinized then stay on same page and show forward to HO btn directly
-				if(($export_unit_status == 'yes' || $NablDate != null) && $firm_type == 3 ){
+				if((($export_unit_status == 'yes' || $NablDate != null) && $firm_type == 3 ) 
+				 	|| ($firm_type == 3 && $export_unit_status == 'yes' && $application_type == 8)){  // # If Block Statement Updated for the Application Type 8 (ADP Flow)- Shankhpal [17/11/2022] #Reason : 
 
 					//this HO level allocation applied for lab export application
 					//on 02-09-2017 by Amol

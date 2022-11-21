@@ -876,3 +876,29 @@ border-radius: .25rem;}
  /*
 .addmt{margin-left: 30px;}
 .inboxwidth{max-width: 30.333%;} */
+
+/* smartphones, iPhone, portrait 480x320 phones 
+Author: Shankhpal Shende
+Purpase: for set layout responsive in mobile device
+date: 04/11/2022
+*/ 
+
+@media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
+    /* Styles */
+    .card{margin: auto;}
+    .col-7{display: contents;}
+    .login-tips{display: contents;}
+    .social-auth-links{margin-bottom: 10px !important;}
+    .registrationform{margin: auto;}
+    #street_address{height: 53px;}
+}
+
+/* added by shankhpal shende on 10/11/2022
+ */
+ .persontbl{
+    width: 200%;
+    overflow: auto;
+ }
+ .scroll{
+    overflow-x: scroll;
+ }

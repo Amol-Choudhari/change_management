@@ -1027,7 +1027,7 @@
 		
 		
 		
-		public function getCommonListingVariables($i,$each_alloc,$for_level,$for_status,$sub_tab=null,$appl_type_id,$appl_type,$list_for_field=null){
+		public function getCommonListingVariables($i,$each_alloc,$for_level,$for_status,$appl_type_id,$appl_type,$list_for_field=null,$sub_tab=null){
 			
 			$creat_array = null;
 			$customer_id = $each_alloc['customer_id'];							
@@ -1305,7 +1305,7 @@
 					
 					foreach($check_payment_submitted_list as $customer_is_list){
 						
-						$list_array = $this->getCommonListingVariables($i,$customer_is_list,$for_level,$for_status,null,$appl_type_id,$appl_type);
+						$list_array = $this->getCommonListingVariables($i,$customer_is_list,$for_level,$for_status,$appl_type_id,$appl_type,null,null);
 					
 						if(!empty($list_array)){
 							$appl_list_array[$i]['appl_type'] = $list_array['appl_type'];
@@ -1333,7 +1333,7 @@
 						}else{ $get_allocations = array(); }		  
 						foreach($get_allocations as $each_alloc){	
 
-							$list_array = $this->getCommonListingVariables($i,$each_alloc,$for_level,$for_status,$sub_tab,$appl_type_id,$appl_type);
+							$list_array = $this->getCommonListingVariables($i,$each_alloc,$for_level,$for_status,$appl_type_id,$appl_type,null,$sub_tab);
 						
 							if(!empty($list_array)){
 								$appl_list_array[$i]['appl_type'] = $list_array['appl_type'];
@@ -1358,7 +1358,7 @@
 						
 						foreach($get_allocations as $each_alloc){
 							
-							$list_array = $this->getCommonListingVariables($i,$each_alloc,$for_level,$for_status,$sub_tab,$appl_type_id,$appl_type);
+							$list_array = $this->getCommonListingVariables($i,$each_alloc,$for_level,$for_status,$appl_type_id,$appl_type,null,$sub_tab);
 						
 							if(!empty($list_array)){
 								$appl_list_array[$i]['appl_type'] = $list_array['appl_type'];
@@ -1384,7 +1384,7 @@
 						
 						foreach($get_allocations as $each_alloc){
 							
-							$list_array = $this->getCommonListingVariables($i,$each_alloc,$for_level,$for_status,$sub_tab,$appl_type_id,$appl_type);
+							$list_array = $this->getCommonListingVariables($i,$each_alloc,$for_level,$for_status,$appl_type_id,$appl_type,null,$sub_tab);
 						
 							if(!empty($list_array)){
 								$appl_list_array[$i]['appl_type'] = $list_array['appl_type'];
@@ -1425,7 +1425,7 @@
 					//Second loop to check application/flow wise allocations	
 					foreach($get_allocations as $each_alloc){
 						
-						$list_array = $this->getCommonListingVariables($i,$each_alloc,$for_level,$for_status,null,$appl_type_id,$appl_type);
+						$list_array = $this->getCommonListingVariables($i,$each_alloc,$for_level,$for_status,$appl_type_id,$appl_type,null,null);
 							
 						if(!empty($list_array)){
 							$appl_list_array[$i]['appl_type'] = $list_array['appl_type'];
@@ -1542,7 +1542,7 @@
 									}
 									
 									
-									//$list_array = $this->getCommonListingVariables($i,$each_alloc,$for_level,$for_status,$sub_tab,$appl_type_id,$appl_type);
+									//$list_array = $this->getCommonListingVariables($i,$each_alloc,$for_level,$for_status,$appl_type_id,$appl_type,null,$sub_tab);
 								
 									//if(!empty($list_array)){
 										$appl_list_array[$i]['appl_type'] = $appl_type;
@@ -1662,7 +1662,7 @@
 										$grantCertificate = null;
 									}
 									
-									//$list_array = $this->getCommonListingVariables($i,$each_alloc,$for_level,$for_status,$sub_tab,$appl_type_id,$appl_type);
+									//$list_array = $this->getCommonListingVariables($i,$each_alloc,$for_level,$for_status,$appl_type_id,$appl_type,null,$sub_tab);
 								
 									//if(!empty($list_array)){
 										$appl_list_array[$i]['appl_type'] = $appl_type;
@@ -1724,7 +1724,7 @@
 										$grantCertificate = null;
 									}
 									
-									//$list_array = $this->getCommonListingVariables($i,$each_alloc,$for_level,$for_status,$sub_tab,$appl_type_id,$appl_type);
+									//$list_array = $this->getCommonListingVariables($i,$each_alloc,$for_level,$for_status,$appl_type_id,$appl_type,null,$sub_tab);
 								
 									//if(!empty($list_array)){
 										$appl_list_array[$i]['appl_type'] = $appl_type;
@@ -1818,7 +1818,7 @@
 							
 							foreach($get_allocations as $each_alloc){
 									
-								$list_array = $this->getCommonListingVariables($i,$each_alloc,$for_level,$for_status,$sub_tab,$appl_type_id,$appl_type);
+								$list_array = $this->getCommonListingVariables($i,$each_alloc,$for_level,$for_status,$appl_type_id,$appl_type,null,$sub_tab);
 						
 								if(!empty($list_array)){
 									$appl_list_array[$i]['appl_type'] = $list_array['appl_type'];
@@ -1854,7 +1854,7 @@
 					
 					foreach($get_allocations as $each_alloc){
 						
-						$list_array = $this->getCommonListingVariables($i,$each_alloc,$for_level,$for_status,$sub_tab,$appl_type_id,$appl_type,$list_for_field);
+						$list_array = $this->getCommonListingVariables($i,$each_alloc,$for_level,$for_status,$appl_type_id,$appl_type,$list_for_field,$sub_tab);
 						
 						if(!empty($list_array)){
 							$appl_list_array[$i]['appl_type'] = $list_array['appl_type'];

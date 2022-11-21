@@ -94,7 +94,7 @@ class AppController extends Controller
 
 	//added on 30-09-201 by Amol
 	//to set application types id array, for which the dashboard will count and list applications.for DMI users
-	$this->Session->write('applTypeArray',array('1','2','3','4','5','6'));
+	$this->Session->write('applTypeArray',array('1','2','3','4','5','6','8'));
 
 	//added on 01-10-2021 by Amol
 	//if not in advance payment mode

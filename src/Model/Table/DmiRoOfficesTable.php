@@ -251,6 +251,15 @@ class DmiRoOfficesTable extends Table{
 		}
 		return $oic;
 	}
+
+	 public function getOfficeDetailsById($id) {
+
+        $officeDetails = $this->find('all',array('conditions'=>array('id IS' => $id, 'OR'=>array('delete_status IS NULL','delete_status'=>'no'))))->first();
+        $office_name = $officeDetails['ro_office'];
+        $office_type = $officeDetails['office_type'];
+        $office_email = $officeDetails['ro_email_id'];
+        return array($office_name,$office_type,$office_email);
+    }
 }
 
 ?>

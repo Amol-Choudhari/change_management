@@ -464,6 +464,10 @@ class CustomfunctionsComponent extends Component {
 		} elseif ($appl_type==6) {
 			
 			$form_type = 'EC';
+			
+		}elseif ($appl_type==8) {  //added by shankhpal shende on 17/11/2022 
+			
+			$form_type = 'ADP';
 		}
 
 		return $form_type;
@@ -3109,7 +3113,16 @@ class CustomfunctionsComponent extends Component {
 				$commodity[$i] = $get_commodity['commodity_name'];
 
 				//get pdf record as per date
-				$DmiReplicaAllotmentPdfs = TableRegistry::getTableLocator()->get('DmiReplicaAllotmentPdfs');
+				//conditional model added on 02-11-2022, to get list for specific alloted pdfs
+				if ($show_list_for=='replica') {
+					$DmiReplicaAllotmentPdfs = TableRegistry::getTableLocator()->get('DmiReplicaAllotmentPdfs');
+					
+				} elseif ($show_list_for=='15Digit') {
+					$DmiReplicaAllotmentPdfs = TableRegistry::getTableLocator()->get('Dmi15DigitAllotmentPdfs');
+					
+				} elseif ($show_list_for=='ECode') {
+					$DmiReplicaAllotmentPdfs = TableRegistry::getTableLocator()->get('DmiECodeAllotmentPdfs');
+				}		
 
 				//mapping pdf record with allotment date, get first records greater than allotment date
 				$get_pdf = $DmiReplicaAllotmentPdfs->find('all',array('fields'=>array('pdf_file','pdf_version'),'conditions'=> array('customer_id IS'=>$each_status['customer_id'],'pdf_version IS'=>$each_status['version']),'order'=>'id asc'))->first();
@@ -3436,9 +3449,7 @@ class CustomfunctionsComponent extends Component {
 
 
 		$DmiCertQrCodes = TableRegistry::getTableLocator()->get('DmiCertQrCodes'); //initialize model in component
-		
-		$resultdata = $DmiCertQrCodes->find('all',array('conditions'=>array('customer_id'=>$customer_id)))->toArray();
-		
+				
 		require_once(ROOT . DS .'vendor' . DS . 'phpqrcode' . DS . 'qrlib.php');
 		
 		if ($type == 'CHM') {
@@ -3478,71 +3489,6 @@ class CustomfunctionsComponent extends Component {
 	}
 
 
-	// Get QR Code for Replica
-	// Author : Shankhpal Shende
-	// Description : This will return QR code for Esigned of Chemist
-	// Date : 19/08/2022
-
-	public function getQrCodeEsignedChemist($tableRowData,$chemist_name,$firm_details){
-
-		if(!empty($tableRowData)){
-			
-			$i=0;
-			$data1 = '';
-			$data2 = '';
-			$data3 = '';
-			foreach($tableRowData as $each){ 
-				$data1 .=  $each['commodity_name'].",";
-				$data2 .= $each['tbl_name'].",";
-				$data3 .= $each['printer_name'].",";
-			} 
-		}
-		
-		$customer_id = $this->Session->read('username');
-		$DmiCertQrCodes = TableRegistry::getTableLocator()->get('DmiCertQrCodes'); //initialize model in component
-		$resultdata = $DmiCertQrCodes->find('all',array('conditions'=>array('customer_id'=>$customer_id)))->toArray();
-		
-		//if(count($resultdata) == 0){
-			
-			require_once(ROOT . DS .'vendor' . DS . 'phpqrcode' . DS . 'qrlib.php');
-	
-			//$data = "MECARD:N:".'Esigned By:'.$result[0].'(Chemist In-charge)'.";EMAIL:".$result[1]['firm_name']." ;";
-			$data = "CA Id :".$firm_details['customer_id']." ## "."Chemist Name :".$chemist_name." ## "."commodity_name :".$data1." ## "."TBL Name: ".$data2." ## "."Printer Name: ".$data3;
-			
-			$qrimgname = rand();
-			
-			$server_imagpath = '/writereaddata/DMI/certificates/QRCodes/'.$qrimgname.".png";
-			
-			$file_path = $_SERVER["DOCUMENT_ROOT"].'/writereaddata/DMI/certificates/QRCodes/'.$qrimgname.".png";
-			
-			$file_name = $file_path;
-			
-			QRcode::png($data,$file_name);
-			
-			
-			$date = date('Y-m-d H:i:s');	
-			
-			$DmiCertificateQrAdd = $DmiCertQrCodes->newEntity(
-													['customer_id'=>$customer_id,
-													'qr_code_path'=>$server_imagpath,
-													'created'=>$date,
-													'modified'=>$date
-													]);
-			
-			$DmiCertQrCodes->save($DmiCertificateQrAdd);
-			
-		//}
-		
-		$qrimage = $DmiCertQrCodes->find('all',array('field'=>'qr_code_path','conditions'=>array('customer_id'=>$customer_id),'order'=>'id desc'))->first();
-		
-		return $qrimage;
-
-	}
-
-
-
-
-
 	//User Type
 	//Description: Returns the user text or type against the username.
 	//@Author : Akash Thakre
@@ -3568,6 +3514,22 @@ class CustomfunctionsComponent extends Component {
 	}
 
 
+	//isApplicationRejected
+	//Description: Returns Yes or No based on the application status junked.
+	//@Author : Akash Thakre
+	//Date : 14-11-2022
+
+	public function isApplicationRejected($username){
+
+		$DmiRejectedApplLogs = TableRegistry::getTableLocator()->get('DmiRejectedApplLogs');
+		$checkApplication = $DmiRejectedApplLogs->find('all')->select(['remark'])->where(['customer_id IS ' => $username])->first();
+		if (!empty($checkApplication)) {
+			$is_rejected = $checkApplication['remark'];
+		}else{
+			$is_rejected = null;
+		}
+		return $is_rejected;
+	}
 
 
 

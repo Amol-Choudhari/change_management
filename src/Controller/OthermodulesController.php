@@ -650,7 +650,7 @@ class OthermodulesController extends AppController{
 			$this->autoRender = false;
 			//get ajax post data
 			$appl_id = $_POST['appl_id'];
-			$appl_type = $_POST['appl_type'];
+			$appl_type = trim($_POST['appl_type']);
 
 			//get firm details
 			$this->loadModel('DmiFirms');
@@ -658,22 +658,23 @@ class OthermodulesController extends AppController{
 			$this->loadModel('DmiFinalSubmits');
 			$this->loadModel('DmiRenewalAllCurrentPositions');
 			$this->loadModel('DmiRenewalFinalSubmits');
-
+			$this->loadModel('DmiApplicationTypes');
+			$this->loadModel('DmiFlowWiseTablesLists');
+			
 			$firm_details = $this->DmiFirms->find('all',array('fields'=>array('firm_name','created'),'conditions'=>array('customer_id'=>$appl_id)))->first();
 			$firm_name = $firm_details['firm_name'];
 
 			//get application type from name
-			$this->loadModel('DmiApplicationTypes');
 			$get_appl_type = $this->DmiApplicationTypes->find('all',array('fields'=>'id','conditions'=>array('application_type'=>$appl_type)))->first();
 			$appl_type_id = $get_appl_type['id'];
 			
 			//get flow wise tables
-			$this->loadModel('DmiFlowWiseTablesLists');
 			$flow_wise_tables = $this->DmiFlowWiseTablesLists->find('all',array('conditions'=>array('application_type'=>$appl_type_id),'order'=>'id ASC'))->first();
 			$current_position_table = $flow_wise_tables['appl_current_pos'];
 			$final_submit_table = $flow_wise_tables['application_form'];
 			
 			//get application applied on
+			$this->loadModel($final_submit_table);
 			$applied_on_details = $this->$final_submit_table->find('all',array('fields'=>'created','conditions'=>array('customer_id'=>$appl_id,'status'=>'pending'),'order'=>'id desc'))->first();
 			$applied_on = $applied_on_details['created'];
 
@@ -692,6 +693,7 @@ class OthermodulesController extends AppController{
 			}
 
 			//get current position details
+			$this->loadModel($current_position_table);
 			$get_pos_details = $this->$current_position_table->find('all',array('fields'=>array('current_level'),'conditions'=>array('customer_id'=>$appl_id),'order'=>'id desc'))->first();
 			$current_level = $get_pos_details['current_level'];
 

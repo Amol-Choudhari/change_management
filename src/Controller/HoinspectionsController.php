@@ -190,6 +190,11 @@ use App\Network\Response\Response;
 			if (($application_type==1 || $application_type==2) && ($form_type=='C' || $form_type=='D')) {
 
 				$section_details['grant_pdf']='grantLaboratoryCertificatePdf';
+
+			//Else If Block Statement is  added for export lab for Application Type -> 8 (ADP Flow) grant pdf by shankhpal shende on 17/11/2022
+			}elseif($application_type==8 && $form_type=='ADP'){ 
+				$section_details['grant_pdf']='grantAdpCertificate';
+
 			}
 			$this->set('section_details',$section_details);
 

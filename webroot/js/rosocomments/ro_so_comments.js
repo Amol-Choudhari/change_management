@@ -87,5 +87,5 @@ if(amaapproved != null){
     }    
 	$('#comment_to').css('display','none');
 	$('#send_comment_btn').css('display','none');
-    $('.remark-current').css('display','none');
+    //$('.remark-current').css('display','none'); //commented on 02-11-2022, as required while RO "Approve"
 }

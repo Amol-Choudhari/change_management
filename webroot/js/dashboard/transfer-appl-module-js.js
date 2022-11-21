@@ -39,6 +39,7 @@
 					var resArray = data.match(/~([^']+)~/)[1];//getting data bitween ~..~ from response
 					resArray = JSON.parse(resArray);//response is JSOn encoded to parse JSON
 
+					$("#appl_id").append("<option value=''>--Select--</option>");//for first option with value blank
 					//taking each customer id from array and creating options tag with value and text.
 					$.each(resArray, function(value, value) {
 						$("#appl_id").append($("<option></option>")

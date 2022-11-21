@@ -1228,9 +1228,9 @@ class Code15digitController extends AppController {
 			$this->DmiAdvPaymentTransactions->save($DmiAdvPaymentTransactionsEntity);	
 			
 			//update allotment status to 1 in replica allotment table
-			$this->loadModel('Dmi15DigitAllotmentPdfs');
+			$this->loadModel('Dmi15DigitAllotmentDetails');
 			$date = date('Y-m-d H:i:s');
-			$this->Dmi15DigitAllotmentPdfs->updateAll(array('allot_status'=>"1",'modified'=>"$date",'version'=>"$current_pdf_version"),array('customer_id IS'=>$customer_id,'allot_status IS Null','delete_status IS Null'));
+			$this->Dmi15DigitAllotmentDetails->updateAll(array('allot_status'=>"1",'modified'=>"$date",'version'=>"$current_pdf_version"),array('customer_id IS'=>$customer_id,'allot_status IS Null','delete_status IS Null'));
 		
 			
 		}
@@ -1292,13 +1292,14 @@ class Code15digitController extends AppController {
 		
 		
 		$message = 'The Replica 15 Digit Code is Approved and Alloted Successfully';
-		$redirect_to = '../chemist/replica_alloted_list';
-		$this->render('/element/message_boxes');
-		
+		$redirect_to = '../chemist/alloted15DigitList';
 		$message_theme = 'success';
+		
+							 
 		$this->set('message_theme',$message_theme);
 		$this->set('message',$message);
 		$this->set('redirect_to',$redirect_to);
+		if (!empty($message)) {$this->render('/element/message_boxes');}
 	}
 
 

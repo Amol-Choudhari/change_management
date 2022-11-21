@@ -947,7 +947,7 @@ class EcodeController extends AppController {
 	public function generateReplicaAllotmentPdf(){
 
 		$this->loadModel('DmiFirms');
-		$this->loadModel('DmiEcodeAllotmentPdfs');
+		$this->loadModel('DmiECodeAllotmentPdfs');
 		
 		//get firm_details from ca_unique_no
 		$ca_unique_no = $this->Session->read('ca_unique_no');
@@ -959,7 +959,7 @@ class EcodeController extends AppController {
 		$pdf_data = $this->render('/Ecode/replica_allotment_pdf_view');	
 
 		//check applicant last record version to increment				
-		$pdf_list = $this->DmiEcodeAllotmentPdfs->find('all', array('fields'=>'pdf_version', 'conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->first();
+		$pdf_list = $this->DmiECodeAllotmentPdfs->find('all', array('fields'=>'pdf_version', 'conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->first();
 		$last_pdf_version = 0;			
 		if(!empty($pdf_list))
 		{										
@@ -987,7 +987,7 @@ class EcodeController extends AppController {
 		
 		$this->viewBuilder()->setLayout('chemist_home_layout');
 		$this->loadModel('DmiFirms');
-		$this->loadModel('DmiEcodeAllotmentPdfs');
+		$this->loadModel('DmiECodeAllotmentPdfs');
 		
 		$message='';
 		$redirect_to='';
@@ -1029,7 +1029,7 @@ class EcodeController extends AppController {
 			$file_path = '/writereaddata/DMI/replica-allotments/'.$filename;
 
 			//check applicant last record version to increment				
-			$pdf_list = $this->DmiEcodeAllotmentPdfs->find('all', array('fields'=>'pdf_version', 'conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->first();
+			$pdf_list = $this->DmiECodeAllotmentPdfs->find('all', array('fields'=>'pdf_version', 'conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->first();
 			$last_pdf_version = 0;			
 			if(!empty($pdf_list))
 			{										
@@ -1038,7 +1038,7 @@ class EcodeController extends AppController {
 
 			$current_pdf_version = $last_pdf_version+1; //increment last version by 1
 			
-			$DmiEcodeAllotmentPdfsEntity = $this->DmiEcodeAllotmentPdfs->newEntity(array(
+			$DmiECodeAllotmentPdfsEntity = $this->DmiECodeAllotmentPdfs->newEntity(array(
 	
 				'customer_id'=>$customer_id,
 				'chemist_id'=>$this->Session->read('username'),
@@ -1050,7 +1050,7 @@ class EcodeController extends AppController {
 			
 			));
 
-			$this->DmiEcodeAllotmentPdfs->save($DmiEcodeAllotmentPdfsEntity);
+			$this->DmiECodeAllotmentPdfs->save($DmiECodeAllotmentPdfsEntity);
 			
 			
 			//save debit entry in transaction table
@@ -1068,9 +1068,9 @@ class EcodeController extends AppController {
 			$this->DmiAdvPaymentTransactions->save($DmiAdvPaymentTransactionsEntity);	
 			
 			//update allotment status to 1 in replica allotment table
-			$this->loadModel('DmiEcodeAllotmentPdfs');
+			$this->loadModel('DmiECodeAllotmentDetails');
 			$date = date('Y-m-d H:i:s');
-			$this->DmiEcodeAllotmentPdfs->updateAll(array('allot_status'=>"1",'modified'=>"$date",'version'=>"$current_pdf_version"),array('customer_id IS'=>$customer_id,'allot_status IS Null','delete_status IS Null'));
+			$this->DmiECodeAllotmentDetails->updateAll(array('allot_status'=>"1",'modified'=>"$date",'version'=>"$current_pdf_version"),array('customer_id IS'=>$customer_id,'allot_status IS Null','delete_status IS Null'));
 		
 			
 		}
@@ -1130,13 +1130,14 @@ class EcodeController extends AppController {
 		
 		
 		$message = 'The E-Code Number is Approved and Alloted Successfully';
-		$redirect_to = '../chemist/replica_alloted_list';
-		$this->render('/element/message_boxes');
-		
+		$redirect_to = '../chemist/allotedECodeList';		
 		$message_theme = 'success';
+		
+							 
 		$this->set('message_theme',$message_theme);
 		$this->set('message',$message);
 		$this->set('redirect_to',$redirect_to);
+		if (!empty($message)) {$this->render('/element/message_boxes');}
 	}
 
 

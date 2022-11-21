@@ -1213,6 +1213,9 @@ class CustomersController extends AppController {
         $this->loadModel('DmiFirms');
         $this->loadModel('DmiDistricts');
 
+        // to get export unit added by shankhpal shende on 08/11/2022 
+        $export_unit_status = $this->Customfunctions->checkApplicantExportUnit($customer_id);
+		$this->set('export_unit_status',$export_unit_status);
 
         //Set Granr Date Condition
         $grantDateCondition = $this->Customfunctions->returnGrantDateCondition($customer_id);
@@ -1328,6 +1331,25 @@ class CustomersController extends AppController {
         $this->loadModel('DmiECodeGrantCertificatePdfs');
         $cert_e_code_pdfs = $this->DmiECodeGrantCertificatePdfs->find('all', array('conditions' => array('customer_id IS' => $customer_id), 'order' => array('id desc')))->toArray();
         $this->set('cert_e_code_pdfs', $cert_e_code_pdfs);
+
+        //To check if the application is rejected or junked and set the custom message - Akash[14-11-2022]
+        $is_appl_rejected =  $this->Customfunctions->isApplicationRejected($customer_id);
+        $this->set('is_appl_rejected',$is_appl_rejected);
+
+                
+        //to show application certificate pdf for Approval of Designated persons
+        //on 18-11-2022 by Shankhpal Shende
+        $this->loadModel('DmiAdpPdfRecords');
+        $appl_adp_pdfs_records = $this->DmiAdpPdfRecords->find('all', array('conditions' => array('customer_id IS' => $customer_id)))->toArray();
+        $this->set('appl_adp_pdfs_records', $appl_adp_pdfs_records);
+
+        //to show Grant certificate pdf for Approval of Designated persons
+        //on 18-11-2022 by Shankhpal Shende
+        $this->loadModel('DmiAdpGrantCertificatePdfs');
+        $appl_adp_grant_pdfs = $this->DmiAdpGrantCertificatePdfs->find('all', array('conditions' => array('customer_id IS' => $customer_id)))->toArray();
+        $this->set('appl_adp_grant_pdfs', $appl_adp_grant_pdfs);
+
+
 		
     }
 

@@ -269,9 +269,7 @@ class CommercialController extends AppController{
 							#SMS: Payment Referred Back
 							$this->DmiSmsEmailTemplates->sendMessageLims(125,$dst_usr_cd,$sample_code); #Source
 							$this->DmiSmsEmailTemplates->sendMessageLims(126,$src_usr_cd,$sample_code); #DDO
-							$this->DmiSmsEmailTemplates->sendMessageLims(141,$oic,$sample_code); 		#OIC
-
-							$this->Customfunctions->saveActionPoint('Payment Referred Back', 'Success');
+							$this->Customfunctions->saveActionPoint('Commercial Sample Payment Referred Back', 'Success');
 
 							$message = 'Payment not confirmed and Referred Back to Applicant';
 							$message_theme = 'success';
@@ -325,17 +323,16 @@ class CommercialController extends AppController{
 
 						if ($this->Workflow->save($workflow_data)) {
 
-							$this->loadModel('DmiSmsEmailTemplates');
+							$office = $this->DmiRoOffices->getOfficeDetailsById($dst_loc_id);
+							$ro_so = $this->DmiUsers->getUserTableId($office[2]);
 
 							#SMS: Payment Confirmed
-							//$this->DmiSmsEmailTemplates->sendMessage(130,$customer_id); #OIC
-							//$this->DmiSmsEmailTemplates->sendMessage(131,$customer_id); #Inward
-							//$this->DmiSmsEmailTemplates->sendMessage(132,$customer_id); #RO
-							//$this->DmiSmsEmailTemplates->sendMessage(133,$customer_id); #DDO
+							$this->DmiSmsEmailTemplates->sendMessageLims(131,$dst_usr_cd,$sample_code); #Source
+							$this->DmiSmsEmailTemplates->sendMessageLims(132,$ro_so,$sample_code); #OIC
 
-							$this->Customfunctions->saveActionPoint('Payment Confirmed', 'Success'); #Action
+							$this->Customfunctions->saveActionPoint('Commercial Sample Payment Confirmed', 'Success'); #Action
 
-							$message = 'Payment Confirmed Successfully';
+							$message = 'Commercial Sample Payment Confirmed Successfully';
 							$message_theme = 'success';
 							$redirect_to = '../commercial_verfication';
 						}

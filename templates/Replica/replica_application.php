@@ -1,6 +1,8 @@
 <?php ?>
 <?php echo $this->Html->css('Replica/replica_application'); ?>
 <?php echo $this->Form->create(null, array('type'=>'file', 'enctype'=>'multipart/form-data', 'id'=>'firm_form')); ?>
+
+
 	<section class="content form-middle form_outer_class" id="form_outer_main">
 		<a href="../customers/secondary_home" class="btn btn-primary">Back</a>
 		<div class="container-fluid form-group wd1080">

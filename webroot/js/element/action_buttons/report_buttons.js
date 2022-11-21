@@ -4,6 +4,7 @@
 	var accept_btn = $('#accept_btn_report_buttons').val();
 	var forward_to_btn = $('#forward_to_btn_report_buttons').val();
 	var application_mode = $('#application_mode').val();
+	var section_form_status = $('#section_form_status').val();//added on 03-11-2022 to show/hide Accepted btn
 
  	if(show_final_report_btn == 'yes'){
 		
@@ -71,3 +72,7 @@
 
 	});
 	
+	//added on 03-11-2022 to show/hide Accepted btn
+	if(section_form_status=='referred_back'){
+		$("#accepted").hide();
+	}

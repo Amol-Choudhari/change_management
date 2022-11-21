@@ -65,6 +65,7 @@
 				}
 
 			}
+
 	?>
 
 	<?php if (!empty($section_details['next_btn'])) { ?>
@@ -83,6 +84,7 @@
 <input type="hidden" id="accept_btn_report_buttons" value="<?php echo $accept_btn; ?>">
 <input type="hidden" id="forward_to_btn_report_buttons" value="<?php echo $forward_to_btn; ?>">
 <input type="hidden" id="application_mode" value="<?php echo $application_mode; ?>">
+<input type="hidden" id="section_form_status" value="<?php echo $section_form_details[0]['form_status']; ?>"><!-- added on 03-11-2022 to show/hide Accepted btn -->
 
 
 <?php echo $this->Html->script('element/action_buttons/report_buttons'); ?>

@@ -7,7 +7,7 @@
 	<?php if (!empty($nextbtnid)) { ?>
 		<a class="btn btn-secondary" id="next_btn" href="<?php echo $this->request->getAttribute('webroot');?><?php echo $controller; ?>/section/<?php echo $nextbtnid; ?>" >Next Section</a>
 	<?php } elseif ($_SESSION['paymentSection'] == 'available') { ?>
-		<a id="next_btn" href="<?php echo $this->request->getAttribute('webroot');?><?php echo $controller; ?>/payment">Next Section</a>
+		<a id="next_btn" class="btn btn-primary" href="<?php echo $this->request->getAttribute('webroot');?><?php echo $controller; ?>/payment">Next Section</a>
 	<?php } ?>
 
 
