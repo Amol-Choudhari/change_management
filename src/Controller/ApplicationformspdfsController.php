@@ -93,6 +93,8 @@ class ApplicationformspdfsController extends AppController{
 			$pdfPrefix = 'EC-';
 		}elseif($application_type==8){ //added by shankhpal shende on 15-11-2022
 			$pdfPrefix = 'ADP-';
+		}elseif($application_type==3){ //added by Amol 13-12-2022 for change/modification
+			$pdfPrefix = 'MOD-';
 		}
 
 	
@@ -252,6 +254,8 @@ class ApplicationformspdfsController extends AppController{
   
 		}elseif($application_type==8){ //added by shankhpal shende on 15-11-2022
 			$pdfPrefix = 'ADP-';
+		}elseif($application_type==3){ //added by Amol 13-12-2022 for change/modification
+			$pdfPrefix = 'MOD-';
 		}
 		
 		$rearranged_id = 'I-'.$pdfPrefix.$split_customer_id[0].'-'.$split_customer_id[1].'-'.$split_customer_id[2].'-'.$split_customer_id[3];
@@ -355,6 +359,8 @@ class ApplicationformspdfsController extends AppController{
   
 		}elseif($application_type==8){ //added by shankhpal shende on 15-11-2022
 			$pdfPrefix = 'ADP-';
+		}elseif($application_type==3){ //added by Amol 13-12-2022 for change/modification
+			$pdfPrefix = 'MOD-';
 		}
 		
 		$rearranged_id = 'G-'.$pdfPrefix.$split_customer_id[0].'-'.$split_customer_id[1].'-'.$split_customer_id[2].'-'.$split_customer_id[3];
@@ -3002,7 +3008,7 @@ class ApplicationformspdfsController extends AppController{
 		$change_premises = '';
 		if (!empty($getChangeDetails['premise_city'])) {
 			$change_district_name = $this->DmiDistricts->find('all',array('fields'=>'district_name','conditions'=>array('id IS'=>$getChangeDetails['premise_city'])))->first();		
-			$change_state_name = $this->DmiStates->find('all',array('fields'=>'state_name','conditions'=>array('id IS'=>$getChangeDetails['premises_state'])))->first();
+			$change_state_name = $this->DmiStates->find('all',array('fields'=>'state_name','conditions'=>array('id IS'=>$getChangeDetails['premise_state'])))->first();
 			$change_premises = $getChangeDetails['premises_street'].', '.$change_district_name['district_name'].', '.$change_state_name['state_name'].', '.$getChangeDetails['premises_pin'];
 		}
 		
@@ -3014,7 +3020,7 @@ class ApplicationformspdfsController extends AppController{
 			$change_lab_type = $change_lab['laboratory_type'];
 			$this->set('change_lab_type',$change_lab_type);
 			
-			$change_premises = $getChangeDetails['premises_street'].', '.$change_district_name['district_name'].', '.$change_state_name['state_name'].', '.$getChangeDetails['premises_pin'];
+			$change_premises = $getChangeDetails['premise_street'].', '.$change_district_name['district_name'].', '.$change_state_name['state_name'].', '.$getChangeDetails['premise_pin'];
 		}
 		
 		//for change commodities

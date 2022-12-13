@@ -1348,6 +1348,19 @@ class CustomersController extends AppController {
         $this->loadModel('DmiAdpGrantCertificatePdfs');
         $appl_adp_grant_pdfs = $this->DmiAdpGrantCertificatePdfs->find('all', array('conditions' => array('customer_id IS' => $customer_id)))->toArray();
         $this->set('appl_adp_grant_pdfs', $appl_adp_grant_pdfs);
+		
+		
+		//to show application pdf for change/modification 
+        //on 13-12-2022 by Amol
+        $this->loadModel('DmiChangePdfRecords');
+        $appl_change_records = $this->DmiChangePdfRecords->find('all', array('conditions' => array('customer_id IS' => $customer_id)))->toArray();
+        $this->set('appl_change_records', $appl_change_records);
+
+        //to show Certificate pdf for change/modification 
+        //on 13-12-2022 by Amol
+        $this->loadModel('DmiChangeGrantCertificatesPdfs');
+        $appl_change_grant_pdfs = $this->DmiChangeGrantCertificatesPdfs->find('all', array('conditions' => array('customer_id IS' => $customer_id)))->toArray();
+        $this->set('appl_change_grant_pdfs', $appl_change_grant_pdfs);
 
 
 		

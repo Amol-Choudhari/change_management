@@ -135,21 +135,32 @@ class ScrutinyController extends AppController{
 			$this->Customfunctions->showOldCertDetailsPopup($customer_id);
 		}
 
-		$changefields = array();
+		/*$changefields = array();
 		if($application_type == 3){
 
 			$this->changeApplication();
 			$changefields = $this->Session->read('changefield');
 		}
-		$this->set('changefields',json_encode($changefields));
+		$this->set('changefields',json_encode($changefields));*/
 
-		$selectedSections = array();
+		/*$selectedSections = array();
 		if($application_type == 3){
 			$this->loadModel('DmiChangeSelectedFields');
 			$selectedfields = $this->DmiChangeSelectedFields->selectedChangeFields();
 			$selectedSections = $selectedfields[2];
 		}
-		$this->set('selectedSections',$selectedSections);
+		$this->set('selectedSections',$selectedSections);*/
+		
+		//commented above code and added below one for change module
+		//on 13-12-2022 by Amol
+		if($application_type == 3){
+			
+			$this->changeApplication();
+			$this->loadModel('DmiChangeSelectedFields');
+			$selectedfields = $this->DmiChangeSelectedFields->selectedChangeFields();
+			$selectedValues = $selectedfields[0];
+			$this->set('selectedValues',$selectedValues);
+		}
 
 		if($oldapplication == 'yes' && $application_type == 1){
 

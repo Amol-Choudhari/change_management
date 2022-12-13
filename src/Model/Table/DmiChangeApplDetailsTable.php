@@ -22,7 +22,7 @@
 			if($form_fields != null){		
 				$form_fields_details = $form_fields;
 				$DmiDistricts = TableRegistry::getTableLocator()->get('DmiDistricts');
-				$DistList = $DmiDistricts->find('list',array('keyField'=>'id','valueField'=>'district_name','conditions'=>array('state_id'=>$form_fields['premise_state'],'delete_status IS NULL'),'order'=>'district_name asc'),)->toArray();
+				$DistList = $DmiDistricts->find('list',array('keyField'=>'id','valueField'=>'district_name','conditions'=>array('state_id IS'=>$form_fields['premise_state'],'delete_status IS NULL'),'order'=>'district_name asc'),)->toArray();
 				$form_fields_details['dist_list'] = $DistList;
 				
 			}else{
@@ -297,6 +297,10 @@
 			$created_date = $CustomersController->Customfunctions->changeDateFormat($forms_data['created']);
 			
 			$firm_type = $CustomersController->Customfunctions->firmType($customer_id);
+			
+			$DmiChangeSelectedFields = TableRegistry::getTableLocator()->get('DmiChangeSelectedFields');
+			$selectedfields = $DmiChangeSelectedFields->selectedChangeFields();
+			$selectedValues = $selectedfields[0];
 			
 			if($reffered_back_to == 'Level3ToApplicant'){
 				

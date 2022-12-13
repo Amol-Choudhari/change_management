@@ -5,12 +5,13 @@
 			foreach($allSectionDetails as $eachSection) {
 				if(!empty($eachSection['progress_bar'])){
 
-						$show = 'no';
-						if($application_type == 3){
+						$show = 'yes';
+						//commented below code on 13-12-2022 by Amol, no need of conditions for change flow
+						/*if($application_type == 3){
 							if(in_array($eachSection['section_id'],$selectedSections)){
 								$show = 'yes';
 							}
-						 }else{  $show = 'yes';  }
+						 }else{  $show = 'yes';  }*/
 
 						 if( $show == 'yes'){
 											?>
