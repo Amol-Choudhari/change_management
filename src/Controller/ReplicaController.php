@@ -1522,7 +1522,7 @@ class ReplicaController extends AppController {
 				$first_rep_no = $rep_detail['serial_no'];
 				
 				//get last alloted number
-				$get_last_rep = $this->DmiReplicaAllotmentDetails->find('all',array('fields'=>'alloted_rep_to','conditions'=>array('customer_id IS'=>$detail_arr['customer_id'],'allot_status'=>1,'delete_status IS Null'),'order'=>'id desc'))->first();
+				$get_last_rep = $this->DmiReplicaAllotmentDetails->find('all',array('fields'=>array('alloted_rep_to','created'),'conditions'=>array('customer_id IS'=>$detail_arr['customer_id'],'allot_status'=>1,'delete_status IS Null'),'order'=>'id desc'))->first();
 				$last_rep = $get_last_rep['alloted_rep_to'];
 				$rep_detail = $this->getReplicaNumberDetails($last_rep);
 				$last_rep_no = $rep_detail['serial_no'];
@@ -1533,9 +1533,8 @@ class ReplicaController extends AppController {
 					
 					$msg .= "<tr><td><b>Firm Name:</b></td><td>".$detail_arr['firm_name']."</td></tr>";
 					$msg .= "<tr><td><b>Certificate No:</b></td><td>".$detail_arr['customer_id']."</td></tr>";
-					$msg .= "<tr><td><b>Year:</b></td><td>".$detail_arr['year']."</td></tr>";
-					$msg .= "<tr><td><b>Month:</b></td><td>".$detail_arr['month']."</td></tr>";
 					$msg .= "<tr><td><b>Serial No:</b></td><td>".$detail_arr['serial_no']."</td></tr>";
+					$msg .= "<tr><td><b>Issued On.</b></td><td>".$get_last_rep['created']."</td></tr>";
 					
 				
 				} else {
@@ -1648,6 +1647,56 @@ class ReplicaController extends AppController {
 		
 	}
 
+
+	//Replica Timeline  (TRIAL)
+	public function replicaTimeline(){
+		$this->viewBuilder()->setLayout('replica_appl_layout');
+		$customer_id = $this->Session->read('username');
+
+		//check if applicant is approved for 15 digit or E-code and redirect to specific controller
+		$this->loadModel('Dmi15DigitGrantCertificatePdfs');
+		$this->loadModel('DmiECodeGrantCertificatePdfs');
+		$checkECodeApproval = $this->DmiECodeGrantCertificatePdfs->find('all',array('fields'=>'id','conditions'=>array('customer_id IS'=>$customer_id)))->first();
+
+		if (!empty($checkECodeApproval)) {
+			$this->redirect('/ecode/replicaApplication');
+		} else {
+			$check15digitApproval = $this->Dmi15DigitGrantCertificatePdfs->find('all',array('fields'=>'id','conditions'=>array('customer_id IS'=>$customer_id)))->first();
+			if (!empty($check15digitApproval)) {
+				$this->redirect('/code15digit/replicaApplication');
+			}
+		}
+
+
+		$this->loadModel('DmiAdvPaymentDetails');
+		$this->loadModel('DmiReplicaAllotmentDetails');
+		$this->loadModel('DmiCaPpLabMapings'); 
+		$this->loadModel('DmiAdvPaymentTransactions');
+		$this->loadModel('DmiChemistAllotments');
+		$this->loadModel('DmiChemistRegistrations');
+
+		
+		$isLabAttached = $this->DmiCaPpLabMapings->find('all',array('conditions'=>array('customer_id IS'=>$customer_id, 'lab_id IS NOT NULL'),'order'=>'id asc'))->first();
+		$this->set('isLabAttached',$isLabAttached);
+
+		$isPpAttached = $this->DmiCaPpLabMapings->find('all',array('conditions'=>array('customer_id IS'=>$customer_id, 'pp_id IS NOT NULL'),'order'=>'id asc'))->first();
+		$this->set('isPpAttached',$isPpAttached);
+
+		$isChemistIncharge = $this->DmiChemistAllotments->find('all',array('fields'=>'chemist_id','conditions'=>array('customer_id IS'=>$customer_id,'status'=>1,'incharge'=>'yes')))->first();
+		$this->set('isChemistIncharge',$isChemistIncharge);
+
+		$advPaymentStatus = $this->DmiAdvPaymentDetails->find('all', array('fields'=>array('id','payment_confirmation'),'conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->first();
+		$this->set('advPaymentStatus',$advPaymentStatus);
+
+		$currentBalance = $this->DmiAdvPaymentTransactions->find('all',array('fields'=>'balance_amount','conditions'=>array('customer_id IS'=>$customer_id),'order'=>array('id desc')))->first();
+		$this->set('currentBalance',$currentBalance);
+
+		$isChemistRegistered = $this->DmiChemistRegistrations->find('all',array('conditions'=>array('created_by IS'=>$customer_id),'order'=>array('id desc')))->first();
+		$this->set('isChemistRegistered',$isChemistRegistered);
+
+		$isChemistApproved = $this->DmiChemistRegistrations->find('all',array('conditions'=>array('created_by IS'=>$customer_id),'order'=>array('id desc')))->first();
+		$this->set('isChemistApproved',$isChemistApproved);
+	}
 
 }
 

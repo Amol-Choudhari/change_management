@@ -151,7 +151,7 @@ class AuthenticationComponent extends Component {
 					$this->forgotPasswordLib($table_name,$emailforrecovery);//for email encoding
 					$sms_message = 'Your password has been expired, The link to reset password is sent on email id '.base64_decode($emailforrecovery).', Please contact the concerned office. AGMARK';
 					$template_id = 1107161673478221041;
-					$this->sendSms($smsmobile,$sms_message,$template_id);
+					//$this->sendSms($smsmobile,$sms_message,$template_id);
 					return 4;
 				}
 
@@ -272,7 +272,7 @@ class AuthenticationComponent extends Component {
 				$to = base64_decode($emailforrecovery);
 			}
 			
-			mail($to,$subject,$txt,$headers, '-f dmiqc@nic.in'); //added new parameter '-f dmiqc@nic.in' on 08-12-2018 by Amol
+			//mail($to,$subject,$txt,$headers, '-f dmiqc@nic.in'); //added new parameter '-f dmiqc@nic.in' on 08-12-2018 by Amol
 
 			//store reset password link keys in DB
 			if ($table=='DmiCustomers' || $table=='DmiFirms') {
@@ -379,8 +379,16 @@ class AuthenticationComponent extends Component {
 						#SMS: Password Set
 						$sms_message = 'Hello '.$passUser.', your password has been set successfully AGMARK.';
 						$template_id = 1107160801193314481;
-						$this->sendSms(base64_decode($mob_no),$sms_message,$template_id);
+						$message_id = 146;
+						$mobile_number = base64_decode($mob_no);
+						$this->sendSms($mobile_number,$sms_message,$template_id,$message_id);
 
+						#Email: Set Password
+						$email_message = 'Hello '.$passUser.', your password has been set successfully AGMARK.';
+						$mail_id = $userDetails['email'];
+						$email_subject = 'Password Changed';
+						$this->sendEmail($mail_id,$email_message,$template_id,$message_id,$email_subject);
+					
 					} else {
 						return 1;
 					}
@@ -606,12 +614,14 @@ class AuthenticationComponent extends Component {
 					}
 
 				} else {
+
 					$this->forgotPasswordLib($table_name,$emailforrecovery);
 					$user_data_query = $table->find('all', array('conditions'=> array('email' => $username)))->first();
 					$mobileno = $user_data_query['phone'];
 					$sms_message = 'Your password has been expired, the link to reset password is sent on email id '.base64_decode($emailforrecovery).'. AGMARK';
 					$template_id = 1107161673473567580;
-					$this->sendSms($mobileno,$sms_message,$template_id);
+					$message_id = 146;
+					$this->sendSms($mobileno,$sms_message,$template_id,$message_id);
 					return 4;
 				}
 
@@ -650,27 +660,30 @@ class AuthenticationComponent extends Component {
 	// #CONTRIBUTER : Akash Thakre (u) (m) 
 	// DATE : 27-04-2021
 
-	public function sendSms($mobileno,$sms_message,$template_id) {
+	public function sendSms($mobileno,$sms_message,$template_id,$message_id) {
 
 		if (!empty($mobileno)) {
 			
+			$DmiSentSmsLogs = TableRegistry::getTableLocator()->get('DmiSentSmsLogs');
 			/*
-			$Dmi_sent_sms_log = ClassRegistry::init('Dmi_sent_sms_log');
-
-			//code to send sms starts here
-			//echo "sendsms.php";
-			// Initialize the sender variable
 			$sender=urlencode("AGMARK");
+			
 			//$uname=urlencode("aqcms.sms");
 			$uname="aqcms.sms";
+			
 			//$pass=urlencode("Y&nF4b#7q");
 			$pass="Y%26nF4b%237q";
+			
 			$send=urlencode("AGMARK");
-			$dest='91'.base64_decode($mobileno);
+			
+			$dest='9860641844';
+			
 			$msg=urlencode($sms_message);
 
 			// Initialize the URL variable
-			$URL="http://smsgw.sms.gov.in/failsafe/HttpLink";
+			//$URL="https://smsgw.sms.gov.in/failsafe/HttpLink";
+			$URL="https://smsgw.sms.gov.in/failsafe/MLink";
+
 			// Create and initialize a new cURL resource
 			$ch = curl_init();
 			// Set URL to URL variable
@@ -678,14 +691,15 @@ class AuthenticationComponent extends Component {
 			// Set URL HTTPS post to 1
 			curl_setopt($ch, CURLOPT_POST, true);
 			// Set URL HTTPS post field values
+			
+			// Set URL HTTPS post field values
+			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
 			$entity_id = '1101424110000041576'; //updated on 18-11-2020
-			$message_id = null;
-			$MID = null;
-			$sent_date = date('Y-m-d H:i:s');
 
 			// if message lenght is greater than 160 character then add one more parameter "concat=1" (Done by pravin 07-03-2018)
-			if (strlen($msg) <= 160 ) {
+			if(strlen($msg) <= 160 ){
 
 				curl_setopt($ch, CURLOPT_POSTFIELDS,"username=$uname&pin=$pass&signature=$send&mnumber=$dest&message=$msg&dlt_entity_id=$entity_id&dlt_template_id=$template_id");
 
@@ -699,14 +713,25 @@ class AuthenticationComponent extends Component {
 			// The URL session is executed and passed to the browser
 			$curl_output =curl_exec($ch);
 			//echo $curl_output;
-
-			//code to send sms ends here
-			//query to save SMS sending logs in DB // added on 11-10-2017
-			$Dmi_sent_sms_log->save_sms_log($message_id, $mobileno, $MID, $sent_date, $msg);
-			*/
-		}
-
 		
+			//code to send sms ends here
+			*/
+
+			//query to save SMS sending logs in DB // added on 11-10-2017
+			$DmiSentSmsLogsEntity = $DmiSentSmsLogs->newEntity(array(
+
+				'message_id'=>$message_id,
+				'destination_list'=>$mobileno,
+				'mid'=>null,
+				'sent_date'=>date('Y-m-d H:i:s'),
+				'message'=>$sms_message,
+				'created'=>date('Y-m-d H:i:s'),
+				'template_id'=>$template_id
+			));
+
+			$DmiSentSmsLogs->save($DmiSentSmsLogsEntity);
+		}
+	
 	}
 
 
@@ -717,10 +742,8 @@ class AuthenticationComponent extends Component {
 	// #CONTRIBUTER : Akash Thakre (u) (m) 
 	// DATE : 27-04-2021
 
-	public function sendEmail($email_message,$email_id,$email_subject){
+	public function sendEmail($email_id,$email_message,$message_id,$template_id,$email_subject){
 				
-
-	
 		//To send Email on list of Email ids.
 		if (!empty($email_id)) {
 
@@ -732,18 +755,16 @@ class AuthenticationComponent extends Component {
 			'Government of India.';
 
 		
-			$to = $email_id;
+			$to = base64_decode($email_id);
 			$subject = $email_subject;
 			$txt = $email_format;
 			$headers = "From: dmiqc@nic.in";
 
-			mail($to,$subject,$txt,$headers);
+			//mail($to,$subject,$txt,$headers);
 		
 		
 			$DmiSentEmailLogs = TableRegistry::getTableLocator()->get('DmiSentEmailLogs');
-			$message_id=null;
-			$template_id=null;
-			
+	
 			//query to save Email sending logs in DB // added on 11-10-2017
 			$DmiSentEmailLogsEntity = $DmiSentEmailLogs->newEntity(array(
 
@@ -757,9 +778,9 @@ class AuthenticationComponent extends Component {
 			));
 
 			$DmiSentEmailLogs->save($DmiSentEmailLogsEntity);
-		
 		}
 	}
+
 
 
 

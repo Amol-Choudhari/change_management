@@ -569,6 +569,104 @@
 
 
 	}
+     
+	// DESIGNATED PERSON TABLE VALIDATION
+	// DESCRIPTION : ----
+	// @AUTHOR : SHANKHPAL SHENDE
+	// DATE : 09/11/2022
+
+	function person_table_validation(){
+        
+		var person_name = $("#person_name").val();
+		var person_qualification = $("#person_qualification").val();
+		var person_qualifi_details_doc = $("#person_qualifi_details_doc").val();
+		var person_experience = $("#person_experience").val();
+		var person_exp_details_doc = $("#person_exp_details_doc").val();
+		var profile_pic = $("#profile_pic").val();
+		var signature_doc = $("#signature_docs").val();
+     
+		var value_return = 'true';
+
+		// Change Condition for validation and error message by pravin 11-07-2017
+		if(check_alpha_character_validation(person_name).result == false){
+
+			$("#error_person_name").show().text(check_alpha_character_validation(person_name).error_message);
+			$("#person_name").addClass("is-invalid");
+			$("#person_name").click(function(){$("#error_person_name").hide().text; $("#person_name").removeClass("is-invalid");});
+			setTimeout(function(){ $("#error_person_name").fadeOut();},5000);
+			value_return = 'false';
+		}
+
+		// Change Condition for validation and error message by pravin 11-07-2017
+		if(check_whitespace_validation_textbox(person_qualification).result == false){
+
+			$("#error_qualification").show().text(check_whitespace_validation_textbox(person_qualification).error_message);
+			$("#person_qualification").addClass("is-invalid");
+			$("#person_qualification").click(function(){$("#error_qualification").hide().text; $("#person_qualification").removeClass("is-invalid");});
+			setTimeout(function(){ $("#error_qualification").fadeOut();},5000);
+			value_return = 'false';
+		}
+
+		// Change Condition for validation and error message by pravin 11-07-2017
+		if(check_number_with_decimal_two_validation(person_experience).result == false){
+
+			$("#error_experience").show().text(check_number_with_decimal_two_validation(person_experience).error_message);
+			$("#person_experience").addClass("is-invalid");
+			$("#person_experience").click(function(){$("#error_experience").hide().text; $("#person_experience").removeClass("is-invalid");});
+			setTimeout(function(){ $("#error_experience").fadeOut();},5000);
+			value_return = 'false';
+		}
+		
+		
+		if($('#person_qualifi_details_doc').text() == "" || $('#person_exp_details_doc').text() == "" || $('#profile_pic').text() == "" || $('#signature_docs').text() == ""){
+             
+			// Change Condition for validation and error message by pravin 11-07-2017
+			if(check_file_upload_validation(person_qualifi_details_doc).result == false){
+
+				$("#error_person_qualifi_details_doc").show().text(check_file_upload_validation(person_qualifi_details_doc).error_message);
+				$("#person_qualifi_details_doc").addClass("is-invalid");
+				$("#person_qualifi_details_doc").click(function(){$("#error_person_qualifi_details_doc").hide().text; $("#person_qualifi_details_doc").removeClass("is-invalid");});
+				setTimeout(function(){ $("#error_person_qualifi_details_doc").fadeOut();},5000);
+				value_return = 'false';
+			}
+			if(check_file_upload_validation(person_exp_details_doc).result == false){
+            
+				$("#error_person_exp_details_doc").show().text(check_file_upload_validation(person_exp_details_doc).error_message);
+				$("#person_exp_details_doc").addClass("is-invalid");
+				$("#person_exp_details_doc").click(function(){$("#error_person_exp_details_doc").hide().text; $("#person_exp_details_doc").removeClass("is-invalid");});
+				setTimeout(function(){ $("#error_person_exp_details_doc").fadeOut();},5000);
+				value_return = 'false';
+			}
+			if(check_file_upload_validation(profile_pic).result == false){
+
+				$("#error_profile_pic").show().text(check_file_upload_validation(profile_pic).error_message);
+				$("#profile_pic").addClass("is-invalid");
+				$("#profile_pic").click(function(){$("#error_profile_pic").hide().text; $("#profile_pic").removeClass("is-invalid");});
+				setTimeout(function(){ $("#error_profile_pic").fadeOut();},5000);
+				value_return = 'false';
+			}
+			if(check_file_upload_validation(signature_doc).result == false){
+
+				$("#error_signature_docs").show().text(check_file_upload_validation(signature_doc).error_message);
+				$("#signature_docs").addClass("is-invalid");
+				$("#signature_docs").click(function(){$("#error_signature_docs").hide().text; $("#signature_docs").removeClass("is-invalid");});
+				setTimeout(function(){ $("#error_signature_docs").fadeOut();},5000);
+				value_return = 'false';
+			}
+
+
+		}
+
+
+		if(value_return == 'false'){
+			return false;
+		}else{
+			exit();
+		}
+
+
+	}
+
 
 
 
@@ -1460,3 +1558,69 @@
 		$('#toast-msg-box-'+theme).fadeIn('slow');
 		$('#toast-msg-box-'+theme).delay(3000).fadeOut('slow');
 	}
+
+
+
+     // CHECK ADD MORE ROWS EMPTY 
+	// DESCRIPTION :  function use for add minimum one row.
+	// @AUTHOR : SHANKHPAL SHENDE
+	// DATE :  15-11-2022
+
+	function person_details_section()
+	{
+		var other_information = $('#other_information').val();
+		var any_other_upload = $('#any_other_upload').val();
+		var value_return = 'true';
+        
+		if($("#person_details_table tr td:first").text() == ''){
+             
+			$("#error_person").show().text("Sorry. There should be minimum 1 person details added.");
+			setTimeout(function(){ $("#error_person").fadeOut();},8000);
+			$("#person_details_table").addClass("is-invalid");
+			$("#person_details_table").click(function(){$("#error_person").hide().text; $("#person_details_table").removeClass("is-invalid");});
+			value_return = 'false';
+		}
+		// Change Condition for validation and error message by shankhpal 15-11-2022
+		if(check_whitespace_validation_textarea(other_information).result == false){
+				
+			$("#error_other_information").show().text(check_whitespace_validation_textarea(other_information).error_message);
+			setTimeout(function(){ $("#error_other_information").fadeOut();},8000);
+			$("#other_information").addClass("is-invalid");
+			$("#other_information").click(function(){$("#error_other_information").hide().text; $("#other_information").removeClass("is-invalid");});
+			value_return = 'false';
+		}
+		if($("#other_docs_value").text() == ''){
+							
+			// Change Condition for validation and error message by pravin 11-07-2017
+			if(check_file_upload_validation(any_other_upload).result == false){
+				
+				$("#error_any_other_upload").show().text(check_file_upload_validation(any_other_upload).error_message);
+				setTimeout(function(){ $("#error_any_other_upload").fadeOut();},8000);
+				$("#any_other_upload").addClass("is-invalid");
+				$("#any_other_upload").click(function(){$("#error_any_other_upload").hide().text; $("#any_other_upload").removeClass("is-invalid");});
+				value_return = 'false';
+			}
+		}
+		
+		// if($('#other_docs_value').text() != ""){
+			
+		// 	// Change Condition for validation and error message by pravin 11-07-2017
+		// 	if(check_file_upload_validation(chemists_employed_docs).result == false){
+
+		// 		$("#error_chemists_employed_docs").show().text(check_file_upload_validation(chemists_employed_docs).error_message);
+		// 		$("#chemists_employed_docs").addClass("is-invalid");
+		// 		$("#chemists_employed_docs").click(function(){$("#error_chemists_employed_docs").hide().text; $("#chemists_employed_docs").removeClass("is-invalid");});
+		// 		value_return = 'false';
+		// 	}
+		// }
+
+        if(value_return == 'false'){
+			var msg = "Please check some fields are missing or not proper.";
+			renderToast('error', msg);
+			return false;
+		}else{
+			exit();
+		}
+		
+	}
+	

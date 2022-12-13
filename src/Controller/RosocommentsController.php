@@ -446,8 +446,8 @@ use Cake\Utility\Hash;
 
 			$this->loadModel("DmiUserRoles");
 			$this->loadModel("DmiApplWithRoMappings");
-			$application_type = $this->Session->read('application_type');
-			$form_type = $this->Customfunctions->checkApplicantFormType($customer_id);	
+			$application_type = 1; //intentionally set to 1, to get form type like A,B,C,D,E,F and not like FDC,EC,SOC etc. on 06-12-2022
+			$form_type = $this->Customfunctions->checkApplicantFormType($customer_id,$application_type);
 			$office_type = $this->Customfunctions->getApplDistrictOffice($customer_id);	
 					
 			$find_ro_email_id = $this->DmiApplWithRoMappings->getOfficeDetails($customer_id);

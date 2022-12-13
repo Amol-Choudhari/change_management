@@ -92,7 +92,7 @@ class ApplicationformspdfsController extends AppController{
 		}elseif($application_type==6){
 			$pdfPrefix = 'EC-';
 		}elseif($application_type==8){ //added by shankhpal shende on 15-11-2022
-			$pdfPrefix = 'LAB-';
+			$pdfPrefix = 'ADP-';
 		}
 
 	
@@ -249,6 +249,9 @@ class ApplicationformspdfsController extends AppController{
 		
 		}elseif($application_type==6){
 			$pdfPrefix = 'EC-';
+  
+		}elseif($application_type==8){ //added by shankhpal shende on 15-11-2022
+			$pdfPrefix = 'ADP-';
 		}
 		
 		$rearranged_id = 'I-'.$pdfPrefix.$split_customer_id[0].'-'.$split_customer_id[1].'-'.$split_customer_id[2].'-'.$split_customer_id[3];
@@ -349,6 +352,9 @@ class ApplicationformspdfsController extends AppController{
 		
 		}elseif($application_type==6){
 			$pdfPrefix = 'EC-';
+  
+		}elseif($application_type==8){ //added by shankhpal shende on 15-11-2022
+			$pdfPrefix = 'ADP-';
 		}
 		
 		$rearranged_id = 'G-'.$pdfPrefix.$split_customer_id[0].'-'.$split_customer_id[1].'-'.$split_customer_id[2].'-'.$split_customer_id[3];
@@ -1996,6 +2002,9 @@ class ApplicationformspdfsController extends AppController{
 		$customer_id = $this->Session->read('customer_id');
 		$this->set('customer_id',$customer_id);
 		
+		$form_type = $this->Customfunctions->checkApplicantFormType($customer_id);
+		$this->set('form_type',$form_type);
+		
 		// Fetch grant date conditions get latest records.
 		$grantDateCondition = $this->Customfunctions->returnGrantDateCondition($customer_id);
 			
@@ -2587,8 +2596,20 @@ class ApplicationformspdfsController extends AppController{
 		}		
 		$this->set('commodity_names',$commodity_names);
 		
-		//This below line is added for the QR Code genration on Shankhpal [16-08-2022]	
-		$result_for_qr = $this->Customfunctions->getQrCode($customer_id,'FDC');
+		//This below line is added for the QR Code genration on Shankhpal [16-08-2022]
+		$this->loadModel('DmiChemistRegistrations');
+		$chemistDetails = $this->DmiChemistRegistrations->find('all',array('conditions'=>array('created_by IS'=>$customer_id,'delete_status IS NULL')))->first();
+		$chemist_fname = $chemistDetails['chemist_fname'];
+		$ca_name = $firm_details['firm_name']; // get firm name
+		
+		//get nodal office of the applied CA
+		$this->loadModel('DmiApplWithRoMappings');
+		$get_office = $this->DmiApplWithRoMappings->getOfficeDetails($customer_id);
+		$region = $get_office['ro_office'];
+		
+		$qr_data = [$customer_id, $ca_name, $chemist_fname,$pdf_date, $region]; // this array send required data to customeFunctionComponent for print qr code
+		
+		$result_for_qr = $this->Customfunctions->getQrCode($qr_data,'FDC');
 		$this->set('result_for_qr',$result_for_qr);
 		
 		$this->generateGrantCerticatePdf('/Applicationformspdfs/grant15DigitCertificate'); 
@@ -2860,8 +2881,19 @@ class ApplicationformspdfsController extends AppController{
 		$this->set('eCode',$eCode);
 		
 		//This below line is added for the QR Code genration on Shankhpal [16-08-2022]	
-		$data = [$customer_id,$eCode];
-		$result_for_qr = $this->Customfunctions->getQrCode($data,'ECode');
+		$this->loadModel('DmiChemistRegistrations');
+		$chemistDetails = $this->DmiChemistRegistrations->find('all',array('conditions'=>array('created_by IS'=>$customer_id,'delete_status IS NULL')))->first();
+		$chemist_fname = $chemistDetails['chemist_fname'];
+		$ca_name = $firm_details['firm_name']; // get firm name
+
+		//get nodal office of the applied CA
+		$this->loadModel('DmiApplWithRoMappings');
+		$get_office = $this->DmiApplWithRoMappings->getOfficeDetails($customer_id);
+		$region = $get_office['ro_office'];
+
+		// $data = [$customer_id,$eCode];
+		$qr_data = [$customer_id, $ca_name, $chemist_fname,$pdf_date, $region]; // this array send required data to customeFunctionComponent for print qr code
+		$result_for_qr = $this->Customfunctions->getQrCode($qr_data,'ECode');
 		$this->set('result_for_qr',$result_for_qr);
 		
 		$this->generateGrantCerticatePdf('/Applicationformspdfs/grantECodeCertificate'); 
@@ -2927,6 +2959,133 @@ class ApplicationformspdfsController extends AppController{
 
 	}
 
+
+	//Created new function and pdf view for the Change/modification application
+	//on 09-12-2022 by Amol
+	public function changeApplPdf(){
+
+		$this->loadModel('DmiFirms');
+		$this->loadModel('DmiDistricts');
+		$this->loadModel('DmiStates');
+		$this->loadModel('MCommodity');
+		$this->loadModel('MCommodityCategory');	
+		
+		//added on 27-03-2018, to set default value
+		$show_esigned_by = $this->Session->read('with_esign');		
+		$this->set('show_esigned_by',$show_esigned_by);		
+		$customer_id = $this->Session->read('username');		
+		$this->set('customer_id',$customer_id);
+		
+		$this->loadModel('DmiChangeSelectedFields');
+		$this->loadModel('DmiChangeApplDetails');
+		$this->loadModel('DmiChangeFieldLists');
+		$this->loadModel('DmiChangeAllTblsDetails');
+		$this->loadModel('DmiChangeDirectorsDetails');
+		
+		//check selected fields
+		$selectedfields = $this->DmiChangeSelectedFields->selectedChangeFields();
+		$selectedValues = $selectedfields[0];
+		
+		//get selected fields name
+		$getFieldName = $this->DmiChangeFieldLists->find('all',array('conditions'=>array('field_id IN'=>$selectedValues,'form_type'=>'common'),'order'=>'field_id asc'))->toArray();
+		
+		//get new change details
+		$getChangeDetails = $this->DmiChangeApplDetails->find('all',array('conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->first();
+		
+		//get change tbl details
+		$changeTblDetails = $this->DmiChangeAllTblsDetails->find('all',array('fields'=>'tbl_name','conditions'=>array('customer_id'=>$customer_id,'delete_status IS NULL','status IS NULL')))->toArray();
+		
+		//get Director details
+		$changeDirectorDetails = $this->DmiChangeDirectorsDetails->find('all',array('fields'=>array('d_name','d_address'),'conditions'=>array('customer_id'=>$customer_id,'delete_status IS NULL','status IS NULL')))->toArray();
+		
+		// to show changed premises details	
+		$change_premises = '';
+		if (!empty($getChangeDetails['premise_city'])) {
+			$change_district_name = $this->DmiDistricts->find('all',array('fields'=>'district_name','conditions'=>array('id IS'=>$getChangeDetails['premise_city'])))->first();		
+			$change_state_name = $this->DmiStates->find('all',array('fields'=>'state_name','conditions'=>array('id IS'=>$getChangeDetails['premises_state'])))->first();
+			$change_premises = $getChangeDetails['premises_street'].', '.$change_district_name['district_name'].', '.$change_state_name['state_name'].', '.$getChangeDetails['premises_pin'];
+		}
+		
+		//for changed lab details
+		if (!empty($getChangeDetails['lab_type'])) {
+
+			$this->loadModel('DmiLaboratoryTypes');
+			$change_lab = $this->DmiLaboratoryTypes->find('all',array('fields'=>'laboratory_type','conditions'=>array('id IS'=>$getChangeDetails['lab_type'])))->first();
+			$change_lab_type = $change_lab['laboratory_type'];
+			$this->set('change_lab_type',$change_lab_type);
+			
+			$change_premises = $getChangeDetails['premises_street'].', '.$change_district_name['district_name'].', '.$change_state_name['state_name'].', '.$getChangeDetails['premises_pin'];
+		}
+		
+		//for change commodities
+		if (!empty($getChangeDetails['comm_category'])) {
+			$change_commodity_array = explode(',',(string) $getChangeDetails['commodity']); #For Deprecations
+			
+			$this->loadModel('MCommodity');
+			$this->loadModel('MCommodityCategory');
+			$i=0;
+			foreach ($change_commodity_array as $sub_commodity_id)
+			{
+				$fetch_commodity_id = $this->MCommodity->find('all',array('conditions'=>array('commodity_code IS'=>$sub_commodity_id)))->first();
+				$commodity_id[$i] = $fetch_commodity_id['category_code'];
+				$change_sub_commodity_data[$i] =  $fetch_commodity_id;
+				$i=$i+1;
+			}
+
+			$unique_commodity_id = array_unique($commodity_id);
+
+			$change_commodity_name_list = $this->MCommodityCategory->find('all',array('conditions'=>array('category_code IN'=>$unique_commodity_id, 'display'=>'Y')))->toArray();
+
+			$this->set('change_commodity_name_list',$change_commodity_name_list);
+			$this->set('change_sub_commodity_data',$change_sub_commodity_data);
+		}
+		
+		$this->set(compact('selectedValues','getFieldName','getChangeDetails','changeTblDetails','changeDirectorDetails','change_premises'));
+		
+		//get nodal office of the applied CA
+		$this->loadModel('DmiApplWithRoMappings');
+		$get_office = $this->DmiApplWithRoMappings->getOfficeDetails($customer_id);
+		$this->set('get_office',$get_office);
+		
+		$pdf_date = date('d-m-Y');
+		$this->set('pdf_date',$pdf_date);					
+		
+		// data from DMI firm Table					
+		$fetch_customer_firm_data = $this->DmiFirms->find('all',array('conditions'=>array('customer_id IS'=>$customer_id)))->first();
+		$customer_firm_data = $fetch_customer_firm_data;
+		$this->set('customer_firm_data',$customer_firm_data);		
+
+		// to show firm address name form id	
+		$fetch_district_name = $this->DmiDistricts->find('all',array('fields'=>'district_name','conditions'=>array('id IS'=>$customer_firm_data['district'], 'OR'=>array('delete_status IS NULL','delete_status ='=>'no'))))->first();
+		$firm_district_name = $fetch_district_name['district_name'];
+		$this->set('firm_district_name',$firm_district_name);
+		
+		$fetch_state_name = $this->DmiStates->find('all',array('fields'=>'state_name','conditions'=>array('id IS'=>$customer_firm_data['state'], 'OR'=>array('delete_status IS NULL','delete_status ='=>'no'))))->first();
+		$firm_state_name = $fetch_state_name['state_name'];
+		$this->set('firm_state_name',$firm_state_name);		
+		
+		// to show commodities and there selected sub-commodities
+		$sub_commodity_array = explode(',',$customer_firm_data['sub_commodity']);
+
+		$i=0;
+		foreach($sub_commodity_array as $sub_commodity_id)
+		{			
+			$fetch_commodity_id = $this->MCommodity->find('all',array('conditions'=>array('commodity_code IS'=>$sub_commodity_id)))->first();
+			$commodity_id[$i] = $fetch_commodity_id['category_code'];			
+			$sub_commodity_data[$i] =  $fetch_commodity_id;			
+			$i=$i+1;
+		}
+
+		$unique_commodity_id = array_unique($commodity_id);		
+		$commodity_name_list = $this->MCommodityCategory->find('all',array('conditions'=>array('category_code IN'=>$unique_commodity_id, 'display'=>'Y')))->toArray();
+		$this->set('commodity_name_list',$commodity_name_list);		
+		$this->set('sub_commodity_data',$sub_commodity_data);
+		
+		$this->generateApplicationPdf('/Applicationformspdfs/changeApplPdf');	
+		
+		// $this->redirect(array('controller'=>'customers','action'=>'secondary_home'));	
+		
+	}
 
 
 	

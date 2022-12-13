@@ -102,11 +102,17 @@ class ApplicationController extends AppController{
 		$final_submit_details = $this->Customfunctions->finalSubmitDetails($customer_id,'application_form');
 		$this->set('final_submit_details',$final_submit_details);
 
-		$changeFieldsList = $this->DmiChangeFieldLists->find('list',array('keyField'=>'field_id','valueField'=>'change_field','conditions'=>array('form_type IS'=>$form_type),'order'=>'field_id'))->toArray();
+		$changeFieldsList = $this->DmiChangeFieldLists->find('list',array('keyField'=>'field_id','valueField'=>'change_field','conditions'=>array('form_type IS'=>'common'),'order'=>'field_id'))->toArray();
 		$this->set('changeFieldsList',$changeFieldsList);
 
 		$selectedValues = $this->DmiChangeSelectedFields->selectedChangeFields();
 		$this->set('selectedValues',$selectedValues[0]);
+		
+		
+		//to solve undefined variable issue
+		$this->set('IsApproved','');
+		$this->set('show_button','');
+		$this->set('show_renewal_button','');
 
 		if ($this->request->is('post')) {
 
@@ -125,6 +131,7 @@ class ApplicationController extends AppController{
 			$this->Session->write('paymentforchange',$fieldResult[1]);
 			$this->redirect('/application/application-for-certificate');
 		}
+		
 	}
 	
 	
@@ -229,11 +236,11 @@ class ApplicationController extends AppController{
 		$this->Customfunctions->showOldCertDetailsPopup($customer_id);
 
 
-		if ($application_type == 3) {
-			$DmiAllDirectorsDetails = TableRegistry::getTableLocator()->get('DmiChangeDirectorsDetails');
-		} else {
+	//	if ($application_type == 3) {
+	//		$DmiAllDirectorsDetails = TableRegistry::getTableLocator()->get('DmiChangeDirectorsDetails');
+	//	} else {
 			$DmiAllDirectorsDetails = TableRegistry::getTableLocator()->get('DmiAllDirectorsDetails');
-		}
+	//	}
 
 		$added_directors_details = $DmiAllDirectorsDetails->allDirectorsDetail($customer_id);
 		$this->set('added_directors_details',$added_directors_details);
@@ -283,18 +290,29 @@ class ApplicationController extends AppController{
 		// get current section all details
 		$this->loadModel('DmiCommonScrutinyFlowDetails');
 
-		// pravin bhakare 28-09-2021
+		//For Chemist Approval (CHM) Flow HAVING Application Type [4] - Pravin [28-09-2021]
 		if ($application_type == 4) {
 
 			$customer_id = $chemist_id;
 			$form_type='CHM';
 		}
 
-		// added for ADP flow as application_type is 8 by shankhpal on 09/11/2022
+		//For Approval of Designated Person (ADP) Flow HAVING Application Type [8] - Shankhpal [09/11/2022]
 		if ($application_type == 8) {
 			
 			$form_type='ADP';
+			$this->loadModel('DmiAdpGrantCertificatePdfs');  
+			//added for checking if application is Granted on 24/11/2022
+			$checkIfgrant = $this->DmiAdpGrantCertificatePdfs->find('all',array('conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id DESC'))->first();
+			$this->set('checkIfgrant',$checkIfgrant);
 		}
+
+		//For Surrender of Certificate (SOC) Flow HAVING Application Type [9] - Akash [24-11-2022]
+		if ($application_type == 9) {
+	
+			$form_type='SOC';
+		}
+
 		$this->set('form_type',$form_type);
 		
 		$firm_type_text = $this->Customfunctions->firmTypeText($customer_id);
@@ -351,25 +369,36 @@ class ApplicationController extends AppController{
 
 		$this->set('final_submit_status',$final_submit_status);
 
-
+		//below code commented by Amol on 06-07-2022
 		/* For change module*/
-		$fstatuses = array('pending','replied','approved');
+		/*$fstatuses = array('pending','replied','approved');
 		if ($application_type == 3 && in_array($final_submit_status,$fstatuses) == false) {
 			$changefields = $this->Session->read('changefield');
 		} else {
 			$changefields = array();
-		}
-		
+		}*/
+		$changefields = array();
+   
 		$this->set('changefields',json_encode($changefields));
 
 		$selectedSections = array();
+		$change_details = array();
+		$last_details = array();
 		if ($application_type == 3) {
 			$this->loadModel('DmiChangeSelectedFields');
+			$this->loadModel('DmiChangeApplDetails');
 			$selectedfields = $this->DmiChangeSelectedFields->selectedChangeFields();
-			$selectedSections = $selectedfields[2];
+			//$selectedSections = $selectedfields[2];
+			$selectedValues = $selectedfields[0];
+
 		}
 		
-		$this->set('selectedSections',$selectedSections);
+		//$this->set('changeDistList',$changeDistList);
+		$this->set('added_directors_details',$added_directors_details);
+		//$this->set('selectedSections',$selectedSections);
+		$this->set('selectedValues',$selectedValues);
+		$this->set('last_details',$last_details);
+		$this->set('change_details',$change_details);
 
 
 		// Check current forms is saved or not
@@ -454,7 +483,7 @@ class ApplicationController extends AppController{
 
 					$message = $firm_type_text.' - '.ucwords(str_replace('_',' ',$section_details['section_name'])).' section, '.$process_query.' successfully';
 
-					//Added this call to save the user action log on 04-03-2022 by Akash
+					#Action: Application Section Saved
 					if ($application_type == 4) {
 						$this->Customfunctions->saveActionPoint('Application '."($process_query)", 'Success');
 					} else {
@@ -554,8 +583,14 @@ class ApplicationController extends AppController{
 
 		} elseif (null !== $this->request->getData('add_tbl_details')) {
 
-			$this->loadModel('DmiAllTblsDetails');
-			$save_details_result = $this->DmiAllTblsDetails->saveTblDetails($customer_id,$this->request->getData());
+			//this condition and code added on 06-07-2022 by Amol
+			if ($application_type == 3) {
+				$this->loadModel('DmiChangeAllTblsDetails');
+				$save_details_result = $this->DmiChangeAllTblsDetails->saveTblDetails($customer_id,$this->request->getData());
+			}else{
+				$this->loadModel('DmiAllTblsDetails');
+				$save_details_result = $this->DmiAllTblsDetails->saveTblDetails($customer_id,$this->request->getData());
+			}
 			
 			if ($save_details_result == 1) {
 				$this->Session->delete('edit_tbl_id');
@@ -1002,8 +1037,18 @@ class ApplicationController extends AppController{
 	// DELETE TBL ID
 	public function deleteTblId($id) {
 		$record_id = $id;
-		$this->loadModel('DmiAllTblsDetails');
-		$tbl_delete_result = $this->DmiAllTblsDetails->deleteTblDetails($record_id);// call to custome function from model
+
+		$application_type = $this->Session->read('application_type');
+
+		//this condition and code added on 06-07-2022 by Amol
+		if($application_type==3){
+			$this->loadModel('DmiChangeAllTblsDetails');
+			$tbl_delete_result = $this->DmiChangeAllTblsDetails->deleteTblDetails($record_id);
+		}else{
+			$this->loadModel('DmiAllTblsDetails');
+			$tbl_delete_result = $this->DmiAllTblsDetails->deleteTblDetails($record_id);// call to custome function from model
+		}
+			
 		if ($tbl_delete_result == 1)
 		{
 			$this->redirect('/application/application-for-certificate');

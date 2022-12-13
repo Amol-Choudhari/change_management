@@ -13,6 +13,7 @@ use Cake\ORM\Entity;
 use Cake\View\ViewBuilder;
 use Cake\Datasource\ConnectionManager;
 use Cake\Database\Type;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class UsersController extends AppController {
 
@@ -31,6 +32,101 @@ class UsersController extends AppController {
 		$this->Session = $this->getRequest()->getSession();
 
 	}
+
+
+	//FOR Trial
+
+	public function forTrial(){
+
+		//require 'vendor/autoload.php';
+		$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+		$spreadsheet = $reader->load("D:/new1.xlsx");
+		$sheetData =$spreadsheet->getSheet(0)->toArray();
+
+		$this->loadModel('DmiAllApplicationsCurrentPositions');
+		$this->loadModel('DmiRejectedApplLogs');
+
+		$i=1;
+
+		unset($sheetData[0]);
+		
+		foreach ($sheetData as $t) {
+			
+			//$get_details = $this->DmiAllApplicationsCurrentPositions->find('all',array('conditions'=>array('customer_id IS'=>trim($t[0])),'order'=>'id DESC'))->first();
+			$get_details = $this->DmiRejectedApplLogs->find('all',array('conditions'=>array('customer_id IS'=>trim($t[0])),'order'=>'id DESC'))->first();
+			pr($get_details['customer_id']);
+			if (empty($get_details)) {
+				
+			}
+
+			
+			$i++;
+		}
+
+		
+		exit;
+	}
+
+
+	public function getAllInfo(){
+
+		$this->loadModel('DmiAllApplicationsCurrentPositions');
+		$this->loadModel('DmiAllocations');
+		$this->loadModel('DmiFormTypes');
+
+		$this->viewBuilder()->setLayout('document_check_list_layout');
+
+		
+
+		
+		
+		
+
+	
+
+
+		if ($this->request->is('post')) {
+
+			$cust = $this->request->getData();
+			$customer_id = $cust['customer_id']; 
+			$currPos = $this->DmiAllApplicationsCurrentPositions->find()->where(['customer_id'=>$customer_id])->first();
+			$firm_type = $this->Customfunctions->firmTypeText($customer_id);
+			$form_type = $this->Customfunctions->checkApplicantFormType($customer_id);
+			$oldornew = $this->Customfunctions->checkApplicationOldNew($customer_id);
+			$getOffice = $this->Customfunctions->getApplDistrictOffice($customer_id,2);
+			$checkCaBevo = $this->Customfunctions->checkCaBevo($customer_id);
+			$checkApplicantExportUnit = $this->Customfunctions->checkApplicantExportUnit($customer_id);
+			$getApplicationCurrentStatus = $this->Customfunctions->getApplicationCurrentStatus($customer_id,2);
+			$checkApplicantValidForRenewal = $this->Customfunctions->checkApplicantValidForRenewal($customer_id);
+			$isOldApplication = $this->Customfunctions->isOldApplication($customer_id,2);
+			$returnGrantDateCondition = $this->Customfunctions->returnGrantDateCondition($customer_id);
+			$getApplRegOfficeId = $this->Customfunctions->getApplRegOfficeId($customer_id,2);
+			$formDes = $this->DmiFormTypes->getFormDesc($form_type);
+
+
+			$dde = array('current_level' => $currPos['current_level'],
+			'current_user_email_id'=>base64_decode($currPos['current_user_email_id']),
+			'firm_type'=>$firm_type,
+			'form_type'=>$form_type,
+			'formDes'=>$formDes,
+			'oldornew'=>$oldornew,
+			'office'=>$getOffice,
+			'bevo'=>$checkCaBevo,
+			'export_unit'=>$checkApplicantExportUnit,
+			'current_status'=>$getApplicationCurrentStatus,
+			'valid_for_renewal'=>$checkApplicantValidForRenewal,
+			'isOldApplication'=>$isOldApplication,
+	   		'returnGrantDateCondition'=>$returnGrantDateCondition,
+			'getApplRegOfficeId'=>base64_decode($getApplRegOfficeId),
+			'cus'=>$customer_id); 
+			
+			$this->set('dde',$dde);
+			
+		}
+		
+	}
+
+
 
 
 

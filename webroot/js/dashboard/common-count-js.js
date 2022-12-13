@@ -21,7 +21,7 @@ $(document).ready(function(){
 	
         $.ajax({
             type: "POST",
-            async:true,//updated from false to true on 07-11-2022, to check loader on tab click
+            async:false,
             url:"../dashboard/common_count_fetch",
 			data:{fetchStatus:fetchStatus},							 
             beforeSend: function (xhr) {

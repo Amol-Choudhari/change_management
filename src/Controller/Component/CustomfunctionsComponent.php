@@ -317,7 +317,12 @@ class CustomfunctionsComponent extends Component {
 
 					//if appl is for lab (domestic/export), No 'SO' involded as per new scenario applied on 21-09-2021 by Amol
 					$firm_type = $this->firmType($customer_id);
-					if ($firm_type==3) {
+	 
+					//check if application's SO office has no active posted user, then treat it as RO office application
+					//added extra condition on 23-11-2022
+					$checkSoOfficerCnt = $this->findOfficerCountInoffice($customer_id);
+					
+					if ($firm_type==3 || $checkSoOfficerCnt==0) {
 						//set district officce to RO by default
 						$district_office = 'RO';
 					}
@@ -445,8 +450,8 @@ class CustomfunctionsComponent extends Component {
 
 				$form_type = 'D';
 			}
-		//pravin bhakare 30-09-2021
-		} elseif ($split_customer_id[0] == 'CHM') {
+		
+		} elseif ($split_customer_id[0] == 'CHM') { #For Chemist Approval (CHM) - Akash [15/05/2022]
 
 			$form_type = 'CHM';
 		}
@@ -457,17 +462,21 @@ class CustomfunctionsComponent extends Component {
 			$appl_type = $this->Session->read('application_type');
 		}
 		
-		if ($appl_type==5) {
+		if ($appl_type == 5) { #For Fifteen Digit Code (FDC) - Amol [15/05/2022]
 
 			$form_type = 'FDC';
 
-		} elseif ($appl_type==6) {
+		} elseif ($appl_type == 6) { #For Approval of E-Code (EC) - Amol [15/05/2022]
 			
 			$form_type = 'EC';
 			
-		}elseif ($appl_type==8) {  //added by shankhpal shende on 17/11/2022 
+		} elseif ($appl_type == 8) {  #For Approval of Desginated Person (ADP) - Shankhpal [17/11/2022]
 			
 			$form_type = 'ADP';
+
+		} elseif ($appl_type == 9) {  #For Surrender of Certificate (SOC) - Akash [17/11/2022]
+			
+			$form_type = 'SOC';
 		}
 
 		return $form_type;
@@ -2739,7 +2748,13 @@ class CustomfunctionsComponent extends Component {
 
 			$DmiGrantCertificatesPdfs = TableRegistry::getTableLocator()->get('DmiChangeGrantCertificatesPdfs');
 			$grantDate = $DmiGrantCertificatesPdfs->find('all',array('conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id DESC'))->first();
+		
+		} elseif ($application_type == 8) { //added on 24-11-2022 by Amol to get ADP process grant date
+
+			$DmiGrantCertificatesPdfs = TableRegistry::getTableLocator()->get('DmiAdpGrantCertificatePdfs');
+			$grantDate = $DmiGrantCertificatesPdfs->find('all',array('conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id DESC'))->first();
 		}
+
 
 		if ($advancepayment == 'yes') {
 
@@ -2829,19 +2844,20 @@ class CustomfunctionsComponent extends Component {
 		$application_type = $this->Session->read('application_type');
 		$sections = array();
 
-		if ($application_type == 3 ) {
+		//commented to manage updated changed flow.
+		/*if ($application_type == 3 ) {
 
 			$DmiChangeSelectedFields = TableRegistry::getTableLocator()->get('DmiChangeSelectedFields');
 			$selectedfields = $DmiChangeSelectedFields->selectedChangeFields();
 			$sections = $selectedfields[2];
 
-		} else {
+		} else {*/
 
 			foreach ($allSectionDetails as $section) {
 
 				$sections[] =  $section['section_id'];
 			}
-		}
+		/*}*/
 
 		sort($sections);
 
@@ -3349,17 +3365,22 @@ class CustomfunctionsComponent extends Component {
 		$DmiRoOffices = TableRegistry::getTableLocator()->get('DmiRoOffices');
 
 		$officerPresent = 0;
-
+		$officeid = null;
+		$result = array();
 		if (strrpos(base64_decode($user),'@')) {//for email encoding
 			$userOffice = $DmiUsers->find('all',array('fields'=>array('posted_ro_office'),'conditions'=>array('email IS'=>$user)))->first();
-			$officeid = $userOffice['posted_ro_office'];
+			if(!empty($userOffice)){
+				$officeid = $userOffice['posted_ro_office'];
+			}			
 		} else {
 			$explodevalue = explode('/',$user);
 			$roOffice = $DmiRoOffices->find('all',array('fields'=>array('id'),'conditions'=>array('short_code IS'=>$explodevalue[2])))->first();
 			$officeid = $roOffice['id'];
 		}
 
-		$result = $DmiUsers->find('list',array('conditions'=>array('posted_ro_office'=>$officeid,'status'=>'active')))->toArray();
+		if ($officeid!=null) {
+			$result = $DmiUsers->find('list',array('conditions'=>array('posted_ro_office'=>$officeid,'status'=>'active')))->toArray();
+		}
 
 		if ( !empty($result))
 		{
@@ -3453,13 +3474,13 @@ class CustomfunctionsComponent extends Component {
 		require_once(ROOT . DS .'vendor' . DS . 'phpqrcode' . DS . 'qrlib.php');
 		
 		if ($type == 'CHM') {
-			$data = "Chemist Name:".$result[0]." ## "."CA Name :".$result[1];
+			$data = "Chemist Name :".$result[0]." ## "." CA ID :".$result[1]." CA Name : ".$result[2]."##"." Date : ".$result[3]."##"."Region : ".$result[4];
 		}elseif ($type=='FDC') {
-			$data = "Applicant Id :".$result." ## "."This is the Certificate of Fifteen Digit Code".";";
+			$data = "CA ID : ".$result[0]." ## "." CA Name : ".$result[1]."##"." Chemist Name : ".$result[2]."##"." Date : ".$result[3]."##"."Region : ".$result[4]."##".$result[5];		  
 		}elseif($type=='ECode'){
-			$data = "Applicant Id :".$result[0]." ## "."ECode :".$result[1].";";
+			$data = "CA ID : ".$result[0]." ## "." CA Name : ".$result[1]."##"." Chemist Name : ".$result[2]."##"." Date : ".$result[3]."##"." Region : ".$result[4];		  
 		}else{
-			$data = "Certificate No :".$result[0]." ## "."Firm Name :".$result[3]." ## "."Grant Date :".$result[1]." ## "."Valid up to date: ".$result[2][0];
+			$data = "Certificate No :".$result[0]." ## "."Firm Name :".$result[3]." ## "."Grant Date :".$result[1]." ## "." Valid up to date: ".$result[2][0];
 		}
 
 		$qrimgname = rand();
@@ -3495,7 +3516,7 @@ class CustomfunctionsComponent extends Component {
 	//Date : 14-09-2022
 
 	public function getUserType($username){
-
+		
 		if (strpos(base64_decode($username),'@')) {
 			$userType = 'User';
 		} else {

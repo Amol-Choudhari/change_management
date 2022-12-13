@@ -296,7 +296,7 @@ class BeforepageloadComponent extends Component {
 		if (!empty($fetch_count)) {
 			
 			$convert_current_date = strtotime($current_date);
-			$convert_table_date  = explode(' ',$fetch_count['created']);
+			$convert_table_date  = explode(' ',(string) $fetch_count['created']); #For Deprecations
 			$explode_table_date = strtotime(str_replace('/','-',$convert_table_date[0]));
 		
 		} else {

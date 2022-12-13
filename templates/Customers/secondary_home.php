@@ -6,40 +6,12 @@
             
             if ($final_submit_status == 'no_final_submit') {  ?>
 
-                <div class="row">
-                    <div class="col-lg-6">
-                        <div class="alert alert-info alert-dismissible">
-                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                            <h5><i class="icon fas fa-info"></i> Please Note !</h5>
-                            <?php 
-                                if ($is_already_granted == 'yes') {
-                                    echo "To fill your old application details please click on 'Apply' button. Thankyou";
-                                } else {
-                                    echo "Please click on 'Apply' button to fill application details. Thankyou";
-                                }
-                            ?>
-                        </div>
-                    </div>
-                </div>
+              <?php  echo $this->element('customer_elements/dash_messages/new_or_old'); ?>
 
             <?php } else {
 
                 if ($is_already_granted == 'no') { ?>
 
-                    <!-- #This Below Block is added to Show the Message if teh application is rejected -->
-                    <?php if($is_appl_rejected != NULL){ ?>
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <div class="alert alert-info alert-dismissible">
-                                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                                    <h5><i class="icon fas fa-info"></i> Please Note !</h5>
-                                    Your Application Has Been Rejected by the DMI.
-                                    <p>Reason For Rejection : <?php echo $is_appl_rejected; ?></p>
-                                </div>
-                            </div>  
-                        </div>
-                    <?php } ?>
-                 
                     <div class="row">
                         <section class="col-lg-12 connectedSortable">
                             <div class="card card-info">
@@ -74,19 +46,6 @@
                     
                 <?php } else if (!($final_submit_status == 'approved' && $final_submit_level == 'level_3')) { ?>
 
-                    <!-- #This Below Block is added to Show the Message if teh application is rejected -->
-                    <?php if($is_appl_rejected != NULL){ ?>
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <div class="alert alert-info alert-dismissible">
-                                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                                    <h5><i class="icon fas fa-info"></i> Please Note !</h5>
-                                    Your Application Has Been Rejected by the DMI.
-                                    <p>Reason For Rejection : <?php echo $is_appl_rejected; ?></p>
-                                </div>
-                            </div>  
-                        </div>
-                    <?php }else{ ?>
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="alert alert-info alert-dismissible">
@@ -96,7 +55,7 @@
                                 </div>
                             </div>  
                         </div>
-                    <?php } ?>
+
                 <?php }
             }
 
@@ -383,6 +342,7 @@
                         <th>Applicant Id</th>
                         <th>Certificate Pdf</th>
                         <th>Grant Date</th>
+                        <th>Version</th>
                     </tr>
                     </thead>  
                     <tbody>
@@ -393,6 +353,7 @@
                                   <a target="blank" href="<?php echo $each_record['pdf_file']; ?>"><?php echo $file_name; ?></a>
                         </td>
                         <td><?php echo substr($each_record['date'],0,-9); ?></td>
+                        <td><?php echo $each_record['pdf_version']; ?></td>
                       </tr>
                     <?php } ?>
                     </tbody>
@@ -414,6 +375,7 @@
                         <th>Applicant Id</th>
                         <th>Certificate Pdf</th>
                         <th>Grant Date</th>
+                        <th>Version</th>
                     </tr>
                     </thead>  
                     <tbody>
@@ -424,6 +386,7 @@
                                   <a target="blank" href="<?php echo $each_record['pdf_file']; ?>"><?php echo $file_name; ?></a>
                         </td>
                         <td><?php echo substr($each_record['date'],0,-9); ?></td>
+                        <td><?php echo $each_record['pdf_version']; ?></td>
                       </tr>
                     <?php } ?>
                     </tbody>

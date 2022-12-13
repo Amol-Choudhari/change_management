@@ -41,10 +41,11 @@ class DmiSmsEmailTemplatesTable extends Table{
 
 	public function sendMessage($message_id, $customer_id) {
 
+
 		if (!isset($_SESSION['application_type'])){ $_SESSION['application_type']=null; }
 
 		$application_type = $_SESSION['application_type'];
-		
+	
 		//This Session ID is Applied for the temporary Application Type is not present.
 		if ($application_type == null) {
 			$application_type = isset($_SESSION['application_type_temp']);
@@ -380,7 +381,7 @@ class DmiSmsEmailTemplatesTable extends Table{
 
 			//replacing dynamic values in the email message
 			$email_message = $this->replaceDynamicValuesFromMessage($customer_id,$email_message);
-			/*
+			
 			$b = array (
 				'SMS' => $sms_message, 
 				'MOBILE' => $destination_mob_nos_values,
@@ -391,12 +392,12 @@ class DmiSmsEmailTemplatesTable extends Table{
 			$fp = fopen('D:/tesq.txt',"a");
 			fwrite($fp, print_r($b, true));
 			fclose($fp);
-			*/
+			
 
 			//To send SMS on list of mobile nos.
 			if (!empty($find_message_record['sms_message'])) {
 
-
+				/*
 				$sender=urlencode("AGMARK");
 				
 				//$uname=urlencode("aqcms.sms");
@@ -447,7 +448,7 @@ class DmiSmsEmailTemplatesTable extends Table{
 			
 				//code to send sms ends here
 
-
+				*/
 				//query to save SMS sending logs in DB // added on 11-10-2017
 				$DmiSentSmsLogsEntity = $DmiSentSmsLogs->newEntity(array(
 					'message_id'=>$message_id,
@@ -462,7 +463,7 @@ class DmiSmsEmailTemplatesTable extends Table{
 				$DmiSentSmsLogs->save($DmiSentSmsLogsEntity);
 			}
 
-
+			
 			//email format to send on mail with content from master
 			$email_format = 'Dear Sir/Madam' . "\r\n\r\n" .$email_message. "\r\n\r\n" .
 							'Thanks & Regards,' . "\r\n" .
@@ -480,7 +481,7 @@ class DmiSmsEmailTemplatesTable extends Table{
 				$txt = $email_format;
 				$headers = "From: dmiqc@nic.in";
 
-				mail($to,$subject,$txt,$headers);
+				//mail($to,$subject,$txt,$headers);
 
 				//query to save Email sending logs in DB // added on 11-10-2017
 				$DmiSentEmailLogsEntity = $DmiSentEmailLogs->newEntity(array(
@@ -794,24 +795,28 @@ class DmiSmsEmailTemplatesTable extends Table{
 			$application_type = isset($_SESSION['application_type_temp']);
 		}
 
-		//Get Application Type Text
+		//Load Models
 		$DmiApplicationTypes = TableRegistry::getTableLocator()->get('DmiApplicationTypes');
 		
+		#For Application Type Text
 		if ($application_type != null) {
-
-			$get_application_type = $DmiApplicationTypes->find('all')->select(['application_type'])->where(['id IS'=>$application_type,'delete_status IS NULL'])->first();
+			#Added the type cast INT on below query to resolve the boolean problem - Akash[24-11-2022]
+			$get_application_type = $DmiApplicationTypes->find('all')->select(['application_type'])->where(['id IS'=>(int) $application_type,'delete_status IS NULL'])->first();
 			$application_type_text = $get_application_type['application_type'];
 		}else{
 			$application_type_text = '';
 		}
 
 
-		//for replica
+		#For Replica
 		$chemist_name = null;
 		$chemist_id = null;
 		$replica_commodities = null;
 		
 		$CustomersController = new CustomersController;
+
+		//Firm Type
+		$firmType = $CustomersController->Customfunctions->firmType($customer_id);
 		
 		//Below Application Type = 7 condtion is added to by pass if the SMS is for Advance Payment -  AKASH [31-10-2022]
 		if (!empty($application_type) && $application_type != 7) {
@@ -900,7 +905,7 @@ class DmiSmsEmailTemplatesTable extends Table{
 
 				$find_allocated_mo = $DmiAllocations->find('all',array('conditions'=>array('customer_id IS'=>$customer_id,'level_3 IS'=>$ro_email_id),'order' => array('id' => 'desc')))->first();
 
-				if (!empty($find_allocated_mo)) {
+				if (!empty($find_allocated_mo)) {	
 
 					$mo_email_id = $find_allocated_mo['level_1'];
 					$mo_user_data = $DmiUsers->find('all',array('conditions'=>array('email IS'=>$mo_email_id)))->first();
@@ -1005,8 +1010,12 @@ class DmiSmsEmailTemplatesTable extends Table{
 			}
 			
 			
-			//////////////[ For Replica ]//////////////
+			//[-- For Replica/E-Code/Fifteen --]
 			
+			$getUserType = $CustomersController->Customfunctions->getUserType($_SESSION['username']);
+			
+			#This Block is added to see if the varibles are for replica is valid or not - Akash[21-11-2022]
+
 			#CHEMIST
 			$get_chemist_name = $DmiChemistRegistrations->find('all',array('conditions'=>array('chemist_id IS'=>$_SESSION['chemistId'],'delete_status IS NULL'),'order'=>'id desc'))->first();
 					
@@ -1026,6 +1035,7 @@ class DmiSmsEmailTemplatesTable extends Table{
 					$chemist_id = $get_chemist_name['chemist_id'];
 				}
 			}
+		
 			
 			#ADVANCE PAYMENT
 			if (!empty($application_type) && $application_type == 7) {
@@ -1043,8 +1053,9 @@ class DmiSmsEmailTemplatesTable extends Table{
 					$pao_name = $fetch_pao_data['f_name']." ".$fetch_pao_data['l_name'];
 				}
 			}
-			
-			#COMMODITIES
+
+
+			#Replica COMMODITIES
 			$getReplicaCommodity = $dmi_replica_allotment_details->find('all')->select(['commodity'])->where(['customer_id IS' => $customer_id])->group('commodity')->toArray();
 			
 			if(empty($getReplicaCommodity)){
@@ -1052,8 +1063,11 @@ class DmiSmsEmailTemplatesTable extends Table{
 				$getTableID = $DmiFirms->find('all')->select(['id'])->where(['customer_id'=>$customer_id])->first();
 				
 				$get_packer_customer_id = $dmi_ca_pp_lab_mapings->find()->select(['customer_id'])->where(['OR' => [['pp_id' => $getTableID['id']], ['lab_id' => $getTableID['id']]]])->first();
-	
-				$getReplicaCommodity = $dmi_replica_allotment_details->find('all')->select(['commodity'])->where(['customer_id IS' => $get_packer_customer_id['customer_id']])->group('commodity')->toArray();
+				
+				#Empty condition is added - Akash [24-11-2022]
+				if (!empty($get_packer_customer_id)) {
+					$getReplicaCommodity = $dmi_replica_allotment_details->find('all')->select(['commodity'])->where(['customer_id IS' => $get_packer_customer_id['customer_id']])->group('commodity')->toArray();
+				}
 			}
 			
 			if(!empty($getReplicaCommodity)){
@@ -1071,17 +1085,23 @@ class DmiSmsEmailTemplatesTable extends Table{
 			}else{
 				$replica_commodities=null;
 			}
-			
-				
+		
+
 			$get_allotments = $dmi_ca_pp_lab_mapings->find('all')->where(['customer_id IS' => $customer_id])->toArray();
 			
-			if(empty($get_allotments)){
-				
-				$getTableID = $DmiFirms->find('all')->select(['id'])->where(['customer_id'=>$customer_id])->first();
-				$get_packer_customer_id = $dmi_ca_pp_lab_mapings->find()->select(['customer_id'])->where(['OR' => [['pp_id' => $getTableID['id']], ['lab_id' => $getTableID['id']]]])->first();
-				$get_allotments = $dmi_ca_pp_lab_mapings->find('all')->where(['customer_id IS' => $get_packer_customer_id['customer_id']])->toArray();
+			
+			if ($_SESSION['IsApproved'] != null  && $_SESSION['IsApproved'] == 'yes') {
+			
+				if(empty($get_allotments)){
+					
+					$getTableID = $DmiFirms->find('all')->select(['id'])->where(['customer_id'=>$customer_id])->first();
+					$get_packer_customer_id = $dmi_ca_pp_lab_mapings->find()->select(['customer_id'])->where(['OR' => [['pp_id' => $getTableID['id']], ['lab_id' => $getTableID['id']]]])->first();
+					$get_allotments = $dmi_ca_pp_lab_mapings->find('all')->where(['customer_id IS' => $get_packer_customer_id['customer_id']])->toArray();
+				}
 			}
 			
+			
+			//For Printer Name and Lab Name
 			if(!empty($get_allotments)){
 				
 				foreach($get_allotments as $each){
@@ -1090,7 +1110,6 @@ class DmiSmsEmailTemplatesTable extends Table{
 					if($each['map_type'] == 'pp'){
 						$getPrinterName = $DmiFirms->find('all',array('conditions'=>array('id IS'=>$each['pp_id'])))->first();
 						$printerName = $getPrinterName['firm_name'];
-						
 					}
 					
 					#LAB
@@ -1102,8 +1121,7 @@ class DmiSmsEmailTemplatesTable extends Table{
 					#PACKER
 					$get_packer_name = $DmiFirms->find('all',array('conditions'=>array('customer_id IS'=>$each['customer_id'])))->first();
 					$packer_name = $get_packer_name['firm_name'];
-			    }
-				
+				}
 			}
 		}
 
@@ -1639,10 +1657,10 @@ class DmiSmsEmailTemplatesTable extends Table{
 			$template_id = $find_message_record['template_id'];//added on 12-05-2021 by Amol, new field
 			
 			//replacing dynamic values in the email message
-			$sms_message = $this->replaceDynamicValuesFromMessage($sms_message,$userCode,$sample_code);
+			$sms_message = $this->replaceDynamicValuesFromMessageLims($sms_message,$userCode,$sample_code);
 
 			//replacing dynamic values in the email message
-			$email_message = $this->replaceDynamicValuesFromMessage($email_message,$userCode,$sample_code);
+			$email_message = $this->replaceDynamicValuesFromMessageLims($email_message,$userCode,$sample_code);
 			
 			$b = array (
 				'SMS' => $sms_message, 
@@ -1771,55 +1789,55 @@ class DmiSmsEmailTemplatesTable extends Table{
 				switch ($matches[1]) {
 
 					case "sample_code":
-						$message = str_replace("%%sample_code%%",$this->getReplaceDynamicValues('sample_code',$userCode,$sample_code),$message);
+						$message = str_replace("%%sample_code%%",(string) $this->getReplaceDynamicValuesLims('sample_code',$userCode,$sample_code),$message);
 					break;
 
 					case "commodities":
-						$message = str_replace("%%commodities%%",$this->getReplaceDynamicValues('commodities',$userCode,$sample_code),$message);
+						$message = str_replace("%%commodities%%",(string) $this->getReplaceDynamicValuesLims('commodities',$userCode,$sample_code),$message);
 					break;
 
 					case "src_user":
-						$message = str_replace("%%src_user%%",$this->getReplaceDynamicValues('src_user',$userCode,$sample_code),$message);
+						$message = str_replace("%%src_user%%",(string) $this->getReplaceDynamicValuesLims('src_user',$userCode,$sample_code),$message);
 					break;
 			
 					case "src_usr_role":
-						$message = str_replace("%%src_usr_role%%",$this->getReplaceDynamicValues('src_usr_role',$userCode,$sample_code),$message);
+						$message = str_replace("%%src_usr_role%%",(string) $this->getReplaceDynamicValuesLims('src_usr_role',$userCode,$sample_code),$message);
 					break;
 
 					case "src_office":
-						$message = str_replace("%%src_office%%",$this->getReplaceDynamicValues('src_office',$userCode,$sample_code),$message);
+						$message = str_replace("%%src_office%%",(string) $this->getReplaceDynamicValuesLims('src_office',$userCode,$sample_code),$message);
 					break;
 
 					case "dst_user":
-						$message = str_replace("%%dst_user%%",$this->getReplaceDynamicValues('dst_user',$userCode,$sample_code),$message);
+						$message = str_replace("%%dst_user%%",(string) $this->getReplaceDynamicValuesLims('dst_user',$userCode,$sample_code),$message);
 					break;
 
 					case "dst_usr_role":
-						$message = str_replace("%%dst_usr_role%%",$this->getReplaceDynamicValues('dst_usr_role',$userCode,$sample_code),$message);
+						$message = str_replace("%%dst_usr_role%%",(string) $this->getReplaceDynamicValuesLims('dst_usr_role',$userCode,$sample_code),$message);
 					break;
 
 					case "dst_office":
-						$message = str_replace("%%dst_office%%",$this->getReplaceDynamicValues('dst_office',$userCode,$sample_code),$message);
+						$message = str_replace("%%dst_office%%",(string) $this->getReplaceDynamicValuesLims('dst_office',$userCode,$sample_code),$message);
 					break;
 
 					case "sample_flow":
-						$message = str_replace("%%sample_flow%%",$this->getReplaceDynamicValues('sample_flow',$userCode,$sample_code),$message);
+						$message = str_replace("%%sample_flow%%",(string) $this->getReplaceDynamicValuesLims('sample_flow',$userCode,$sample_code),$message);
 					break;
 
 					case "category":
-						$message = str_replace("%%category%%",$this->getReplaceDynamicValues('category',$userCode,$sample_code),$message);
+						$message = str_replace("%%category%%",(string) $this->getReplaceDynamicValuesLims('category',$userCode,$sample_code),$message);
 					break;
 		
 					case "oic":
-						$message = str_replace("%%oic%%",$this->getReplaceDynamicValues('oic',$userCode,$sample_code),$message);
+						$message = str_replace("%%oic%%",(string) $this->getReplaceDynamicValuesLims('oic',$userCode,$sample_code),$message);
 					break;
 
 					case "pao_name":
-						$message = str_replace("%%pao_name%%",$this->getReplaceDynamicValues('pao_name',$userCode,$sample_code),$message);
+						$message = str_replace("%%pao_name%%",(string) $this->getReplaceDynamicValuesLims('pao_name',$userCode,$sample_code),$message);
 					break;
 
 					case "ro_name":
-						$message = str_replace("%%ro_name%%",$this->getReplaceDynamicValues('ro_name',$userCode,$sample_code),$message);
+						$message = str_replace("%%ro_name%%",(string) $this->getReplaceDynamicValuesLims('ro_name',$userCode,$sample_code),$message);
 					break;
 
 					default:
@@ -1966,6 +1984,7 @@ class DmiSmsEmailTemplatesTable extends Table{
 		$DmiUsers = TableRegistry::getTableLocator()->get('DmiUsers');
 
 		$details = $DmiUsers->getUserDetailsById($userCode);
+
 		$getID = $this->smsUserId(trim($details['role']));
 		
 		$destination_array = explode(',',$destination_values);
@@ -2026,6 +2045,13 @@ class DmiSmsEmailTemplatesTable extends Table{
 		if ($role == 'SO Officer') { $dest_id = 113; }
 
 		return $dest_id;
+	}
+
+
+	//This function is created for convert the month no to month name
+	function getMonthName($value){
+		$monthName = date("F", mktime(0, 0, 0, $value, 10));
+		return $monthName;
 	}
 	
 }

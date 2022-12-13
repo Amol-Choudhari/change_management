@@ -58,7 +58,7 @@
 																<div class="form-group row">
 																	<label class="col-md-4">Menu Position :</label>
 																		<?php
-																			$options=array('side'=>'Side','bottom'=>'Bottom');
+																			$options=array('side'=>'Top','bottom'=>'Bottom');
 																			$attributes=array('legend'=>false, 'id'=>'position', 'value'=>'side');
 																			echo $this->Form->radio('position',$options,$attributes); ?>
 																			<span id="error_position" class="error invalid-feedback"></span>

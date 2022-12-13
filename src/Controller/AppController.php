@@ -133,6 +133,18 @@ class AppController extends Controller
 		$current_user_division = $this->DmiUsers->find('all',array('conditions'=>array('email IS'=>$username)))->first();
 		$this->set('current_user_division',$current_user_division);
 
+		//Is Approved
+		$IsApproved=null;
+		$final_submit_id = $this->DmiFinalSubmits->find('all', array('conditions' => array('customer_id IS' => $username),'order'=>'id desc'))->first();
+		if (!empty($final_submit_id)) {
+			//get grant status		
+			if ($final_submit_id['status']=='approved' && $final_submit_id['current_level']=='level_3') {
+				$IsApproved='yes';
+			}
+			$this->Session->write('IsApproved',$IsApproved);
+		}else{
+			$this->Session->write('IsApproved',$IsApproved);
+		}
 
 		if(null == ($this->Session->read('paymentforchange'))){
 			$this->Session->write('paymentforchange','available');
@@ -198,10 +210,11 @@ class AppController extends Controller
 
 			$get_logs_records = $this->$table->find('all',array('conditions'=>array('customer_id IS'=>$user_id),'order'=>'id Desc'))->toArray();
 
-    } elseif ($table == 'DmiChemistLogs') {
+		} elseif ($table == 'DmiChemistLogs') {
 
-      $get_logs_records = $this->$table->find('all',array('conditions'=>array('customer_id IS'=>$user_id),'order'=>'id Desc'))->toArray();
-    }
+			$get_logs_records = $this->$table->find('all',array('conditions'=>array('customer_id IS'=>$user_id),'order'=>'id Desc'))->toArray();
+		}
+
 		$i = 0;
 		foreach ($get_logs_records as $each) {
 
@@ -240,7 +253,7 @@ class AppController extends Controller
 			return 'Sorry... Your account is disabled for today, on account of 3 login failure.';
 		}
 
-  }
+  	}
 
   	//created/updated/added on 25-06-2021 for multiple logged in check security updates, by Amol
 	//this function is called from element "already_loggedin_msg", if applicant/user proceeds.

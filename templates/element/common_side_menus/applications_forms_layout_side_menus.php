@@ -30,12 +30,12 @@ $application_type = $_SESSION['application_type'];
         </li>
         <?php $sec_id = '1'; foreach($allSectionDetails as $eachSection) {
 
-				$show = 'no';
-				if($application_type == 3){
+				$show = 'yes';
+				/*if($application_type == 3){
 					if(in_array($eachSection['section_id'],$selectedSections)){
 						$show = 'yes';
 					}
-				 }else{  $show = 'yes';  }
+				 }else{  $show = 'yes';  }*/
 
 				if($show == 'yes'){
 											?>

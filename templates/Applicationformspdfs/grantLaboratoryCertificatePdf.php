@@ -48,7 +48,10 @@
 			<tr>
 			<td align="center" style="padding:5px;">
 				<h4><span style="font-family: krutidev010; font-weight:bold; font-size:13px;">iz;¨x'kkyk ds vuqe¨nu dk izek.k i=</span><br>
-				Certificate of Approval of Laboratory<br>
+				
+				<?php if ($form_type=='C') { ?>Certificate of Approval of Laboratory(Export)
+				<?php }else { ?>Certificate of Approval of Laboratory <?php } ?>
+				<br>
 				<span style="font-family: krutidev010; font-weight:bold; font-size:13px;">¼d`f’k mit ¼Js.khdj.k vkSj fpãzadu½ vf/kfu;e] 1937 ds varjxZr vf/klwfpr lkekU; Js.khdj.k vkSj fpãzadu fu;e] 1988 ds mica/kks ds v/khu tkjh½</span><br>
 				Issued under the provision of General Grading & Marking Rules, 1988 notified under Agriculture Produce(Grading & Marking) Act,1937</h4>
 			</td>
@@ -115,32 +118,32 @@
 						<td style="padding:10px; vertical-align:top;">4. Status(proprietorship/ Partnership/ Public Limited/ Private Limited/ Registered Co-operative Society/ Govt. Undertaking etc.)</td>
 						<td style="padding:10px; vertical-align:top;"><?php if(!empty($business_type)){ echo $business_type; }else{ echo 'NA'; }  ?></td>
 					</tr>
-					
-					<tr>
-						<td style="padding:10px; vertical-align:top;">5. Name and addresses of proprietors/Partners/Directors/Office beares etc.</td>
-						<td style="padding:10px; vertical-align:top;">
-								<table width="100%" border="1">
-									<tr>
-										<th style="padding:10px;" width="15%" cellspacing="50" align="left">S.No.</th>
-										<th style="padding:10px;" width="30%" cellspacing="50" align="left">Name</th>
-										<th style="padding:10px;" width="55%" cellspacing="50" align="left">Address</th>
-									</tr>
-									<?php $i=1; foreach($added_directors_details as $each_detail){?>
-										<tr>
-											<td style="padding:10px; vertical-align:top;"><?php echo $i; ?></td>
-											<td style="padding:10px; vertical-align:top;"><?php if(!empty($each_detail['Dmi_all_directors_detail']['d_name'])){ echo $each_detail['Dmi_all_directors_detail']['d_name']; }else{ echo 'NA'; } ?></td>
-											<td style="padding:10px; vertical-align:top;"><?php if(!empty($each_detail['Dmi_all_directors_detail']['d_address'])){ echo ucfirst($each_detail['Dmi_all_directors_detail']['d_address']); }else{ echo 'NA'; } ?></td>
 
-										</tr>
-									<?php $i=$i+1;} ?>
-									
-								</table>
-						</td>
-					</tr>
+		 
+																																   
+													
+									   
+			 
+																						
+																					   
+																						  
+			  
+																		 
+			  
+																			   
+																																																				   
+																																																								  
+
+			   
+						   
 					
-					
+				
+		   
+		  
+	 
+	 
 					<tr>
-						<td style="padding:10px; vertical-align:top;">6. Name of Commodities on which grade designation marks may be applied</td>
+						<td style="padding:10px; vertical-align:top;">5. Name of Commodities on which grade designation marks may be applied</td>
 						<td style="padding:10px; vertical-align:top;">
 							<?php
 
@@ -169,9 +172,35 @@
 					
 										
 					<tr>
-						<td style="padding:10px; vertical-align:top;">7. Date of Validity of Approval:</td>
+						<td style="padding:10px; vertical-align:top;">6. Date of Validity of Approval:</td>
 						<td style="padding:10px; vertical-align:top;"><?php if(!empty($certificate_valid_upto[0])){  echo $certificate_valid_upto[0]; }else{ echo 'NA'; } ?></td>
 					</tr>
+					
+					<?php if (!empty($added_directors_details)) { ?>
+					
+						<tr>
+							<td style="padding:10px; vertical-align:top;">7. Name and addresses of proprietors/Partners/Directors/Office beares etc.</td>
+							<td style="padding:10px; vertical-align:top;">
+									<table width="100%" border="1">
+										<tr>
+											<th style="padding:10px;" width="15%" cellspacing="50" align="left">S.No.</th>
+											<th style="padding:10px;" width="30%" cellspacing="50" align="left">Name</th>
+											<th style="padding:10px;" width="55%" cellspacing="50" align="left">Address</th>
+										</tr>
+										<?php $i=1; foreach($added_directors_details as $each_detail){?>
+											<tr>
+												<td style="padding:10px; vertical-align:top;"><?php echo $i; ?></td>
+												<td style="padding:10px; vertical-align:top;"><?php if(!empty($each_detail['Dmi_all_directors_detail']['d_name'])){ echo $each_detail['Dmi_all_directors_detail']['d_name']; }else{ echo 'NA'; } ?></td>
+												<td style="padding:10px; vertical-align:top;"><?php if(!empty($each_detail['Dmi_all_directors_detail']['d_address'])){ echo ucfirst($each_detail['Dmi_all_directors_detail']['d_address']); }else{ echo 'NA'; } ?></td>
+
+											</tr>
+										<?php $i=$i+1;} ?>
+										
+									</table>
+							</td>
+						</tr>	
+					
+					<?php } ?>
 			
 			</table>
 					
@@ -213,7 +242,7 @@
 		<table width="100%" border="1">
 				<tr>
 					<td>
-					<b>Renewal of Approval of Laboratory</b>
+					<b><?php if ($form_type=='C') { ?>Renewal of Approval of Laboratory(Export)<?php }else{ ?>Renewal of Approval of Laboratory<?php } ?></b>
 					
 					</td>
 					
@@ -284,7 +313,7 @@
 		<table width="100%" border="1">
 				<tr>
 					<td>
-					<b>Change in the Approval of Laboratory</b>
+					<b><?php if ($form_type=='C') { ?>Change in the Approval of Laboratory(Export)<?php }else{ ?>Change in the Approval of Laboratory<?php } ?></b>
 					
 					</td>
 					
@@ -330,7 +359,13 @@
 				</tr>
 				
 				<tr>
-					<td style="padding:10px; vertical-align:top;">Endorsement of the competent authority about withdrawal of approval of Laboratory:</td>
+					<td style="padding:10px; vertical-align:top;">
+						<?php if ($form_type=='C') { ?>
+							Endorsement of the competent authority about withdrawal of approval of Laboratory(Export):
+						<?php }else{ ?>
+							Endorsement of the competent authority about withdrawal of approval of Laboratory:
+						<?php } ?>
+					</td>
 					<td style="padding:10px; vertical-align:top;">E-signed By:<?php echo 'NA'; ?></td>
 				</tr>
 		

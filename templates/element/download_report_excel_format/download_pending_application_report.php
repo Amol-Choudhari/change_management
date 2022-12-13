@@ -1,3 +1,4 @@
+<?php echo $this->Html->script('Reports/close_loader_js'); ?>
 <?php
 //functionality to manage header and all table rows in excel sheet date:18/12/2017//
  
@@ -46,3 +47,5 @@ $header = "<table style='border: 5px solid black;'>
  echo $header;
  
 ?>
+
+

@@ -16,22 +16,4 @@
 	
 <!-- <input style="background:#666; color:#f2d60b; float: right; margin-right: 16px; text-align: center;" id="download_report" type="submit" name="download_report" class="col-md-3" value="<?php echo $buttonName; ?>" > -->
 
-<script>
-
-	//for disabling firefox resend popup message on form resubmitting.
-	if ( window.history.replaceState ) {
-	  window.history.replaceState( null, null, window.location.href );
-	}
-
-	// After downloading the report as excel format, refersh the current page on the document.click event
-	// Done By pravin 14/3/2018
-	$(document).ready(function () {
-		$('#download_report').click(function(e) { 
-			 
-			 $(document).on("click",function() {
-							 
-				window.location.reload();
-			});			
-		});
-	});
-</script>
+<?php echo $this->Html->script('Reports/download_excel_element'); ?>

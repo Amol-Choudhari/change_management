@@ -1329,80 +1329,7 @@ class Code15digitController extends AppController {
 //function to get details from replica serial no. 
 	public function getReplicaNumberDetails($rep_serial_no){
 		
-		$ca_unique_no = substr($rep_serial_no,0,5);
-		//get CA details
-		$this->loadModel('DmiFirms');
-		
-		if(is_numeric($ca_unique_no)==true){
-			$get_details = $this->DmiFirms->find('all',array('fields'=>array('firm_name','customer_id'),'conditions'=>array('id IS'=>$ca_unique_no)))->first();
-		}else{
-			$get_details = array();
-		}
-		
-		if(!empty($get_details)){
-			
-			$firm_name = $get_details['firm_name'];
-			$customer_id = $get_details['customer_id'];
-			
-			//alphabetic conversion of year (currently upto 26 years)
-			$year_ar = array('2021'=>'A','2022'=>'B','2023'=>'C','2024'=>'D','2025'=>'E','2026'=>'F','2027'=>'G','2028'=>'H','2029'=>'I','2030'=>'J','2031'=>'K',
-							'2032'=>'L','2033'=>'M','2034'=>'N','2035'=>'O','2036'=>'P','2037'=>'Q','2038'=>'R','2039'=>'S','2040'=>'T','2041'=>'U','2042'=>'V','2043'=>'W',
-							'2044'=>'X','2045'=>'Y','2046'=>'Z');
-							
-			//alphabetic conversion of month (A to L Jan to Dec and again M to X Jan to Dec)
-			$month_ar = array('January'=>'A','February'=>'B','March'=>'C','April'=>'D','May'=>'E','June'=>'F','July'=>'G','August'=>'H','September'=>'I','October'=>'J','November'=>'K','December'=>'L');
-			
-			//if range exceeds (ZZZ999) for same month then start month from M to X (Jan to Dec)
-			$month_ar2 = array('January'=>'M','February'=>'N','March'=>'O','April'=>'P','May'=>'Q','June'=>'R','July'=>'S','August'=>'T','September'=>'U','October'=>'V','November'=>'W','December'=>'X');
-			
-			//get month and year from mapping arr
-			if(substr($rep_serial_no,6,1) > 'L'){//get array 2 if month alphabet is greater than L
-				$month = array_search(substr($rep_serial_no,6,1),$month_ar2);
-			}else{
-				$month = array_search(substr($rep_serial_no,6,1),$month_ar);
-			}
-			
-			$year = array_search(substr($rep_serial_no,5,1),$year_ar);
-			
-			
-			//now to get numeric converion of replica serial number (last 6 digits)
-			
-			//serial no mapping array for thound, lakh, and crore position place (AAA000)
-			$mapping_arr = array('0'=>'A','1'=>'B','2'=>'C','3'=>'D','4'=>'E','5'=>'F','6'=>'G','7'=>'H','8'=>'I','9'=>'J','10'=>'K',
-								'11'=>'L','12'=>'M','13'=>'N','14'=>'O','15'=>'P','16'=>'Q','17'=>'R','18'=>'S','19'=>'T','20'=>'U','21'=>'V','22'=>'W',
-								'23'=>'X','24'=>'Y','25'=>'Z');
-			
-			
-			$hun_val = substr($rep_serial_no,10,3);
-			$thNum = array_search(substr($rep_serial_no,9,1),$mapping_arr);//thousand digit
-			$lkNum = array_search(substr($rep_serial_no,8,1),$mapping_arr);//lakh digit
-			$crNum = array_search(substr($rep_serial_no,7,1),$mapping_arr);//crore digit
-			
-			$thNum = $thNum*1000;
-			$lkNum = $lkNum*26000;
-			$crNum = $crNum*676000;
-			
-			$serial_no = $hun_val;
-			if($thNum != 0){				
-				$serial_no = $serial_no+$thNum;
-			}
-			if($lkNum != 0){				
-				$serial_no = $serial_no+$lkNum;
-			}
-			if($crNum != 0){				
-				$serial_no = $serial_no+$crNum;
-			}
-			
-			//add 1 in above total as started from 000
-			$serial_no = $serial_no+1;
-			
-			return array('firm_name'=>$firm_name,'customer_id'=>$customer_id,'year'=>$year,'month'=>$month,'serial_no'=>$serial_no);
-
-		}else{
-			
-			return array('firm_name'=>'','customer_id'=>'','year'=>'','month'=>'','serial_no'=>'');
-		}
-		
+		//not useful in Ecode search.		
 		
 	}
 
@@ -1414,53 +1341,31 @@ class Code15digitController extends AppController {
 		$msg = '';
 		$rep_ser_no = $_POST['rep_ser_no'];
 		
-		$detail_arr = $this->getReplicaNumberDetails($rep_ser_no);
+		//$officeCode = substr($rep_ser_no, 0, 1);
+		//$commCode = substr($rep_ser_no, 0, 2);
+		$intiPart = substr($rep_ser_no, 0, 6);
 		
-		if(!empty($detail_arr['customer_id'])){
+		$this->LoadModel('Dmi15DigitAllotmentDetails');
+		$code15DigitDetails = $this->Dmi15DigitAllotmentDetails->find('all',array('fields'=>array('customer_id','created','commodity'),'conditions'=>array('alloted_rep_from LIKE'=>$intiPart.'%','allot_status'=>1,'delete_status IS Null'),'order'=>'id asc'))->first();
 		
-			//check if entered replica number is valid number for the CA
-			$this->LoadModel('Dmi15DigitAllotmentDetails');
-			//get first alloted number
-			$get_first_rep = $this->Dmi15DigitAllotmentDetails->find('all',array('fields'=>'alloted_rep_from','conditions'=>array('customer_id IS'=>$detail_arr['customer_id'],'allot_status'=>1,'delete_status IS Null'),'order'=>'id asc'))->first();
+		if(!empty($code15DigitDetails)){
 			
-			if(!empty($get_first_rep)){
-				
-				$first_rep = $get_first_rep['alloted_rep_from'];
-				$rep_detail = $this->getReplicaNumberDetails($first_rep);
-				$first_rep_no = $rep_detail['serial_no'];
-				
-				//get last alloted number
-				$get_last_rep = $this->Dmi15DigitAllotmentDetails->find('all',array('fields'=>'alloted_rep_to','conditions'=>array('customer_id IS'=>$detail_arr['customer_id'],'allot_status'=>1,'delete_status IS Null'),'order'=>'id desc'))->first();
-				$last_rep = $get_last_rep['alloted_rep_to'];
-				$rep_detail = $this->getReplicaNumberDetails($last_rep);
-				$last_rep_no = $rep_detail['serial_no'];
-				
-				//check if the searched replica number is between this range
-				if($detail_arr['serial_no'] >= $first_rep_no && $detail_arr['serial_no'] <= $last_rep_no){
-					
-					
-					$msg .= "<tr><td><b>Firm Name:</b></td><td>".$detail_arr['firm_name']."</td></tr>";
-					$msg .= "<tr><td><b>Certificate No:</b></td><td>".$detail_arr['customer_id']."</td></tr>";
-					$msg .= "<tr><td><b>Year:</b></td><td>".$detail_arr['year']."</td></tr>";
-					$msg .= "<tr><td><b>Month:</b></td><td>".$detail_arr['month']."</td></tr>";
-					$msg .= "<tr><td><b>Serial No:</b></td><td>".$detail_arr['serial_no']."</td></tr>";
-					
-				
-				}else{
-					
-					$msg = "<tr><td>Sorry, The 15 Digit Code you have searched is not valid.</td></tr>";
-				}
-			
-			}else{
-				
-				$msg = "<tr><td>Sorry, The 15 Digit Code you have searched is not valid.</td></tr>";
-			}
+			$this->LoadModel('DmiFirms');
+			$firmDetails = $this->DmiFirms->find('all',array('fields'=>array('firm_name'),'conditions'=>array('customer_id IS'=>$code15DigitDetails['customer_id'])))->first();
+		
+			//get commodity name
+			$this->LoadModel('MCommodity');
+			$getCommodity = $this->MCommodity->find('all',array('fields'=>'commodity_name','conditions'=>array('commodity_code'=>$code15DigitDetails['commodity'])))->first();
+		
+			$msg .= "<tr><td><b>Firm Name:</b></td><td>".$firmDetails['firm_name']."</td></tr>";
+			$msg .= "<tr><td><b>Certificate No:</b></td><td>".$code15DigitDetails['customer_id']."</td></tr>";
+			$msg .= "<tr><td><b>Commodity:</b></td><td>".$getCommodity['commodity_name']."</td></tr>";
+			$msg .= "<tr><td><b>Issued On.</b></td><td>".$code15DigitDetails['created']."</td></tr>";
 		
 		}else{
 			
-			$msg = "<tr><td>Sorry, The 15 Digit Code you have searched is not valid.</td></tr>";
+			$msg = "<tr><td>Sorry, The 15-Digit-Code you have searched is not valid.</td></tr>";
 		}
-		
 		
 		
 		echo '~'.$msg.'~';

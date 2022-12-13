@@ -1,8 +1,15 @@
 
-<?php //pr($section_form_details);die;
+<?php
 	echo $this->Html->css('../multiselect/jquery.multiselect');
 	echo $this->Html->script('../multiselect/jquery.multiselect');
 ?>
+<!-- condition added for vissible proceed to update button if application is final granted and the 
+application is final submit otherwise button not displayed added by shankhpal shende on 24-11-2022 -->
+<?php if(!empty($checkIfgrant)) {
+	if (empty($final_submit_details)) {?>
+	<button class="btn btn-primary float-right ml-auto" type="submit" id="wanttoedit">Proceed to Update</button>
+<?php } } ?>
+
 <?php echo $this->Form->create(null, array('type'=>'file', 'enctype'=>'multipart/form-data', 'id'=>$section)); ?>
 
 <section class="content form-middle form_outer_class" id="form_outer_main">
@@ -352,6 +359,10 @@
 	-->
 <input type="hidden" id="final_submit_status_id" value="<?php echo $final_submit_status; ?>">
 <input type="hidden" id="export_unit_status_id" value="<?php echo $export_unit_status; ?>">
-
+<!-- added for if session value is set -->
+<?php if(!empty($_SESSION['adpupdatemode'])) { ?>
+    <input type="hidden" id="checkeditsession" value="<?php echo $_SESSION['adpupdatemode']; ?>">
+<?php } ?>
 <?php echo $this->Html->script('element/application_forms/adp/person_details'); ?>
+<?php echo $this->Html->script('element/application_forms/adp/want_to_edit'); ?>
 

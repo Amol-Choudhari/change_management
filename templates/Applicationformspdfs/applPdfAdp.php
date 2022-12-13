@@ -1,4 +1,4 @@
-<?php //pr($lab_incharge_data);die; ?>
+<?php ?>
 <style>
 	h4 {
 		padding: 5px;
@@ -50,8 +50,9 @@
 		</tr>
 
         <tr>
-			<td><br>I,<?php echo $lab_incharge_data['lab_ceo_name']; ?> of M/s <?php echo $customer_firm_data['street_address'].', '; echo $firm_district_name.', '; echo $firm_state_name.', '; echo $customer_firm_data['postal_code']; ?>  seek approval for below
-            mentioned persons to issue CAG for grading and marking of agricultural commodities for [type of the certification approved by DMI]  in accordance with the provision of agriculture
+			<td><br>I,<?php echo $lab_incharge_data['lab_ceo_name']; ?> of <?php echo $customer_firm_data['firm_name'].', '; echo $customer_firm_data['street_address'].','; echo $firm_district_name.', '; echo $firm_state_name.', '; echo $customer_firm_data['postal_code']; ?>  seek approval for below
+            mentioned persons to issue CAG for grading and marking of agricultural commodities for <?php echo $customer_firm_data['firm_name']; ?>
+			in accordance with the provision of agriculture
             produce (Grading and Marking) Act, 1937 and rules made there under.</td>
 		</tr>
         <tr>
@@ -86,4 +87,65 @@
 		</td>
 	</tr>
 </table>	
+<div style="page-break-before:always"><br>
+  <table>
+    <tr>
+		<td><br>Declaration:</td><br><br>                 
+	</tr>
+
+	<tr>
+		<td><br>I,<?php echo $lab_incharge_data['lab_ceo_name']; ?> of <?php echo $customer_firm_data['firm_name'].', '; echo $customer_firm_data['street_address'].','; echo $firm_district_name.', '; echo $firm_state_name.', '; echo $customer_firm_data['postal_code']; ?>   hereby solemnly and 
+             sincerely affirm and state that:
+		</td>
+	</tr>
+
+	<tr>
+		<td><br>List of the designated persons to be approved with designation, Laboratory name and Office name.</td><br>
+	</tr>
+
+	<tr>
+		<td><br>Are designated persons for the purpose of issuing the certificate of Agmark on behalf of 
+		<?php echo $customer_firm_data['firm_name'].', '; echo $customer_firm_data['street_address'].','; echo $firm_district_name.', '; echo $firm_state_name.', '; echo $customer_firm_data['postal_code']; ?></td><br>
+	</tr>
+
+	<tr>
+		<td><br>I do hereby declare that they are responsible persons of the Laboratory, The laboratory will liable for the actions.</td><br>
+	</tr>
+
+	<tr>
+		<td><br>I do hereby declare that as per record and belief of company they do not have criminal record.</td><br>
+	</tr>
+
+	<tr>
+		<td><br>I do hereby declare that the above stated facts are true and correct and I have not surppressed any material facts relating to subject matter of declaration.</td><br>
+	</tr>
+
+	<tr>
+		<td><br>Sworn and signed on behalf of <?php echo $customer_firm_data['firm_name'].', '; echo $customer_firm_data['street_address'].','; echo $firm_district_name.', '; echo $firm_state_name.', '; echo $customer_firm_data['postal_code']; ?></td><br>
+	</tr>
+
+  </table>		 
+
+  <table>					
+	 <tr>
+		<td  align="left"><br><br><br>
+			Place: <?php echo $firm_district_name.', '; echo $firm_state_name.'.';?><br>
+			Date: <?php echo $pdf_date;?>
+		</td>
+	</tr>
+</table>
+
+<table>	
+	<tr>
+		<td align="right">Your Sincerely<br>
+            <?php echo $customer_firm_data['firm_name']; ?><br> 
+			<?php echo $customer_firm_data['street_address'].', <br>';
+				  echo $firm_district_name.', ';
+				  echo $firm_state_name.', ';
+				echo $customer_firm_data['postal_code'].'.<br>';?>
+		</td>
+	</tr>
+</table>	
+
+</div> 
 

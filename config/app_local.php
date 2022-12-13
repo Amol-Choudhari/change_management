@@ -54,15 +54,15 @@ return [
             'password' => '123',
             'database' => 'newphaseIIdb',
             */
-            /*
+            
             # 41 - Test Migration
             
-            'host' => '10.158.81.41',
+         /*   'host' => '10.158.81.41',
              #'port' => 'non_standard_port_number',
             'username' => 'postgres',
             'password' => '123',
-            'database' => 'testmigration1',
-            */
+            'database' => 'dmiupdated',*/
+            
 
             # LocalHost - Test Migration
                         

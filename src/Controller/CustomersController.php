@@ -3796,7 +3796,146 @@ class CustomersController extends AppController {
 
 
 
+	// customer_information function added by Laxmi Bhadade on 18-11-22
+    public function customerInformation(){
+       $result = '';
+        $commodity = '';
+        $this->viewBuilder()->setLayout('document_check_list_layout');
+         $this->loadModel('DmiFirms');
+         $this->loadModel('DmiCustomers');
+        $this->loadModel('DmiStates');
+        $this->loadModel('DmiDistricts');
+        $this->loadModel('MCommodityCategory');
+        $this->loadModel('DmiGrantCertificatesPdfs');
+        $this->loadModel('DmiPackingTypes');
+       
 
+        $conn = ConnectionManager::get('default');
+         if( $this->request->is('post') ) {
+            if($this->request->getdata('name') == 'primary'){
+                $customer_id = $this->request->getdata('id');
+                $primary_data = $this->DmiCustomers->find('all')->where(array('customer_id IS' => $customer_id))->first();
+                if (!empty($primary_data->district )) {
+                $dist = $this->DmiDistricts->find('all',array('fields'=>array('district_name','state_id')))->where(array('id IS'=>$primary_data->district , 'state_id IS'=> $primary_data->state))->first();
+                $state = $this->DmiStates->find('all',array('fields'=>array('state_name')))->where(array('id IS'=> $primary_data->state , 'id IS'=> $dist->state_id))->first();
+                
+              }
+               if ($primary_data  !=null) {
+            $result= "<table class= table table-bordered >
+                            <thead>
+                              <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>District</th>
+                                <th>State</th>
+                              </tr>
+                            </thead>
+                              <tr id= custmer_data >
+                                <td id= id>".$customer_id."</td>
+                                <td id= name>".$primary_data->f_name." &nbsp; ".$primary_data->l_name."</td>
+                                <td id= district>".$dist->district_name."</td>
+                                <td id= state>".$state->state_name."</td>
+                                
+                              </tr>
+                             
+                              
+                            </tbody>
+                          </table>
+                        ";
+                   
+                        echo $result;
+                    }else{
+
+                     echo $result = "<p class = 'text-danger' id = 'danger-id'>This Customer Id is not valid</p>";
+                
+                
+                    }
+                     
+                 
+                exit;
+            }elseif($this->request->getdata('name') == 'firm'){
+                 $customer_id = $this->request->getdata('id');
+
+                  
+                $firm_data = $this->DmiFirms->find('all')->where(array('customer_id IS' => $customer_id))->first();
+                //if commodity is one then select packaging type
+               
+                 if(!empty($firm_data->commodity) && $firm_data->commodity > 1) {
+                    
+                      $commodity = $this->MCommodityCategory->find('all',array('fields'=>array('category_name')))->where(array('category_code IS'=> $firm_data->commodity))->first();
+
+                            if(!empty ($commodity->category_name)) { 
+                               $commodity = $commodity->category_name;
+                           } else { 
+                               $commodity = "Not found ";
+                          }
+                }else{
+                    if(!empty($firm_data->packaging_materials) && $firm_data->commodity == 1){
+                        $packaging =  explode(',', $firm_data->packaging_materials);
+                            foreach($packaging as $packtype){
+                               $pacging_type = $this->DmiPackingTypes->find('all',array('fields'=>array('packing_type')))->where(array('id IS'=> $packtype))->first();
+                                  
+                                
+                              if(!empty($pacging_type->packing_type)){
+                                  $commodity .= $pacging_type->packing_type. ",";
+                              }
+                              else{
+                                $commodity = "Not found ";
+                              }
+                            } 
+                         
+                      }
+                }
+
+                   
+                
+                
+                   $grant_date = $this->DmiGrantCertificatesPdfs->find('all',array('fields'=>array('date')))->where(array('customer_id IS'=> $customer_id))->last();
+                       if(!empty($grant_date->date)){
+                         $grant_date = $grant_date->date;
+                          $uptoDate = $this->Customfunctions->getCertificateValidUptoDate($customer_id, $grant_date);
+                           $date =  date('d-m-Y', strtotime("$uptoDate +1 Months"));
+                     }
+                   
+                    if(!empty($date)){
+                    $current_date = date("d-m-Y");
+                    if($current_date <  $date ){
+                       $status = "Inactive";
+                    }else{
+                        $status = "Active valid on &nbsp;" .$grant_date;
+                    }
+                }else{
+                     $status = "Not Found";
+                }
+                 
+                  if ($firm_data  !=null) {
+              
+                    $result .= "<tr><td><b>Name:</b></td><td>".$firm_data->firm_name."</td></tr>";
+                    $result .= "<tr><td><b>Commodity:</b></td><td>".$commodity."</td></tr>";
+                    $result .= "<tr><td><b>Status:</b></td><td>".$status."</td></tr>";
+                     
+                        echo $result;
+                    }else{
+
+                     echo $result = "<tr><td></td><td>Sorry, This Customer Id you have searched is not valid</td></tr>";
+                
+                
+                    }
+                exit;
+
+            }else{
+               
+                $customer_id_not_valid_msg = 'Sorry, This Customer Id is not valid';
+
+                       // $this->set('customer_id_not_valid_msg', $customer_id_not_valid_msg);
+                       echo $result = "<tr><td></td><td>This Customer Id you have searched is not valid</td></tr>";
+                
+                          echo $result;
+                        exit;
+            }
+      }
+   }
+   
+   
 }
-
 ?>

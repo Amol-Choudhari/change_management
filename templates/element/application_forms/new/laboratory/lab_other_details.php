@@ -241,13 +241,13 @@
 						</div>
 					</div>
 
-					<div class="card-header"><h3 class="card-title">Is Accreditated with NABL</h3></div>
+					<div class="card-header"><h3 class="card-title">Accreditation with NABL</h3></div>
 					<div class="form-horizontal">
 						<div class="card-body">
 							<div class="row">
 								<div class="col-sm-12">
 									<div class="form-group row">
-										<label for="inputEmail3" class="col-sm-3 col-form-label">Is laboratory accreditated with? <span class="cRed">*</span></label>
+										<label for="inputEmail3" class="col-sm-3 col-form-label">Is Accreditation Number Available? <span class="cRed">*</span></label>
 										<div class="col-sm-9">
 											<?php //if lab export then NABL accreditation is mandatory applied on 27-09-2021 by Amol
 												if ($export_unit_status == 'yes') {
@@ -288,7 +288,7 @@
 							<div class="row">
 								<div class="col-sm-6">
 									<div class="form-group row">
-										<label for="inputEmail3" class="col-sm-3 col-form-label">Area Of Laboratory (Sq. Meter) <span class="cRed">*</span></label>
+										<label for="inputEmail3" class="col-sm-3 col-form-label">Accreditation Number <span class="cRed">*</span></label>
 										<div class="col-sm-9">
 											<?php echo $this->Form->control('accreditation_no', array('type'=>'text', 'id'=>'accreditation_no', 'escape'=>false, 'value'=>$section_form_details[0]['accreditation_no'], 'label'=>false, 'placeholder'=>'Please Enter accreditation Number', 'class'=>'form-control')); ?>
 											<span id="error_accreditation_no" class="error invalid-feedback"></span> <!--create div field for showing error message (by pravin 09/05/2017)-->

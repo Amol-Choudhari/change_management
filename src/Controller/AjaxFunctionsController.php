@@ -2010,6 +2010,20 @@ class AjaxFunctionsController extends AppController{
 			echo 'no';
 		}
 	}
+	// check If Session Is Exists
+	// DESCRIPTION : FOR CHECKING THE SESSION IF SESSION IS YES , RETURN THE YES OR NO
+	// @AUTHOR : SHANKHPAL SHENDE
+	// DATE : 24-11-2022
+
+	public function checkIfSesionIsExists() {
+
+		//$this->autoRender = false;
+		// taking editmode data in Session variables
+	    $this->Session->write('adpupdatemode','yes');
+	    echo 'yes';exit;
+			
+	}
+
 
 }
 ?>

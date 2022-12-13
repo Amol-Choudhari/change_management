@@ -30,7 +30,8 @@
 			$CustomersController = new CustomersController;	
 			$grantDateCondition = $CustomersController->Customfunctions->returnGrantDateCondition($customer_id);	
 
-			$this->getSetOldRecord($customer_id);
+			//commented on 07-07-2022 by Amol,
+			//$this->getSetOldRecord($customer_id);
 
 			if(isset($_SESSION['edit_directors_details_id'])){ $hide_edit_id = array('id !='=>$_SESSION['edit_directors_details_id']); }else{ $hide_edit_id = array('id IS NOT NULL');  }
 			$added_directors_details = $this->find('all', array('conditions'=>array('OR'=>$hide_edit_id,
@@ -118,8 +119,8 @@
 			}			
 			
 		}
-
-		public function getSetOldRecord($customer_id)
+		//commented on 07-07-2022 by Amol, as adding record in controller
+		/*public function getSetOldRecord($customer_id)
 		{
 			$CustomersController = new CustomersController;	
 			$grantDateCondition = $CustomersController->Customfunctions->returnGrantDateCondition($customer_id);	
@@ -148,7 +149,7 @@
 					$this->save($oldRecord);				
 				}
 			}
-		}
+		}*/
 }
 
 ?>

@@ -760,7 +760,17 @@ class InspectionsController extends AppController{
 		$Dmi_flow_wise_tables = $Dmi_flow_wise_tables_list->find('all',array('conditions'=>array('application_type IS'=>$application_type)))->first();
 		$Dmi_final_submit_tb = TableRegistry::getTableLocator()->get($Dmi_flow_wise_tables['application_form']);
 		$Dmi_inspection_final_submit_tb = TableRegistry::getTableLocator()->get($Dmi_flow_wise_tables['inspection_report']);	
-		$Dmi_allocation_table_tb = TableRegistry::getTableLocator()->get($Dmi_flow_wise_tables['allocation']);	
+		$Dmi_allocation_table_tb = TableRegistry::getTableLocator()->get($Dmi_flow_wise_tables['allocation']);
+
+
+		//below condition is added to provide Grant table name for some applications, as there is conditional siteinspection for it.
+		//it was throwing issue after esigning the doc and storing grant record.
+		//on 22-11-2022 by Amol
+		if(empty($allSectionDetails)){
+			
+			$DmiCommonScrutinyFlowDetails = TableRegistry::getTableLocator()->get('DmiCommonScrutinyFlowDetails');
+			$allSectionDetails = $DmiCommonScrutinyFlowDetails->allSectionList($application_type,$office_type,$firm_type,$form_type);
+		}
 		
 		$customer_level_3_approved = $Dmi_final_submit_tb->find('all',
 												array('conditions'=>array('customer_id IS'=>$customer_id,$grantDateCondition,
