@@ -271,16 +271,26 @@ class CustomfunctionsComponent extends Component {
 		$phaseOneApplication = $Dmi_allocation->find('all',array('conditions'=>array('customer_id IS'=>$customer_id,'date(created) <'=>$secondPhaseLaunchDate,$grantDateCondition)))->first();
 
 		//get district id from firm table
+		$dist_id = '';
+		$applied_to = null;
+		
 		$get_dist_id = $Dmi_firm->find('all',array('conditions'=>array('customer_id IS'=>$customer_id)))->first();
-		$dist_id = $get_dist_id['district'];
-		$applied_to = $get_dist_id['applied_to'];
-
+		if(!empty($get_dist_id)){
+			$dist_id = $get_dist_id['district'];
+			$applied_to = $get_dist_id['applied_to'];
+		}
+		
 		//now check RO/SO/SMD id in district table to set office for application
 		//$this->loadModel('Dmi_district');
+		$ro_id = '';
+		$so_id = '';
+		$smd_id = '';
 		$district_details = $Dmi_district->find('all',array('conditions'=>array('id IS'=>$dist_id)))->first();
-		$ro_id = $district_details['ro_id'];
-		$so_id = $district_details['so_id'];
-		$smd_id = $district_details['smd_id'];
+		if(!empty($district_details)){
+			$ro_id = $district_details['ro_id'];
+			$so_id = $district_details['so_id'];
+			$smd_id = $district_details['smd_id'];
+		}	
 
 		$to_office = null;
 		$tranferApp = $DmiApplTransferLogs->find('all',array('conditions'=>array('customer_id IS'=>$customer_id,'appl_type IS'=>$appl_type,$grantDateCondition),'order'=>array('id desc')))->first();
@@ -1747,9 +1757,9 @@ class CustomfunctionsComponent extends Component {
 						$get_grant_month = date('m',strtotime($cert_grant_date));
 						
 						if ($get_grant_month > 9) {//if grant in oct,nov or dec then grant from 1st of next year
-							$renewa_dates_present ='';
+							$renewa_dates_present ='yes';//swapped '' to 'yes' on 22-12-2022
 						} else {
-							$renewa_dates_present ='yes';
+							$renewa_dates_present ='';//swapped 'yes' to '' on 22-12-2022
 						}
 						
 					} else {
@@ -1919,9 +1929,9 @@ class CustomfunctionsComponent extends Component {
 						$get_grant_month = date('m',strtotime($cert_grant_date));
 						
 						if ($get_grant_month > 9) {//if grant in oct,nov or dec then grant from 1st of next year
-							$renewa_dates_present ='';
+							$renewa_dates_present ='yes';//swapped '' to 'yes' on 22-12-2022
 						} else {
-							$renewa_dates_present ='yes';
+							$renewa_dates_present ='';//swapped 'yes' to '' on 22-12-2022
 						}
 						
 					} else {
@@ -2895,7 +2905,7 @@ class CustomfunctionsComponent extends Component {
 
 		if ($appl_type == 3) {
 
-			$form_type = $this->checkApplicantFormType($customer_id);
+			//$form_type = $this->checkApplicantFormType($customer_id);
 			$grantDateCondition = $this->returnGrantDateCondition($customer_id);
 			$selectedfields = $DmiChangeSelectedFields->find('all',array('conditions'=>array('customer_id IS'=>$customer_id,$grantDateCondition)))->first();
 
@@ -2904,8 +2914,8 @@ class CustomfunctionsComponent extends Component {
 			}
 
 			foreach ($selectedValues as $data) {
-
-				$changeField = $DmiChangeFieldLists->find('all',array('valueField'=>array('inspection'),'conditions'=>array('field_id IS'=>$data, 'form_type IS'=>$form_type)))->first();
+							//in conditions applied firm_type => 'common'
+				$changeField = $DmiChangeFieldLists->find('all',array('valueField'=>array('inspection'),'conditions'=>array('field_id IS'=>$data, 'form_type IS'=>'common')))->first();
 				
 				if (!empty($changeField) && $changeField['inspection'] == 'yes') {
 					$inspection = 'yes';

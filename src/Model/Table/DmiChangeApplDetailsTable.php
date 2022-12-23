@@ -534,7 +534,7 @@
 			$selected_packing_types = array();
 			$selected_category_commodities = array();
 			
-			if($firm_type==1){
+			if($firm_type==1 && !empty($firm_details['commodity'])){
 
 				//in CA to show only already selected category list, to avoid payment amount conflict
 				$commodity_array = explode(',',$firm_details['commodity']);
@@ -560,7 +560,7 @@
 				}
 
 				
-			}elseif($firm_type==2){
+			}elseif($firm_type==2 && !empty($firm_details['packing_types'])){
 
 				$packing_types = $packingTypeTable->find('list',array('keyField'=>'id','valueField'=>'packing_type','conditions'=>array('delete_status IS Null')))->toArray();
 
@@ -571,7 +571,7 @@
 					$selected_packing_types = $packingTypeTable->find('list',array('keyField'=>'id','valueField'=>'packing_type', 'conditions'=>array('id IN'=> $packaging_type_id)))->toArray();
 				}
 				
-			}elseif($firm_type==3){
+			}elseif($firm_type==3 && !empty($firm_details['commodity'])){
 
 				$category_list = $categoryTable->find('list',array('keyField'=>'category_code','valueField'=>'category_name','conditions'=>array('display'=>'Y')))->toArray();
 

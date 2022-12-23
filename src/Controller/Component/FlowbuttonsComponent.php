@@ -418,7 +418,7 @@ class FlowbuttonsComponent extends Component {
 		
 		//if(empty($ho_allocation)){
 			
-			if($applicationType == 1){
+			if($applicationType == 1 || $applicationType == 3){//added appl type 3 condition on 21-12-2022 by Amol
 				
 				if($firm_type==2){
 					

@@ -170,6 +170,28 @@ class RomoioapplicantcommunicationactionsComponent extends Component {
 				$allFormsApproved = $this->Customfunctions->formStatusValue($allSectionDetails,$customer_id);
 
 				if($allFormsApproved == 2 ){
+					
+					//for specific flows where office type is RO and Stay on the window after Scrtiny to Grant
+					//condition added on 19-12-2022 by Amol, to avoid redirect after all section scrutinized
+					$office_type = $this->Customfunctions->getApplDistrictOffice($customer_id);					
+					if($application_type==3 || $application_type==4 || $application_type==9){ 
+					
+						if ($office_type=='RO' && $application_type==3) {
+							$changeInspection = $this->Customfunctions->inspRequiredForChangeApp($customer_id,$application_type);
+							if ($changeInspection=='no') {
+								return 2;
+							}
+							
+						} elseif ($application_type==4) {
+							
+							$NewChemist = 'yes';
+							if ($NewChemist=='yes') {return 2;}
+							
+						} elseif ($office_type=='RO' && $application_type==9) {							
+							return 2;
+						}
+						
+					}
 
 					if($oldapplication == 'yes' && empty($old_dates_verified) && $application_type==1){
 
@@ -435,6 +457,92 @@ class RomoioapplicantcommunicationactionsComponent extends Component {
 		));
 		//entry in Grant certificate table.
 		$DmiGrantCertificatesPdfs->save($DmiGrantCertificatesPdfsEntity);
+
+		return true;
+	}
+	
+	
+	
+	// After Scrutiny Forward To Ro
+	// Description: This method is used to save the entries to the allocation tables for Level 4 Ro entries
+	// By: Akash
+	// Date: 02-12-2022
+
+	public function afterScrutinyForwardToRo($customer_id,$application_type,$grantDateCondition,$Dmi_allocation_table,$Dmi_appl_current_pos_table){
+
+		//$Dmi_allocation_table = TableRegistry::getTableLocator()->get($Dmi_allocation_table);
+		//$Dmi_appl_current_pos_table = TableRegistry::getTableLocator()->get($Dmi_appl_current_pos_table);
+
+
+		$ro_email_id = $this->Customfunctions->getApplRegOfficeId($customer_id,$application_type);
+		$allocation_id = $Dmi_allocation_table->find('all',array('conditions'=>array('customer_id IS'=>$customer_id,$grantDateCondition)))->first();
+
+		$Dmi_allocation_Entity = $Dmi_allocation_table->newEntity(array(
+
+			'id'=>$allocation_id['id'],
+			'customer_id'=>$customer_id,
+			'level_4_ro'=>$ro_email_id,
+			'current_level'=>$ro_email_id,
+			'created'=>date('Y-m-d H:i:s'),
+			'modified'=>date('Y-m-d H:i:s')
+		));
+
+		if($Dmi_allocation_table->save($Dmi_allocation_Entity));
+
+		$user_email_id = $ro_email_id;
+		$current_level = 'level_4_ro';
+		$Dmi_appl_current_pos_table->currentUserUpdate($customer_id,$user_email_id,$current_level);
+		return true;
+	}
+
+
+	// ifApplicationIsExport
+	// Description: This method is used to save the entries to the allocation tables for HO entries which is used for forward
+	// By: Akash
+	// Date: 02-12-2022
+
+	public function ifApplicationIsExport($customer_id,$application_type){
+		
+		//Load Model
+		$DmiUserRoles = TableRegistry::getTableLocator()->get('DmiUserRoles');
+		$DmiFlowWiseTablesLists = TableRegistry::getTableLocator()->get('DmiFlowWiseTablesLists');
+		$Dmi_final_submit_tb = $DmiFlowWiseTablesLists->find('all',array('conditions'=>array('application_type IS'=>$application_type)))->first();
+
+
+		//this HO level allocation applied for lab export application
+		//on 02-09-2017 by Amol
+		$find_dy_ama_user = $DmiUserRoles->find('all',array('fields'=>'user_email_id','conditions'=>array('dy_ama'=>'yes','OR'=>array('super_admin IS NULL','super_admin'=>'no'))))->first();
+		$dy_ama_email_id = $find_dy_ama_user['user_email_id'];
+
+		$find_jt_ama_user = $DmiUserRoles->find('all',array('fields'=>'user_email_id','conditions'=>array('jt_ama'=>'yes','OR'=>array('super_admin IS NULL','super_admin'=>'no'))))->first();;
+		$jt_ama_email_id = $find_jt_ama_user['user_email_id'];
+
+		$find_ama_user = $DmiUserRoles->find('all',array('fields'=>'user_email_id','conditions'=>array('ama'=>'yes','OR'=>array('super_admin IS NULL','super_admin'=>'no'))))->first();;
+		$ama_email_id = $find_ama_user['user_email_id'];
+
+		$Dmi_ho_allocation = TableRegistry::getTableLocator()->get($Dmi_final_submit_tb['ho_level_allocation']);
+		$Dmi_all_applications_current_position = TableRegistry::getTableLocator()->get($Dmi_final_submit_tb['appl_current_pos']);
+
+		$Dmi_ho_allocation_entity = $Dmi_ho_allocation->newEntity(array(
+
+			'customer_id'=>$customer_id,
+			'dy_ama'=>$dy_ama_email_id,
+			'jt_ama'=>$jt_ama_email_id,
+			'ama'=>$ama_email_id,
+			'current_level'=>$dy_ama_email_id,
+			'created'=>date('Y-m-d H:i:s'),
+			'modified'=>date('Y-m-d H:i:s')
+		));
+		
+		if($Dmi_ho_allocation->save($Dmi_ho_allocation_entity)){
+
+			//Update record in all applications current position table
+			//created and applied on 02-09-2017 by amol
+			$customer_id = $customer_id;
+			$user_email_id = $dy_ama_email_id;
+			$current_level = 'level_4';
+			$Dmi_all_applications_current_position->currentUserUpdate($customer_id,$user_email_id,$current_level);//call to custom function from model
+		}
 
 		return true;
 	}

@@ -506,8 +506,8 @@
 			$creat_array = false;
 			$username = $this->Session->read('username');
 			
-			if ($appl_type_id == 2) {
-				$level2 = null;
+			if ($appl_type_id == 2 || $appl_type_id == 3) {//added temp for all change flow to avoid level 2 check, on 21-12-2022
+				$level2 = null;			
 			} else {
 				$level2 = "and al.level_2 IS NOT NULL";
 			}			
@@ -1234,7 +1234,7 @@
 				
 			//get flow wise tables
 			$DmiFlowWiseTablesLists = TableRegistry::getTableLocator()->get('DmiFlowWiseTablesLists');
-			$flow_wise_tables = $DmiFlowWiseTablesLists->find('all',array('conditions'=>array('application_type IN'=>$this->Session->read('applTypeArray')),'order'=>'id ASC'))->toArray();
+			$flow_wise_tables = $DmiFlowWiseTablesLists->find('all',array('conditions'=>array('application_type IN'=>$applTypeArray/*$this->Session->read('applTypeArray')*/),'order'=>'id ASC'))->toArray();
 		
 			$i=0;
 			$appl_list_array = array();

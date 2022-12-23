@@ -96,8 +96,10 @@ class InspectionsController extends AppController{
 		$form_final_submit_details = $this->Customfunctions->finalSubmitDetails($customer_id,'application_form');
 		
 		//Below the Not Empty condition is added to remove the offset error - Akash [26-10-2022]
-		if(!empty($form_final_submit_details['status']) != 'approved'){
-			$this->Session->write('application_mode','view');
+		if (!empty($form_final_submit_details)) {
+			if($form_final_submit_details['status'] != 'approved'){ 
+				$this->Session->write('application_mode','view');
+			}
 		}
 		
 		$user_email_id = $this->Session->read('username');

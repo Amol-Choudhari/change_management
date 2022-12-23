@@ -466,7 +466,7 @@ use App\Network\Response\Response;
 					//call custom function from Model with message id
 					//added this condition on 16-09-2019, if appln is CA BEVO
 					//then approved by JTAMA and send to DYAMA
-					if($ca_bevo_applicant == 'yes' && $application_type==1) { //added cond. on 22-11-2021 for appl. type = 1
+					if($ca_bevo_applicant == 'yes' && ($application_type==1 || $application_type==3)) { //added cond. on 22-11-2021 for appl. type = 1
 
 						#SMS: JTAMA approved application
 						//$this->DmiSmsEmailTemplates->sendMessage(53,$customer_id);

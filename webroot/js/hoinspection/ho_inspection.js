@@ -54,7 +54,7 @@ var ca_bevo_applicant = $('#ca_bevo_applicant').val();
 
 
 //added below new condition on 16-09-2019 for CA BEVO appln approved by Jtama only
-if(check_user_role.ama == 'yes' || (check_user_role.jt_ama == 'yes' && ca_bevo_applicant == 'yes' && application_type_id==1))//added cond. on 22-11-2021 for appl. type = 1
+if(check_user_role.ama == 'yes' || (check_user_role.jt_ama == 'yes' && ca_bevo_applicant == 'yes' && (application_type_id==1 || application_type_id==3)))//added cond. on 22-11-2021 for appl. type = 1
 {
     //below code added on 04-08-2017 by Amol
    $("#approved_btn").hide();
