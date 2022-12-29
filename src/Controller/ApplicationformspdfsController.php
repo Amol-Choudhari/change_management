@@ -1613,71 +1613,8 @@ class ApplicationformspdfsController extends AppController{
 		//because main tables will be updated with new details at last once certificate esigned.
 		//added on 27-12-2022 for change management
 		if ($this->Session->read('application_type')==3) {
-			
-			$this->loadModel('DmiChangeApplDetails');
-			$changeApplDetails = $this->DmiChangeApplDetails->sectionFormDetails($customer_id);
-
-			if (!empty($changeApplDetails[0]['firm_name'])) {				
-				$customer_firm_data['firm_name'] = $changeApplDetails[0]['firm_name'];				
-			}
-			if (!empty($changeApplDetails[0]['mobile_no'])) {
-				$customer_firm_data['mobile_no'] = $changeApplDetails[0]['mobile_no'];
-				$customer_firm_data['email'] = $changeApplDetails[0]['email_id'];
-				$customer_firm_data['fax_no'] = $changeApplDetails[0]['phone_no'];				
-			}
-			if (!empty($changeApplDetails[0]['commodity'])) {
-				
-				// to show commodities and there selected sub-commodities
-				$sub_commodity_array = explode(',',(string) $changeApplDetails[0]['commodity']); #For Deprecations
-
-				$i=0;
-				foreach($sub_commodity_array as $sub_commodity_id)
-				{			
-					$fetch_commodity_id = $this->MCommodity->find('all',array('conditions'=>array('commodity_code IS'=>$sub_commodity_id)))->first();
-					$commodity_id[$i] = $fetch_commodity_id['category_code'];			
-					$sub_commodity_data[$i] =  $fetch_commodity_id;			
-					$i=$i+1;
-				}
-
-				$unique_commodity_id = array_unique($commodity_id);		
-				$commodity_name_list = $this->MCommodityCategory->find('all',array('conditions'=>array('category_code IN'=>$unique_commodity_id, 'display'=>'Y')))->toArray();
-				$this->set('commodity_name_list',$commodity_name_list);		
-				$this->set('sub_commodity_data',$sub_commodity_data);			
-			}
-			if (!empty($changeApplDetails[0]['premise_street'])) {
-				
-				$premises_data[0]['street_address'] = $changeApplDetails[0]['premise_street'];
-				
-				$premises_district_name = $this->Mastertablecontent->districtValueById($changeApplDetails[0]['premise_city']);
-				$this->set('premises_district_name',$premises_district_name);
-				
-				$premises_state_name = $this->Mastertablecontent->stateValueById($changeApplDetails[0]['premise_state']);
-				$this->set('premises_state_name',$premises_state_name);	
-
-				$premises_data[0]['postal_code'] = $changeApplDetails[0]['premise_pin'];			
-			}
-			if (!empty($changeApplDetails[0]['lab_type'])) {
-				
-				$laboratory_data[0]['laboratory_name'] = $changeApplDetails[0]['lab_name'];
-				$this->set('laboratory_data',$laboratory_data);
-
-			}			
-			//check if TBL updated
-			$this->loadModel('DmiChangeAllTblsDetails');
-			$added_tbls_details = $this->DmiChangeAllTblsDetails->find('all', array('conditions'=>array('customer_id IS'=>$customer_id,'delete_status IS NULL','status IS NULL'),'order'=>'id'))->toArray();
-			if (!empty($added_tbls_details)) {
-				$added_tbls_details[1][0] = $added_tbls_details;
-				$this->set('added_tbls_details',$added_tbls_details);				
-			}
-			//check if Director details updated
-			$this->loadModel('DmiChangeDirectorsDetails');
-			$added_directors_details = $this->DmiChangeDirectorsDetails->find('all', array('conditions'=>array('customer_id IS'=>$customer_id,'delete_status IS NULL','status IS NULL'),'order'=>'id'))->toArray();
-			if (!empty($added_directors_details)) {	
-				$this->set('added_directors_details',$added_directors_details);				
-			}
-			
-			$this->set('premises_data',$premises_data);
-			$this->set('customer_firm_data',$customer_firm_data);
+			$this->loadComponent('Randomfunctions');
+			$this->Randomfunctions->setChangedDetailsForGrantPdf($customer_id,$customer_firm_data,$premises_data,$laboratory_data);
 		}
 
 		//if called for re-esign process, make grant date condition blank, bcoz need to call all records

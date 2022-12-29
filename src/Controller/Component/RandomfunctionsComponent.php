@@ -558,6 +558,86 @@ class RandomfunctionsComponent extends Component {
 				return null;
 			}
 		}
+		
+		
+		//created common function to set variables in Grant pdf view for change flow
+		//this is to show details on grant pdf from change appl table before final esigned.
+		//29-12-2022 by Amol
+		public function setChangedDetailsForGrantPdf($customer_id,$customer_firm_data,$premises_data,$laboratory_data){
+
+			$DmiChangeApplDetails = TableRegistry::getTableLocator()->get('DmiChangeApplDetails');
+			$MCommodity = TableRegistry::getTableLocator()->get('MCommodity');
+			$MCommodityCategory = TableRegistry::getTableLocator()->get('MCommodityCategory');
+			$changeApplDetails = $DmiChangeApplDetails->sectionFormDetails($customer_id);
+
+			if (!empty($changeApplDetails[0]['firm_name'])) {//if firm name changed			
+				$customer_firm_data['firm_name'] = $changeApplDetails[0]['firm_name'];				
+			}
+			if (!empty($changeApplDetails[0]['mobile_no'])) {//if Mobile no changed	
+				$customer_firm_data['mobile_no'] = $changeApplDetails[0]['mobile_no'];
+				$customer_firm_data['email'] = $changeApplDetails[0]['email_id'];
+				$customer_firm_data['fax_no'] = $changeApplDetails[0]['phone_no'];				
+			}
+			if (!empty($changeApplDetails[0]['commodity'])) {//if commodity changed	
+				
+				// to show commodities and there selected sub-commodities
+				$sub_commodity_array = $changeApplDetails[0]['commodity'];
+
+				$i=0;
+				foreach($sub_commodity_array as $key => $value)
+				{			
+					$fetch_commodity_id = $MCommodity->find('all',array('conditions'=>array('commodity_code IS'=>$key)))->first();
+					$commodity_id[$i] = $fetch_commodity_id['category_code'];			
+					$sub_commodity_data[$i] =  $fetch_commodity_id;			
+					$i=$i+1;
+				}
+
+				$unique_commodity_id = array_unique($commodity_id);		
+				$commodity_name_list = $MCommodityCategory->find('all',array('conditions'=>array('category_code IN'=>$unique_commodity_id, 'display'=>'Y')))->toArray();
+				$this->Controller->set('commodity_name_list',$commodity_name_list);		
+				$this->Controller->set('sub_commodity_data',$sub_commodity_data);			
+			}
+			if (!empty($changeApplDetails[0]['packing_types'])) {//if Packaging material changed	for PP
+				
+				$packaging_materials = $changeApplDetails[0]['packing_types'];
+				$packaging_types = $this->DmiPackingTypes->find('list', array('keyField'=>'id','valueField'=>'packing_type', 'conditions'=>array('id IN'=>$packaging_materials)))->toArray();			 
+				$this->set('packaging_types',$packaging_types);
+			}
+			if (!empty($changeApplDetails[0]['premise_street'])) {//if premises changed	
+				
+				$premises_data[0]['street_address'] = $changeApplDetails[0]['premise_street'];
+				
+				$premises_district_name = $this->Controller->Mastertablecontent->districtValueById($changeApplDetails[0]['premise_city']);
+				$this->Controller->set('premises_district_name',$premises_district_name);
+				
+				$premises_state_name = $this->Controller->Mastertablecontent->stateValueById($changeApplDetails[0]['premise_state']);
+				$this->Controller->set('premises_state_name',$premises_state_name);	
+
+				$premises_data[0]['postal_code'] = $changeApplDetails[0]['premise_pin'];			
+			}
+			if (!empty($changeApplDetails[0]['lab_type'])) {//if Lab details changed	
+				
+				$laboratory_data[0]['laboratory_name'] = $changeApplDetails[0]['lab_name'];
+				$this->Controller->set('laboratory_data',$laboratory_data);
+
+			}			
+			//check if TBL updated
+			$DmiChangeAllTblsDetails = TableRegistry::getTableLocator()->get('DmiChangeAllTblsDetails');
+			$added_tbls_details = $DmiChangeAllTblsDetails->find('all', array('conditions'=>array('customer_id IS'=>$customer_id,'delete_status IS NULL','status IS NULL'),'order'=>'id'))->toArray();
+			if (!empty($added_tbls_details)) {
+				$added_tbls_details[1][0] = $added_tbls_details;
+				$this->Controller->set('added_tbls_details',$added_tbls_details);				
+			}
+			//check if Director details updated
+			$DmiChangeDirectorsDetails = TableRegistry::getTableLocator()->get('DmiChangeDirectorsDetails');
+			$added_directors_details = $DmiChangeDirectorsDetails->find('all', array('conditions'=>array('customer_id IS'=>$customer_id,'delete_status IS NULL','status IS NULL'),'order'=>'id'))->toArray();
+			if (!empty($added_directors_details)) {	
+				$this->Controller->set('added_directors_details',$added_directors_details);				
+			}
+			
+			$this->Controller->set('premises_data',$premises_data);
+			$this->Controller->set('customer_firm_data',$customer_firm_data);
+		}
 
 
 	}
