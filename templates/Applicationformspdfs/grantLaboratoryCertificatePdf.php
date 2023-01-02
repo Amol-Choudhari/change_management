@@ -190,8 +190,8 @@
 										<?php $i=1; foreach($added_directors_details as $each_detail){?>
 											<tr>
 												<td style="padding:10px; vertical-align:top;"><?php echo $i; ?></td>
-												<td style="padding:10px; vertical-align:top;"><?php if(!empty($each_detail['Dmi_all_directors_detail']['d_name'])){ echo $each_detail['Dmi_all_directors_detail']['d_name']; }else{ echo 'NA'; } ?></td>
-												<td style="padding:10px; vertical-align:top;"><?php if(!empty($each_detail['Dmi_all_directors_detail']['d_address'])){ echo ucfirst($each_detail['Dmi_all_directors_detail']['d_address']); }else{ echo 'NA'; } ?></td>
+												<td style="padding:10px; vertical-align:top;"><?php if(!empty($each_detail['d_name'])){ echo $each_detail['d_name']; }else{ echo 'NA'; } ?></td>
+												<td style="padding:10px; vertical-align:top;"><?php if(!empty($each_detail['d_address'])){ echo ucfirst($each_detail['d_address']); }else{ echo 'NA'; } ?></td>
 
 											</tr>
 										<?php $i=$i+1;} ?>

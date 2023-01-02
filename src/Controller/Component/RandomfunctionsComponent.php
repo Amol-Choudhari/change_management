@@ -563,7 +563,7 @@ class RandomfunctionsComponent extends Component {
 		//created common function to set variables in Grant pdf view for change flow
 		//this is to show details on grant pdf from change appl table before final esigned.
 		//29-12-2022 by Amol
-		public function setChangedDetailsForGrantPdf($customer_id,$customer_firm_data,$premises_data,$laboratory_data){
+		public function setChangedDetailsForGrantPdf($customer_id,$customer_firm_data,$premises_data,$laboratory_data=null){
 
 			$DmiChangeApplDetails = TableRegistry::getTableLocator()->get('DmiChangeApplDetails');
 			$MCommodity = TableRegistry::getTableLocator()->get('MCommodity');
@@ -615,7 +615,7 @@ class RandomfunctionsComponent extends Component {
 
 				$premises_data[0]['postal_code'] = $changeApplDetails[0]['premise_pin'];			
 			}
-			if (!empty($changeApplDetails[0]['lab_type'])) {//if Lab details changed	
+			if (!empty($changeApplDetails[0]['lab_type']) && !empty($laboratory_data)) {//if Lab details changed	
 				
 				$laboratory_data[0]['laboratory_name'] = $changeApplDetails[0]['lab_name'];
 				$this->Controller->set('laboratory_data',$laboratory_data);
@@ -637,6 +637,81 @@ class RandomfunctionsComponent extends Component {
 			
 			$this->Controller->set('premises_data',$premises_data);
 			$this->Controller->set('customer_firm_data',$customer_firm_data);
+		}
+		
+		
+		//to show changed fields or section name with updated changed, in Section III
+		//on 02-01-2023 by Amol
+		public function showChangedFieldsInGrantPdfSection($customer_id){
+			
+			$DmiChangeSelectedFields = TableRegistry::getTableLocator()->get('DmiChangeSelectedFields');
+			$DmiChangeApplDetails = TableRegistry::getTableLocator()->get('DmiChangeApplDetails');
+			$DmiChangeFieldLists = TableRegistry::getTableLocator()->get('DmiChangeFieldLists');
+			$DmiChangeAllTblsDetails = TableRegistry::getTableLocator()->get('DmiChangeAllTblsDetails');
+			$DmiChangeDirectorsDetails = TableRegistry::getTableLocator()->get('DmiChangeDirectorsDetails');
+			$DmiDistricts = TableRegistry::getTableLocator()->get('DmiDistricts');
+			$DmiStates = TableRegistry::getTableLocator()->get('DmiStates');
+			
+			//check selected fields
+			$selectedfields = $DmiChangeSelectedFields->selectedChangeFields();
+			$selectedValues = $selectedfields[0];
+			
+			//get selected fields name
+			$getFieldName = $DmiChangeFieldLists->find('all',array('conditions'=>array('field_id IN'=>$selectedValues,'form_type'=>'common'),'order'=>'field_id asc'))->toArray();
+			
+			//get new change details
+			$getChangeDetails = $DmiChangeApplDetails->find('all',array('conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->first();
+			
+			//get change tbl details
+			$changeTblDetails = $DmiChangeAllTblsDetails->find('all',array('fields'=>'tbl_name','conditions'=>array('customer_id'=>$customer_id,'delete_status IS NULL','status IS NULL')))->toArray();
+			
+			//get Director details
+			$changeDirectorDetails = $DmiChangeDirectorsDetails->find('all',array('fields'=>array('d_name','d_address'),'conditions'=>array('customer_id'=>$customer_id,'delete_status IS NULL','status IS NULL')))->toArray();
+			
+			// to show changed premises details	
+			$change_premises = '';
+			if (!empty($getChangeDetails['premise_city'])) {
+				$change_district_name = $DmiDistricts->find('all',array('fields'=>'district_name','conditions'=>array('id IS'=>$getChangeDetails['premise_city'])))->first();		
+				$change_state_name = $DmiStates->find('all',array('fields'=>'state_name','conditions'=>array('id IS'=>$getChangeDetails['premise_state'])))->first();
+				$change_premises = $getChangeDetails['premises_street'].', '.$change_district_name['district_name'].', '.$change_state_name['state_name'].', '.$getChangeDetails['premises_pin'];
+			}
+			
+			//for changed lab details
+			if (!empty($getChangeDetails['lab_type'])) {
+
+				$DmiLaboratoryTypes = TableRegistry::getTableLocator()->get('DmiLaboratoryTypes');
+				$change_lab = $DmiLaboratoryTypes->find('all',array('fields'=>'laboratory_type','conditions'=>array('id IS'=>$getChangeDetails['lab_type'])))->first();
+				$change_lab_type = $change_lab['laboratory_type'];
+				$this->Controller->set('change_lab_type',$change_lab_type);
+				
+				$change_premises = $getChangeDetails['premise_street'].', '.$change_district_name['district_name'].', '.$change_state_name['state_name'].', '.$getChangeDetails['premise_pin'];
+			}
+			
+			//for change commodities
+			if (!empty($getChangeDetails['comm_category'])) {
+				$change_commodity_array = explode(',',(string) $getChangeDetails['commodity']); #For Deprecations
+				
+				$MCommodity = TableRegistry::getTableLocator()->get('MCommodity');
+				$MCommodityCategory = TableRegistry::getTableLocator()->get('MCommodityCategory');
+
+				$i=0;
+				foreach ($change_commodity_array as $sub_commodity_id)
+				{
+					$fetch_commodity_id = $MCommodity->find('all',array('conditions'=>array('commodity_code IS'=>$sub_commodity_id)))->first();
+					$commodity_id[$i] = $fetch_commodity_id['category_code'];
+					$change_sub_commodity_data[$i] =  $fetch_commodity_id;
+					$i=$i+1;
+				}
+
+				$unique_commodity_id = array_unique($commodity_id);
+
+				$change_commodity_name_list = $MCommodityCategory->find('all',array('conditions'=>array('category_code IN'=>$unique_commodity_id, 'display'=>'Y')))->toArray();
+
+				$this->Controller->set('change_commodity_name_list',$change_commodity_name_list);
+				$this->Controller->set('change_sub_commodity_data',$change_sub_commodity_data);
+			}
+			
+			$this->Controller->set(compact('selectedValues','getFieldName','getChangeDetails','changeTblDetails','changeDirectorDetails','change_premises'));
 		}
 
 

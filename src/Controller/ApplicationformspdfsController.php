@@ -1615,6 +1615,7 @@ class ApplicationformspdfsController extends AppController{
 		if ($this->Session->read('application_type')==3) {
 			$this->loadComponent('Randomfunctions');
 			$this->Randomfunctions->setChangedDetailsForGrantPdf($customer_id,$customer_firm_data,$premises_data,$laboratory_data);
+			$this->Randomfunctions->showChangedFieldsInGrantPdfSection($customer_id);
 		}
 
 		//if called for re-esign process, make grant date condition blank, bcoz need to call all records
@@ -1839,6 +1840,14 @@ class ApplicationformspdfsController extends AppController{
 		// show added directors table	
 		$added_directors_details = $this->DmiAllDirectorsDetails->allDirectorsDetail($customer_id);	
 		$this->set('added_directors_details',$added_directors_details);
+		
+		//check if process is Change/Modification then get details from change table.
+		//because main tables will be updated with new details at last once certificate esigned.
+		//added on 27-12-2022 for change management
+		if ($this->Session->read('application_type')==3) {
+			$this->loadComponent('Randomfunctions');
+			$this->Randomfunctions->setChangedDetailsForGrantPdf($customer_id,$customer_firm_data,$premises_data);
+		}
 
 		//if called for re-esign process, make grant date condition blank, bcoz need to call all records
 		//applied on 24-09-2021 by Amol
@@ -2077,6 +2086,14 @@ class ApplicationformspdfsController extends AppController{
 		//Fetch added directors table details
 		$added_directors_details = $this->DmiAllDirectorsDetails->allDirectorsDetail($customer_id);	
 		$this->set('added_directors_details',$added_directors_details);
+				
+		//check if process is Change/Modification then get details from change table.
+		//because main tables will be updated with new details at last once certificate esigned.
+		//added on 27-12-2022 for change management
+		if ($this->Session->read('application_type')==3) {
+			$this->loadComponent('Randomfunctions');
+			$this->Randomfunctions->setChangedDetailsForGrantPdf($customer_id,$customer_firm_data,$premises_data);
+		}
 
 		//if called for re-esign process, make grant date condition blank, bcoz need to call all records
 		//applied on 24-09-2021 by Amol
@@ -2990,71 +3007,8 @@ class ApplicationformspdfsController extends AppController{
 		$customer_id = $this->Session->read('username');		
 		$this->set('customer_id',$customer_id);
 		
-		$this->loadModel('DmiChangeSelectedFields');
-		$this->loadModel('DmiChangeApplDetails');
-		$this->loadModel('DmiChangeFieldLists');
-		$this->loadModel('DmiChangeAllTblsDetails');
-		$this->loadModel('DmiChangeDirectorsDetails');
-		
-		//check selected fields
-		$selectedfields = $this->DmiChangeSelectedFields->selectedChangeFields();
-		$selectedValues = $selectedfields[0];
-		
-		//get selected fields name
-		$getFieldName = $this->DmiChangeFieldLists->find('all',array('conditions'=>array('field_id IN'=>$selectedValues,'form_type'=>'common'),'order'=>'field_id asc'))->toArray();
-		
-		//get new change details
-		$getChangeDetails = $this->DmiChangeApplDetails->find('all',array('conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->first();
-		
-		//get change tbl details
-		$changeTblDetails = $this->DmiChangeAllTblsDetails->find('all',array('fields'=>'tbl_name','conditions'=>array('customer_id'=>$customer_id,'delete_status IS NULL','status IS NULL')))->toArray();
-		
-		//get Director details
-		$changeDirectorDetails = $this->DmiChangeDirectorsDetails->find('all',array('fields'=>array('d_name','d_address'),'conditions'=>array('customer_id'=>$customer_id,'delete_status IS NULL','status IS NULL')))->toArray();
-		
-		// to show changed premises details	
-		$change_premises = '';
-		if (!empty($getChangeDetails['premise_city'])) {
-			$change_district_name = $this->DmiDistricts->find('all',array('fields'=>'district_name','conditions'=>array('id IS'=>$getChangeDetails['premise_city'])))->first();		
-			$change_state_name = $this->DmiStates->find('all',array('fields'=>'state_name','conditions'=>array('id IS'=>$getChangeDetails['premise_state'])))->first();
-			$change_premises = $getChangeDetails['premises_street'].', '.$change_district_name['district_name'].', '.$change_state_name['state_name'].', '.$getChangeDetails['premises_pin'];
-		}
-		
-		//for changed lab details
-		if (!empty($getChangeDetails['lab_type'])) {
-
-			$this->loadModel('DmiLaboratoryTypes');
-			$change_lab = $this->DmiLaboratoryTypes->find('all',array('fields'=>'laboratory_type','conditions'=>array('id IS'=>$getChangeDetails['lab_type'])))->first();
-			$change_lab_type = $change_lab['laboratory_type'];
-			$this->set('change_lab_type',$change_lab_type);
-			
-			$change_premises = $getChangeDetails['premise_street'].', '.$change_district_name['district_name'].', '.$change_state_name['state_name'].', '.$getChangeDetails['premise_pin'];
-		}
-		
-		//for change commodities
-		if (!empty($getChangeDetails['comm_category'])) {
-			$change_commodity_array = explode(',',(string) $getChangeDetails['commodity']); #For Deprecations
-			
-			$this->loadModel('MCommodity');
-			$this->loadModel('MCommodityCategory');
-			$i=0;
-			foreach ($change_commodity_array as $sub_commodity_id)
-			{
-				$fetch_commodity_id = $this->MCommodity->find('all',array('conditions'=>array('commodity_code IS'=>$sub_commodity_id)))->first();
-				$commodity_id[$i] = $fetch_commodity_id['category_code'];
-				$change_sub_commodity_data[$i] =  $fetch_commodity_id;
-				$i=$i+1;
-			}
-
-			$unique_commodity_id = array_unique($commodity_id);
-
-			$change_commodity_name_list = $this->MCommodityCategory->find('all',array('conditions'=>array('category_code IN'=>$unique_commodity_id, 'display'=>'Y')))->toArray();
-
-			$this->set('change_commodity_name_list',$change_commodity_name_list);
-			$this->set('change_sub_commodity_data',$change_sub_commodity_data);
-		}
-		
-		$this->set(compact('selectedValues','getFieldName','getChangeDetails','changeTblDetails','changeDirectorDetails','change_premises'));
+		$this->loadComponent('Randomfunctions');
+		$this->Randomfunctions->showChangedFieldsInGrantPdfSection($customer_id);
 		
 		//get nodal office of the applied CA
 		$this->loadModel('DmiApplWithRoMappings');

@@ -446,15 +446,26 @@
 		
 		<table width="100%" border="1" >
 				<tr>
-					<th style="padding:10px;" width="30%" cellspacing="50" align="left"><b>Date of Application</b></th>
-					<th style="padding:10px;" width="30%" cellspacing="50" align="left"><b>Details of the changes recorded</b></th>
-					<th style="padding:10px;" width="40%" cellspacing="50" align="left"><b>Signature & Designation of Authorised Officer</b></th>
+					<th style="padding:10px;" width="25%" cellspacing="50" align="left"><b>Date of Application</b></th>
+					<th style="padding:10px;" width="45%" cellspacing="50" align="left"><b>Details of the changes recorded</b></th>
+					<th style="padding:10px;" width="30%" cellspacing="50" align="left"><b>Signature & Designation of Authorised Officer</b></th>
 					
 				</tr>
 				
 				<tr>
 					<td style="padding:10px; vertical-align:top;">Date: <?php echo 'NA'; ?></td>
-					<td style="padding:10px; vertical-align:top;"><?php echo 'NA'; ?></td>
+					<td style="padding:10px; vertical-align:top;">
+						<table width="100%" border="1">
+							<tr>
+								<td style="padding:10px; vertical-align:top;"><b>Section/Field</b></td>
+								<td style="padding:10px; vertical-align:top;"><b>Changed Detail</b></td>
+							</tr>
+							
+							<!-- element call to show change updates added on 02-01-2023-->
+							<?php echo $this->element('application_forms/change/elementChangeUpdatesOnCertificate'); ?>
+						</table>
+					
+					</td>
 					<td style="padding:10px; vertical-align:top;">E-Signed By: <?php echo 'NA'; ?></td>
 				</tr>
 		
