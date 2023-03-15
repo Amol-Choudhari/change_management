@@ -715,13 +715,7 @@ class DashboardController extends AppController{
 									//commented below condition to show allocated appls also in allocation window, on 10-08-2022
 									//if($current_pos['current_level']=='level_3' && $current_pos['current_user_email_id']==$username){
 
-										//application must not be with applicant while allocation
-										//added on 03-02-2023 by Amol
-										$finalSubmitStatus = $this->$final_submit_table->find('all',array('conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->first();
-										if($finalSubmitStatus['status'] != 'referred_back'){
-											$creat_array = true;
-										}
-										
+										$creat_array = true;
 									//}
 
 								}
@@ -819,12 +813,7 @@ class DashboardController extends AppController{
 												//commented below condition to show allocated appls also in allocation window, on 10-08-2022
 												//if($current_pos['current_level']=='level_3' && $current_pos['current_user_email_id']==$username){
 
-												//application must not be with applicant while allocation
-													//added on 03-02-2023 by Amol
-													$finalSubmitStatus = $this->$final_submit_table->find('all',array('conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->first();
-													if($finalSubmitStatus['status'] != 'referred_back'){
-														$creat_array = true;
-													}
+													$creat_array = true;
 
 												//}
 
@@ -890,12 +879,7 @@ class DashboardController extends AppController{
 									//commented below condition to show allocated appls also in allocation window, on 10-08-2022
 									//if($current_pos['current_level']=='level_4_ro' && $current_pos['current_user_email_id']==$username){
 
-										//application must not be with applicant while allocation
-										//added on 03-02-2023 by Amol
-										$finalSubmitStatus = $this->$final_submit_table->find('all',array('conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->first();
-										if($finalSubmitStatus['status'] != 'referred_back'){
-											$creat_array = true;
-										}
+										$creat_array = true;
 
 									//}
 								}
@@ -965,12 +949,7 @@ class DashboardController extends AppController{
 									//commented below condition to show allocated appls also in allocation window, on 10-08-2022
 									//if($current_pos['current_user_email_id']==$username && $current_pos['current_level']=='level_4'){
 
-										//application must not be with applicant while allocation
-										//added on 03-02-2023 by Amol
-										$finalSubmitStatus = $this->$final_submit_table->find('all',array('conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->first();
-										if($finalSubmitStatus['status'] != 'referred_back'){
-											$creat_array = true;
-										}
+										$creat_array = true;
 
 									//}
 
@@ -1135,7 +1114,7 @@ class DashboardController extends AppController{
 
 					'customer_id'=>$customer_id,
 					'application_type'=>$appl_type_id['id'],
-					'created'=>date('Y-m-d H:i:s'),
+					'created'=>$current_date,
 					'user_id'=>$user_id,
 					'mo_office'=>$mo_office,
 					'mo_email_id'=>$mo_user_id,
@@ -1144,67 +1123,6 @@ class DashboardController extends AppController{
 				));
 
 				if($this->DmiMoAllocationLogs->save($allocation_logs_entity)){
-					
-					//check if reallocating application and comments in Mo-RO comments table
-					//if found entry then enter new record from RO to MO comment, to manage reallocation
-					if($allocation_type=='1' || $allocation_type=='3' || $allocation_type=='5'){
-						
-						//for Nodal officer scrutiny
-						if($allocation_type=='1'){
-							$commentsTable = $flow_wise_tables['commenting_with_mo'];
-							$this->loadModel($commentsTable);
-							$dataArray = array(
-								'customer_id'=>$customer_id,
-								'comment_by'=>$username,
-								'comment_to'=>$mo_user_id,
-								'comment_date'=>date('Y-m-d H:i:s'),
-								'comment'=>'Reallocated for Scrutiny',
-								'created'=>date('Y-m-d H:i:s'),
-								'modified'=>date('Y-m-d H:i:s'),
-								'available_to'=>'mo'
-							);
-						
-						//for Level4 RO scrutiny
-						}else if($allocation_type=='3'){
-							$commentsTable = $flow_wise_tables['ro_so_comments'];
-							$this->loadModel($commentsTable);
-							$dataArray = array(
-								'customer_id'=>$customer_id,
-								'comment_by'=>$username,
-								'comment_to'=>$mo_user_id,
-								'comment_date'=>date('Y-m-d H:i:s'),
-								'comment'=>'Reallocated for Scrutiny',
-								'created'=>date('Y-m-d H:i:s'),
-								'modified'=>date('Y-m-d H:i:s'),
-								'from_user'=>'ro',
-								'to_user'=>'mo',
-							);
-						
-						//for HO level scrutiny
-						}else if($allocation_type=='5'){
-							$commentsTable = $flow_wise_tables['ho_comment_reply'];
-							$this->loadModel($commentsTable);
-							$dataArray = array(
-								'customer_id'=>$customer_id,
-								'comment_by'=>$username,
-								'comment_to'=>$mo_user_id,
-								'comment_date'=>date('Y-m-d H:i:s'),
-								'comment'=>'Reallocated for Scrutiny',
-								'created'=>date('Y-m-d H:i:s'),
-								'modified'=>date('Y-m-d H:i:s'),
-								'from_user'=>'dy_ama',
-								'to_user'=>'ho_mo_smo',
-							);
-						}
-						//check last comment record	
-						$checkRecord = $this->$commentsTable->find('all',array('conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->first();
-						if(!empty($checkRecord)){
-							$ro_mo_comments_entity = $this->$commentsTable->newEntity($dataArray);
-							$this->$commentsTable->save($ro_mo_comments_entity);
-						}
-						
-						
-					}
 					
 					#SMS: Allocation
 					$this->DmiSmsEmailTemplates->sendMessage($msg_id,$customer_id);
@@ -1306,7 +1224,7 @@ class DashboardController extends AppController{
 
 					'customer_id'=>$customer_id,
 					'application_type'=>$appl_type_id['id'],
-					'created'=>date('Y-m-d H:i:s'),
+					'created'=>$current_date,
 					'user_id'=>$user_id,
 					'io_office'=>$io_office,
 					'io_email_id'=>$io_user_id,
@@ -2570,6 +2488,27 @@ class DashboardController extends AppController{
 		$this->Session->write('listFor',$_POST['listFor']);
 		$this->Session->write('listSubTab',$_POST['listSubTab']);
 		exit;
+	}
+	
+	
+	//added this methos on 03-02-2023
+	//to check if application is inprocess for scrutiny with MO/SMO
+	//called through ajax when allocate/reallocate button is clicked for scrutiny
+	public function check_appl_inprocess_before_reallocation_scrutiny(){
+		
+		$this->autoRender = false;
+		$customer_id = $_POST['customer_id'];
+		$appl_type = $_POST['appl_type'];
+		$mo_user_id = $_POST['mo_user_id'];
+		
+		//get flow wise MO RO comments model
+		$this->loadModel('DmiFlowWiseTablesLists');
+		$DmiFlowWiseTablesLists = $this->DmiFlowWiseTablesLists->find('all',array('fields'=>'commenting_with_mo','conditions'=>array('application_type IS'=>$appl_type)))->first();
+		
+		
+		$this->loadModel('DmiStates');
+		$this->loadModel('DmiFlowWiseTablesLists');
+		
 	}
 
 

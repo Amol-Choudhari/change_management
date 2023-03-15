@@ -116,7 +116,15 @@ class AjaxFunctionsController extends AppController{
 	public function editMachineId() {
 
 		$this->autoRender = false;
-		$this->loadModel('DmiAllMachinesDetails');
+		//$this->loadModel('DmiAllMachinesDetails');
+		
+		$applicationType = $this->Session->read('application_type');
+		//added condition for Change module on 14-03-2023 by Amol
+		if ($applicationType == 3) {
+			$DmiAllMachinesDetails = TableRegistry::getTableLocator()->get('DmiChangeAllMachinesDetails');
+		} else {
+			$DmiAllMachinesDetails = TableRegistry::getTableLocator()->get('DmiAllMachinesDetails');
+		}
 
 		$customer_id = $this->Customfunctions->sessionCustomerID();
 		$firm_type = $this->Customfunctions->firmType($customer_id);
@@ -143,7 +151,7 @@ class AjaxFunctionsController extends AppController{
 
 			if (!empty($edit_machine_id)) {
 
-				$find_machines_details = $this->DmiAllMachinesDetails->find('all',array('conditions'=>array('id IS'=>$edit_machine_id)))->first();
+				$find_machines_details = $DmiAllMachinesDetails->find('all',array('conditions'=>array('id IS'=>$edit_machine_id)))->first();
 				$this->set('find_machines_details',$find_machines_details);
 
 				$machine_type_value_edit = $find_machines_details['machine_type'];
@@ -158,11 +166,11 @@ class AjaxFunctionsController extends AppController{
 			$machine_type = htmlentities($_POST['machine_type'], ENT_QUOTES);
 			$machine_no = htmlentities($_POST['machine_no'], ENT_QUOTES);
 			$machine_capacity = htmlentities($_POST['machine_capacity'], ENT_QUOTES);
-			$save_details_result = $this->DmiAllMachinesDetails->editMachineDetails($record_id,$machine_name,$machine_type,$machine_no,$machine_capacity);// call custome method from model
+			$save_details_result = $DmiAllMachinesDetails->editMachineDetails($record_id,$machine_name,$machine_type,$machine_no,$machine_capacity);// call custome method from model
 			$this->Session->delete('edit_machine_id');
 		}
 
-		$added_machines_details[1] = $this->DmiAllMachinesDetails->machineDetails($firm_type);
+		$added_machines_details[1] = $DmiAllMachinesDetails->machineDetails($firm_type);
 		$this->Set('section_form_details',$added_machines_details);
 		
 		//this below call is modified "Element" changed to "element" as it declining the path on server by AKASH THAKRE on 23-03-2022
@@ -180,7 +188,16 @@ class AjaxFunctionsController extends AppController{
 	public function addMachineDetails() {
 		
 		$this->autoRender = false;
-		$this->loadModel('DmiAllMachinesDetails');
+		//$this->loadModel('DmiAllMachinesDetails');
+		
+		$applicationType = $this->Session->read('application_type');
+		//added condition for Change module on 14-03-2023 by Amol
+		if ($applicationType == 3) {
+			$DmiAllMachinesDetails = TableRegistry::getTableLocator()->get('DmiChangeAllMachinesDetails');
+		} else {
+			$DmiAllMachinesDetails = TableRegistry::getTableLocator()->get('DmiAllMachinesDetails');
+		}
+		
 
 		$customer_id = $this->Customfunctions->sessionCustomerID();
 		$firm_type = $this->Customfunctions->firmType($customer_id);
@@ -190,8 +207,8 @@ class AjaxFunctionsController extends AppController{
 		$machine_no = htmlentities($_POST['machine_no'], ENT_QUOTES);
 		$machine_capacity = htmlentities($_POST['machine_capacity'], ENT_QUOTES);
 
-		$save_details_result = $this->DmiAllMachinesDetails->saveMachineDetails($machine_name,$machine_type,$machine_no,$machine_capacity);// call custome method from model
-		$added_machines_details[1] = $this->DmiAllMachinesDetails->machineDetails($firm_type);
+		$save_details_result = $DmiAllMachinesDetails->saveMachineDetails($machine_name,$machine_type,$machine_no,$machine_capacity);// call custome method from model
+		$added_machines_details[1] = $DmiAllMachinesDetails->machineDetails($firm_type);
 		$this->Set('section_form_details',$added_machines_details);
 		
 		//this below call is modified "Element" changed to "element" as it declining the path on server by AKASH THAKRE on 23-03-2022
@@ -209,16 +226,24 @@ class AjaxFunctionsController extends AppController{
 	public function deleteMachineId() {
 		
 		$this->Session->delete('edit_machine_id');
-		$this->loadModel('DmiAllMachinesDetails');
+		//$this->loadModel('DmiAllMachinesDetails');
+		
+		$applicationType = $this->Session->read('application_type');
+		//added condition for Change module on 14-03-2023 by Amol
+		if ($applicationType == 3) {
+			$DmiAllMachinesDetails = TableRegistry::getTableLocator()->get('DmiChangeAllMachinesDetails');
+		} else {
+			$DmiAllMachinesDetails = TableRegistry::getTableLocator()->get('DmiAllMachinesDetails');
+		}
 
 		$customer_id = $this->Customfunctions->sessionCustomerID();
 		$firm_type = $this->Customfunctions->firmType($customer_id);
 
 		//$record_id = $id;
 		$record_id = $_POST['delete_machine_id'];
-		$machine_delete_result = $this->DmiAllMachinesDetails->deleteMachineDetails($record_id);// call to custome function from model
+		$machine_delete_result = $DmiAllMachinesDetails->deleteMachineDetails($record_id);// call to custome function from model
 
-		$added_machines_details[1] = $this->DmiAllMachinesDetails->machineDetails($firm_type);
+		$added_machines_details[1] = $DmiAllMachinesDetails->machineDetails($firm_type);
 		$this->Set('section_form_details',$added_machines_details);
 		
 		//this below call is modified "Element" changed to "element" as it declining the path on server by AKASH THAKRE on 23-03-2022
@@ -489,6 +514,7 @@ class AjaxFunctionsController extends AppController{
 	public function deleteDirectorsDetailsId() {
 
 		//$this->loadModel('DmiAllDirectorsDetails');
+		//added condition for Change module on 14-03-2023 by Amol
 		$applicationType = $this->Session->read('application_type');
 		if ($applicationType == 3) {
 			$DmiAllDirectorsDetails = TableRegistry::getTableLocator()->get('DmiChangeDirectorsDetails');
@@ -523,6 +549,7 @@ class AjaxFunctionsController extends AppController{
 	public function addDirectorsDetails() {
 
 		$applicationType = $this->Session->read('application_type');
+		//added condition for Change module on 14-03-2023 by Amol
 		if ($applicationType == 3) {
 			$DmiAllDirectorsDetails = TableRegistry::getTableLocator()->get('DmiChangeDirectorsDetails');
 		} else {
@@ -557,6 +584,7 @@ class AjaxFunctionsController extends AppController{
 	public function editDirectorsDetailsId() {
 
 		$applicationType = $this->Session->read('application_type');
+		//added condition for Change module on 14-03-2023 by Amol
 		if ($applicationType == 3) {
 			$DmiAllDirectorsDetails = TableRegistry::getTableLocator()->get('DmiChangeDirectorsDetails');
 		} else {

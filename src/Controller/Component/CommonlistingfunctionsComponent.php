@@ -372,7 +372,8 @@
 			
 			if ($for_status == 'pending') {
 				
-				$stmt = $conn->execute("select al.*,cp.modified as tradate from $allocationTable as al 
+				//commented the code on 20-01-2023, as for level pending with scrutiny tab is hidden,but count was getting added in main tab.
+				/*$stmt = $conn->execute("select al.*,cp.modified as tradate from $allocationTable as al 
 										inner join (select fss.customer_id, fss.status , fss.current_level from $finalSubmitTable as fss
 										inner join (select max(id) id, customer_id from $finalSubmitTable group by customer_id) as fs on fs.customer_id = fss.customer_id and fs.id = fss.id) as fsr on fsr.customer_id = al.customer_id
 										LEFT  join (select mrc.customer_id,mrc.available_to from $moRoCommentsDetailsTable as mrc
@@ -381,7 +382,9 @@
 										inner join (select maxcpt.* from $applCurrentPosTable as maxcpt
 										inner join (select max(id) id, customer_id from $applCurrentPosTable group by customer_id) as mxcpt on mxcpt.customer_id = maxcpt.customer_id and mxcpt.id = maxcpt.id) as cp on cp.customer_id = al.customer_id
 										where cp.current_level != 'applicant' and al.level_3 = '$username' and al.level_1 IS NOT NULL and al.current_level = al.level_1 AND ((fsr.status != 'approved' AND fsr.current_level != 'level_1') OR (fsr.status != 'approved' AND fsr.current_level != 'level_3')) AND
-										cmt.customer_id IS NULL;");
+										cmt.customer_id IS NULL;");*/
+				//set blank array for default, as this tab is hidden ofr level 3
+				$stmt = array();						
 										
 			} elseif ($for_status == 'ref_back' || $for_status == 'replied') {
 				

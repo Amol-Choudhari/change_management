@@ -77,7 +77,7 @@ class AppController extends Controller
 	public function beforeFilter(EventInterface $event){
 
 		parent::beforeFilter($event);
-		
+
 		//below headers are set for "Content-Security-Policy", to allow inline scripts from same origin and report the outer origin scripts calls.
 		//the "Content-Security-Policy" header is commmented from httpd.conf file now and set here.
 		//26-10-2021 by Amol
@@ -90,6 +90,8 @@ class AppController extends Controller
 
 			Router::url('/');
 		}
+		
+		//print_r($this->Customfunctions->getCertificateValidUptoDate('413/2/MUM/004','06/05/2021 00:00:00'));exit;
 
 
 	//added on 30-09-201 by Amol
@@ -227,7 +229,6 @@ class AppController extends Controller
 
 		$current_date = strtotime(date('d-m-Y'));
 
-
 		$j = 0;
 		$failed_count = 0;
 		while ($j <= 2) {
@@ -235,8 +236,14 @@ class AppController extends Controller
 			if (!empty($remark[$j])) {
 
 				if ($remark[$j] == 'Failed') {
+					
+					$log_date = strtotime(str_replace('/','-',$date[$j]));
 
-					$failed_count = $failed_count+1;
+					if ($current_date == $log_date) {
+
+						$failed_count = $failed_count+1;
+					}
+					
 				}
 			}
 

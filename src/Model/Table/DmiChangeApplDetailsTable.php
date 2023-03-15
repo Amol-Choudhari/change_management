@@ -17,7 +17,11 @@
 		// Fetch form section all details
 		public function sectionFormDetails($customer_id)
 		{
-			$form_fields = $this->find('all', array('conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->first();
+			
+			$CustomersController = new CustomersController; 
+			$grantDateCondition = $CustomersController->Customfunctions->returnGrantDateCondition($customer_id);
+		
+			$form_fields = $this->find('all', array('conditions'=>array('customer_id IS'=>$customer_id,$grantDateCondition),'order'=>'id desc'))->first();
 					
 			if($form_fields != null){		
 				$form_fields_details = $form_fields;
@@ -72,6 +76,7 @@
 						'tbl_registered'=>$each['tbl_registered'],
 						'tbl_registered_no'=>$each['tbl_registered_no'],
 						'tbl_registration_docs'=>$each['tbl_registration_docs'],
+						'delete_status'=>$each['delete_status'],
 						'created'=>$CustomersController->Customfunctions->changeDateFormat($each['created']),
 						'modified'=>$CustomersController->Customfunctions->changeDateFormat($each['modified'])
 					);
@@ -100,6 +105,7 @@
 						'user_email_id'=>$each['user_email_id'],
 						'd_name'=>$each['d_name'],
 						'd_address'=>$each['d_address'],
+						'delete_status'=>$each['delete_status'],
 						'created'=>$CustomersController->Customfunctions->changeDateFormat($each['created']),
 						'modified'=>$CustomersController->Customfunctions->changeDateFormat($each['modified'])
 					);
@@ -116,9 +122,39 @@
 			$DmiCustomerLaboratoryDetails = TableRegistry::getTableLocator()->get('DmiCustomerLaboratoryDetails');
 			$laboratory_types = $CustomersController->Mastertablecontent->allLaboratoryType();
 			$fetchlabDetails = $DmiCustomerLaboratoryDetails->find('all',array('fields'=>array('laboratory_name','laboratory_type','consent_letter_docs','chemist_detail_docs','lab_equipped_docs'),'conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->first();
-			$labDetails = array($laboratory_types,$fetchlabDetails);		
+			$labDetails = array($laboratory_types,$fetchlabDetails);
+
+			//machinery details
+			$DmiChangeAllMachinesDetails = TableRegistry::getTableLocator()->get('DmiChangeAllMachinesDetails');
+			$checkChangeMachine = $DmiChangeAllMachinesDetails->find('all',array('fields'=>'id','conditions'=>array('customer_id IS'=>$customer_id)))->first();
+			
+			//for first time only
+			if(empty($checkChangeMachine)){
+				//fetch last details
+				$DmiAllMachinesDetails = TableRegistry::getTableLocator()->get('DmiAllMachinesDetails');
+				$getLastMachines = $DmiAllMachinesDetails->find('all',array('conditions'=>array('customer_id IS'=>$customer_id,'delete_status IS NULL'),'order'=>'id asc'))->toArray();
+				$dataArr = array();
+				foreach($getLastMachines as $each){
+					$dataArr[] = array(
+						'customer_id'=>$customer_id,
+						'machine_name'=>$each['machine_name'],
+						'machine_type'=>$each['machine_type'],
+						'machine_no'=>$each['machine_no'],
+						'machine_capacity'=>$each['machine_capacity'],
+						'delete_status'=>$each['delete_status'],
+						'created'=>$CustomersController->Customfunctions->changeDateFormat($each['created']),
+						'modified'=>$CustomersController->Customfunctions->changeDateFormat($each['modified'])
+					);
+				}
+				//save last details in change tbl table
+				$ChangeMachinesEntity = $DmiChangeAllMachinesDetails->newEntities($dataArr);
+				foreach($ChangeMachinesEntity as $each){
+					$DmiChangeAllMachinesDetails->save($each);
+				}
+			}
+			$added_machines_details = $DmiChangeAllMachinesDetails->machineDetails($customer_id);
 					
-			return array($form_fields_details,$firm_details,$premises_details,$added_tbls_details,$added_directors_details,$labDetails);
+			return array($form_fields_details,$firm_details,$premises_details,$added_tbls_details,$added_directors_details,$labDetails,$added_machines_details);
 				
 		}		
 		

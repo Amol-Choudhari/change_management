@@ -3490,7 +3490,7 @@ class CustomfunctionsComponent extends Component {
 		}elseif($type=='ECode'){
 			$data = "CA ID : ".$result[0]." ## "." CA Name : ".$result[1]."##"." Chemist Name : ".$result[2]."##"." Date : ".$result[3]."##"." Region : ".$result[4];		  
 		}else{
-			$data = "Certificate No :".$result[0]." ## "."Firm Name :".$result[3]." ## "."Grant Date :".$result[1]." ## "." Valid up to date: ".$result[2][0];
+			$data = "Certificate No :".$result[0]." ## "."Firm Name :".$result[3]." ## "."Grant Date :".$result[1]." ## "." Valid up to date: ".$result[2][max(array_keys($result[2]))];
 		}
 
 		$qrimgname = rand();

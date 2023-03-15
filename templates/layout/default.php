@@ -31,12 +31,18 @@
 		<header><?php echo $this->element('home-page-elements/home-page-header'); ?> </header>
 		<div class="clear"></div>
 		<div class="container site-page">
-			<h2><? 
+			<h2><?php 
 					#this ISSET is added for checking the variables of the page - Akash [21-11-2022]
-					echo isset($pagetitle); 
+					if (isset($pagetitle)) {
+						echo $pagetitle; 
+					}					
 				?>
 			</h2>
-			<p class="page_content"><?php echo isset($pagedata); ?></p>
+			<p class="page_content"><?php 
+				if (isset($pagedata)) {
+					echo $pagedata; 
+				}				
+			?></p>
 		</div>
 		<?php echo $this->element('home-page-elements/home-page-footer'); ?>
 	</body>

@@ -31,28 +31,28 @@
 	                  							<div class="form-group">
 													<label>Application type <span class="cRed">*</span></label>
 													<?php echo $this->Form->control('appl_type', array('type'=>'select', 'id'=>'appl_type', 'label'=>false, 'options'=>$applTypesList, 'empty'=>'--Select--','class'=>'form-control')); ?>
-													<span id="error_appl_type" class="error invalid-feedback"></span>
+													<span id="error_appl_type" class="error"></span>
 												</div>
 											</div>
 											<div class="col-sm-3">
 												<div class="form-group">
 													<label>From Office <span class="cRed">*</span></label>
 													<?php echo $this->Form->control('from_office', array('type'=>'select', 'id'=>'from_office', 'label'=>false, 'options'=>$office_list, 'empty'=>'--Select--','class'=>'form-control')); ?>
-													<span id="error_from_office" class="error invalid-feedback"></span>
+													<span id="error_from_office" class="error"></span>
 												</div>
 											</div>
 											<div class="col-sm-3">
 												<div class="form-group">
 													<label>Application Id <span class="cRed">*</span></label>
 													<?php echo $this->Form->control('appl_id', array('type'=>'select', 'id'=>'appl_id', 'label'=>false, 'empty'=>'--Select--','class'=>'form-control')); ?>
-													<span id="error_appl_id" class="error invalid-feedback"></span>
+													<span id="error_appl_id" class="error"></span>
 												</div>
 											</div>
 											<div class="col-sm-3">
 	                  							<div class="form-group">
 													<label>To Office <span class="cRed">*</span></label>
-													<?php echo $this->Form->control('to_office', array('type'=>'select', 'id'=>'to_office', 'label'=>false, 'options'=>$office_list, 'empty'=>'--Select--','class'=>'form-control')); ?>
-													<span id="error_to_office" class="error invalid-feedback"></span>
+													<?php echo $this->Form->control('to_office', array('type'=>'select', 'id'=>'to_office', 'label'=>false, /*'options'=>$office_list,*/ 'empty'=>'--Select--','class'=>'form-control')); ?>
+													<span id="error_to_office" class="error"></span>
 												</div>
 											</div>
 										</div>

@@ -1615,7 +1615,17 @@ class ApplicationformspdfsController extends AppController{
 		if ($this->Session->read('application_type')==3) {
 			$this->loadComponent('Randomfunctions');
 			$this->Randomfunctions->setChangedDetailsForGrantPdf($customer_id,$customer_firm_data,$premises_data,$laboratory_data);
-			$this->Randomfunctions->showChangedFieldsInGrantPdfSection($customer_id);
+			
+			$this->loadModel('DmiChangeSelectedFields');
+			$getNoOfAppl = $this->DmiChangeSelectedFields->find('all',array('fields'=>array('id','changefields'),'conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->toArray();
+			$this->Randomfunctions->showChangedFieldsInGrantPdfSection($customer_id,$getNoOfAppl);
+			/*$i=0;
+			foreach($getNoOfAppl as $each){				
+				$this->Randomfunctions->showChangedFieldsInGrantPdfSection($customer_id,$i);				
+				$i++;
+			}*/
+			
+			$this->set('getNoOfAppl',$getNoOfAppl);
 		}
 
 		//if called for re-esign process, make grant date condition blank, bcoz need to call all records

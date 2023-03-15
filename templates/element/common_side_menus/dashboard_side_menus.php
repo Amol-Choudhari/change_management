@@ -262,6 +262,12 @@
 											</a>
 										</li>
 										<li class="nav-item">
+											<a href="<?php echo $this->request->getAttribute("webroot");?>hoinspections/redirectGrantedApplications/3" class="bg-cyan nav-link <?php echo $menu_add_menu; ?>">
+												<i class="far fa-dot-circle nav-icon"></i>
+												<p class="nav-icon-p">Change Application</p>
+											</a>
+										</li>
+										<li class="nav-item">
 											<a href="<?php echo $this->request->getAttribute("webroot");?>hoinspections/redirectGrantedApplications/5" class="bg-cyan nav-link <?php echo $menu_add_menu; ?>">
 												<i class="far fa-dot-circle nav-icon"></i>
 												<p class="nav-icon-p">Approval for 15 Digit Code</p>

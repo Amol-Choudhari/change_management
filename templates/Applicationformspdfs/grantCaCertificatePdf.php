@@ -452,22 +452,11 @@
 					
 				</tr>
 				
-				<tr>
-					<td style="padding:10px; vertical-align:top;">Date: <?php echo 'NA'; ?></td>
-					<td style="padding:10px; vertical-align:top;">
-						<table width="100%" border="1">
-							<tr>
-								<td style="padding:10px; vertical-align:top;"><b>Section/Field</b></td>
-								<td style="padding:10px; vertical-align:top;"><b>Changed Detail</b></td>
-							</tr>
+				
 							
-							<!-- element call to show change updates added on 02-01-2023-->
-							<?php echo $this->element('application_forms/change/elementChangeUpdatesOnCertificate'); ?>
-						</table>
-					
-					</td>
-					<td style="padding:10px; vertical-align:top;">E-Signed By: <?php echo 'NA'; ?></td>
-				</tr>
+				<!-- element call to show change updates added on 02-01-2023-->
+				<?php echo $this->element('application_forms/change/elementChangeUpdatesOnCertificate'); ?>
+						
 		
 		</table>
 		

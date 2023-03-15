@@ -165,7 +165,9 @@ class OthermodulesController extends AppController{
 		//$grant_details = $this->DmiGrantCertificatesPdfs->find('all',array('conditions'=>array('customer_id'=>$this->Session->read('customer_id'),'pdf_version'=>'2')))->first();
 
 		$grant_details = $this->DmiGrantCertificatesPdfs->find('all',array('conditions'=>array('customer_id IS'=>$this->Session->read('customer_id'),'user_email_id IS NOT'=>'old_application'),'order'=>'id desc'))->first();
-		$grant_date = chop($grant_details['date'],'00:00:00');
+		//$grant_date = chop($grant_details['date'],'00:00:00');
+		$grant_date = explode(' ',$grant_details['date']);
+		$grant_date = $grant_date[0];
 		$this->Session->write('re_esign_grant_date',$grant_date);
 
 		//creating application type session

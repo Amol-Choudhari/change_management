@@ -20,7 +20,7 @@ class DmiChangeSelectedFieldsTable extends Table{
 		$recordid = '';
 		$sections = [];
 		
-		$selectedfields = $this->find('all',array('conditions'=>array('customer_id IS'=>$customer_id,$grantDateCondition)))->first();
+		$selectedfields = $this->find('all',array('conditions'=>array('customer_id IS'=>$customer_id,$grantDateCondition),'order'=>'id desc'))->first();
 		if($selectedfields != null){
 			$recordid = $selectedfields['id'];
 			$selectedValues = explode(',',$selectedfields['changefields']);

@@ -1593,7 +1593,7 @@ class CustomersController extends AppController {
     }
 
     //function to encode email id columns for flow wise tables and speficied tables
-/*    public function updateEmailWithId(){			
+   /* public function updateEmailWithId(){			
 			
         $this->autoRender=false;
 
@@ -1609,7 +1609,6 @@ class CustomersController extends AppController {
         //for flow wise common tables
         $this->loadModel('DmiFlowWiseTablesLists');
         $flowWisetables = $this->DmiFlowWiseTablesLists->find('all',array('conditions'=>array('id IN'=>$this->Session->read('applTypeArray')),'order'=>'id ASC'))->toArray();
-        
         foreach($flowWisetables as $eachFlow){
 
             $hoAllocationTable = $eachFlow['ho_level_allocation'];
@@ -3947,6 +3946,73 @@ class CustomersController extends AppController {
                         exit;
             }
       }
+   }
+   
+   
+   public function setLabApplToRO(){
+	   
+	   $conn = ConnectionManager::get('default');
+	   
+	   $query = $conn->execute("SELECT df.customer_id FROM dmi_firms AS df
+						INNER JOIN dmi_ro_offices AS ofs ON split_part(df.customer_id,'/',3) = ofs.short_code AND ofs.office_type='SO'
+						 WHERE df.customer_id LIKE '%/3/%' AND df.delete_status IS NULL ORDER BY df.id");
+	   
+	   $result = $query->fetchAll('assoc');
+	   $this->loadModel('DmiRoOffices');
+	   $this->loadModel('DmiAllocations');
+	   $this->loadModel('DmiRenewalAllocations');
+	   $this->loadModel('DmiAllApplicationsCurrentPositions');
+	   $this->loadModel('DmiRenewalAllCurrentPositions');
+	     print_r($result);exit;
+	   $updateIds = array();
+	   $i=$i+1;
+	   foreach ($result as $each) {
+	//$each['customer_id']='208/3/PUN/001';
+		   $short_code = explode('/',$each['customer_id']);
+		   $get_office = $this->DmiRoOffices->find('all',array('conditions'=>array('short_code'=>$short_code[2])))->first();
+		   if($get_office['office_type']=='SO'){
+			   
+			   $ro_id = $get_office['ro_id_for_so'];
+			   
+			   $getRODetails = $this->DmiRoOffices->find('all',array('fields'=>'ro_email_id','conditions'=>array('id'=>$ro_id)))->first();
+			   $ro_email_id = $getRODetails['ro_email_id'];
+			   
+			   //for new allocations
+			   if($this->DmiAllocations->UpdateAll(array('level_3'=>$ro_email_id,'current_level'=>$ro_email_id),array('customer_id'=>$each['customer_id'],'level_3'=>$get_office['ro_email_id'],'current_level'=>$get_office['ro_email_id']))){
+				   $updateIds[$i] = $each['customer_id'];
+				   $i=$i+1;
+			   }
+			   
+			   if($this->DmiAllocations->UpdateAll(array('level_3'=>$ro_email_id),array('customer_id'=>$each['customer_id'],'level_3'=>$get_office['ro_email_id']))){
+				   $updateIds[$i] = $each['customer_id'];
+				   $i=$i+1;
+			   }
+			   
+				if($this->DmiAllApplicationsCurrentPositions->UpdateAll(array('current_user_email_id'=>$ro_email_id),array('customer_id'=>$each['customer_id'],'current_level'=>'level_3','current_user_email_id'=>$get_office['ro_email_id']))){
+					$updateIds[$i] = $each['customer_id'];
+					$i=$i+1;
+				}
+			   
+			   //for renwal allocations
+			   if($this->DmiRenewalAllocations->UpdateAll(array('level_3'=>$ro_email_id,'current_level'=>$ro_email_id),array('customer_id'=>$each['customer_id'],'level_3'=>$get_office['ro_email_id'],'current_level'=>$get_office['ro_email_id']))){
+				   $updateIds[$i] = $each['customer_id'];
+					$i=$i+1;
+			   }
+			   
+			   if($this->DmiRenewalAllocations->UpdateAll(array('level_3'=>$ro_email_id),array('customer_id'=>$each['customer_id'],'level_3'=>$get_office['ro_email_id']))){
+				   $updateIds[$i] = $each['customer_id'];
+					$i=$i+1;
+			   }
+			   
+			   if($this->DmiRenewalAllCurrentPositions->UpdateAll(array('current_user_email_id'=>$ro_email_id),array('customer_id'=>$each['customer_id'],'current_level'=>'level_3','current_user_email_id'=>$get_office['ro_email_id']))){
+				   $updateIds[$i] = $each['customer_id'];
+					$i=$i+1;
+			   }
+		   }
+		 
+	   }
+	 
+	   
    }
    
    

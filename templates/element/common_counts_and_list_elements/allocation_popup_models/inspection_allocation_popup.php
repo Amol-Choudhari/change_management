@@ -59,6 +59,10 @@
 
 		</div>
 	</div>
+	
+	
+	<!-- applied on 03-02-2023 by Amol-->
+	<input type="hidden" id="comm_with" value="<?php echo $comm_with; ?>" >
 
 <?php 
 //commented script call, now all script is in common-count-js.js file as function call, changed on 21-10-2021 by Amol

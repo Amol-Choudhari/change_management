@@ -61,7 +61,8 @@ return [
              #'port' => 'non_standard_port_number',
             'username' => 'postgres',
             'password' => '123',
-            'database' => 'dmiupdated',*/
+         //   'database' => 'aqcmsp2',
+			'database' => 'p2complt1',*/
             
 
             # LocalHost - Test Migration

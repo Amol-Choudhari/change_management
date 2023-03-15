@@ -306,6 +306,14 @@
 
 						
 					<?php } ?>
+					
+					<?php if (in_array(9,$selectedValues)) { // for Machinery details ?>
+						<!-- fields for new change value-->
+						<div class="col-md-12"><div class="card card-success"><div class="card-header"><h3 class="card-title">Machinery Details</h3></div></div></div>
+						<div class="clearfix"></div>
+						<?php echo $this->element('application_forms/change/machine_details_table_view'); ?>
+
+					<?php } ?>
 				</div>
 			</div>
 		</div>

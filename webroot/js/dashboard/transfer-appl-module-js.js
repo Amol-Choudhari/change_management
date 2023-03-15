@@ -48,6 +48,31 @@
 
 				}
 			});
+			
+			
+			//this new ajax code added on 30-01-2023 by Amol
+			$.ajax({
+				
+				type: "POST",
+				url:"../dashboard/get_to_office",
+				data: {from_office:from_office},
+				beforeSend: function (xhr) { // Add this line
+						xhr.setRequestHeader('X-CSRF-Token', $('[name="_csrfToken"]').val());
+				}, 
+				success: function (data) {
+					
+					$("#to_office").html('');
+					var resArray = data.match(/~([^']+)~/)[1];//getting data bitween ~..~ from response
+					resArray = JSON.parse(resArray);//response is JSOn encoded to parse JSON
+
+					$("#to_office").append("<option value=''>--Select--</option>");//for first option with value blank
+					//taking each office from array and creating options tag with value and text.
+					$.each(resArray, function(value, value) {
+						$("#to_office").append($("<option></option>").attr("value", this.id).text(this.ro_office));
+					});
+
+				}
+			});
 		
 		}else{
 			$('#error_appl_type').text('Please Select Application type').css({'color':'red','font-size':'12px'});

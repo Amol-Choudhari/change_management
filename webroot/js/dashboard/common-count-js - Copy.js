@@ -971,34 +971,47 @@ $("#all_count_box").click(function(){
 			
 			var appl_type = $("#alloc_appl_type").val();
 			var customer_id = $("#alloc_customer_id").val();
-			var mo_user_id = $("#mo_users_list").val();		
-			var comm_with = $("#comm_with").val();
+			var mo_user_id = $("#mo_users_list").val();
 			
 			if (appl_type != '' && customer_id !='' && mo_user_id !=null) {
 
-				//condition added on 03-02-2023
-				//to check if the application is already allocated.
-				//if yes, then alert user on reallocation of application to get confirmation.
-				
-				//first time allocation
-				if (comm_with == 'Not Allocated') {
-					
-					common_ajax_code_scrutiny_alloc(customer_id, appl_type, mo_user_id);
-				
-				//for reallocation
-				} else {
-					
-					//get confirmation from user for reallocation
-					if(confirm("1. The Application "+customer_id+" is already allocated and inprocess for scrutiny with "+comm_with+". \n\n2. If you want to communicate with scrutiny officer then go to application form section and send reply/comment from there, no need to reallocate.\n\n3. Even if you want to Reallocate to another Scrutiny officer then click 'Ok' else click 'Cancel'.")){
-								
-						common_ajax_code_scrutiny_alloc(customer_id, appl_type, mo_user_id);
-					}else{
-						$("#scrutiny_alloction_Modal").hide();
-						$("#allocations_count_box").click();
-					}
-					
-				}
 
+				//this check added on 03-02-2023
+				//to check if the application is already in between comm.
+				//if yes, then alert user on reallocation of application to get confirmation.
+				$.ajax({
+					
+					type: "POST",
+					async:true,
+					url:"../dashboard/check_appl_inprocess_before_reallocation_scrutiny",
+					data:{customer_id:customer_id,appl_type:appl_type,mo_user_id:mo_user_id},
+					beforeSend: function (xhr) { // Add this line
+							$(".loader").show();$(".loadermsg").show();
+							xhr.setRequestHeader('X-CSRF-Token', $('[name="_csrfToken"]').val());
+					}, 
+					success: function (data) {
+
+						$(".loader").hide();$(".loadermsg").hide();
+						$("#scrutiny_alloction_Modal").hide();
+						
+						//for reallocation
+						if (data=='yes') {
+							if(confirm("The Application "+customer_id+" is already allocated and inprocess for scrutiny. Even if you want to Reallocate click 'Ok' else click 'Cancel'.")){
+								
+								common_ajax_code_scrutiny_alloc(customer_id, appl_type, mo_user_id);
+							}
+						
+						//for first time allocation
+						}else{
+							
+							common_ajax_code_scrutiny_alloc(customer_id, appl_type, mo_user_id);
+							
+						}							
+							
+					}
+				});
+				
+				
 		   } else {
 				$.alert('Please Select All Details. It can not be blank');
 				return false;
@@ -1006,8 +1019,9 @@ $("#all_count_box").click(function(){
 		});	
 	}
 	
+	
 	//added method on 03-02-2023 for common ajax code scrutiny allocation
-	function common_ajax_code_scrutiny_alloc(customer_id, appl_type, mo_user_id){
+	function common_ajax_code_scrutiny_alloc(var customer_id, var appl_type, var mo_user_id){
 		
 		$.ajax({
 									
@@ -1061,33 +1075,29 @@ $("#all_count_box").click(function(){
 			var customer_id = $("#alloc_customer_id").val();
 			var io_user_id = $("#io_users_list").val();
 			var ro_scheduled_date = $("#ro_scheduled_date").val();
-			var comm_with = $("#comm_with").val();
 			
-			if (appl_type != '' && io_user_id != null && customer_id != '')
+			if (appl_type != '' && io_user_id != null && customer_id != '' && customer_id != '')
 			{
-				
-				//condition added on 07-02-2023
-				//to check if the application is already allocated.
-				//if yes, then alert user on reallocation of application to get confirmation.
-				
-				//first time allocation
-				if (comm_with == 'Not Allocated') {
-					
-					common_ajax_code_inspec_alloc(customer_id, appl_type, io_user_id, ro_scheduled_date);
-				
-				//for reallocation
-				} else {
-					
-					//get confirmation from user for reallocation
-					if(confirm("1. The Application "+customer_id+" is already allocated and inprocess for Site Inspection with "+comm_with+". \n\n2. If you want to communicate with IO officer then go to Report form section and send reply/comment from there, no need to reallocate.\n\n3. Even if you want to Reallocate to another IO officer then click 'Ok' else click 'Cancel'.")){
-								
-						common_ajax_code_inspec_alloc(customer_id, appl_type, io_user_id, ro_scheduled_date);
-					}else{
-						$("#inspection_alloction_Modal").hide();
-						$("#allocations_count_box").click();
-					}
-					
-				}
+			
+				$.ajax({
+						type: "POST",
+						async:true,
+						url:"../dashboard/allocate_appl_for_inspection",
+						data:{customer_id:customer_id,appl_type:appl_type,io_user_id:io_user_id,ro_scheduled_date:ro_scheduled_date},
+						beforeSend: function (xhr) { // Add this line
+								$(".loader").show();$(".loadermsg").show();
+								xhr.setRequestHeader('X-CSRF-Token', $('[name="_csrfToken"]').val());
+						}, 
+						success: function (data) {
+
+								$(".loader").hide();$(".loadermsg").hide();
+								$("#inspection_alloction_Modal").hide();
+								alert("The Application "+customer_id+" is successfully allocated for Site Inspection to IO user.");
+								//to reload list after allocation
+								$('#for_inspection_allocation_tab').click();
+
+						}
+				});
 				
 			}else{
 				
@@ -1095,32 +1105,6 @@ $("#all_count_box").click(function(){
 				return false;
 			}
 		});
-	}
-	
-	//added method on 07-02-2023 for common ajax code inspection allocation
-	function common_ajax_code_inspec_alloc(customer_id, appl_type, io_user_id, ro_scheduled_date){
-		
-		$.ajax({
-			
-			type: "POST",
-			async:true,
-			url:"../dashboard/allocate_appl_for_inspection",
-			data:{customer_id:customer_id,appl_type:appl_type,io_user_id:io_user_id,ro_scheduled_date:ro_scheduled_date},
-			beforeSend: function (xhr) { // Add this line
-				$(".loader").show();$(".loadermsg").show();
-				xhr.setRequestHeader('X-CSRF-Token', $('[name="_csrfToken"]').val());
-			}, 
-			success: function (data) {
-
-				$(".loader").hide();$(".loadermsg").hide();
-				$("#inspection_alloction_Modal").hide();
-				alert("The Application "+customer_id+" is successfully allocated for Site Inspection to IO user.");
-				//to reload list after allocation
-				$('#for_inspection_allocation_tab').click();
-
-			}
-		});
-		
 	}
 
 

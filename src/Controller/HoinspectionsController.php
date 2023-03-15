@@ -711,13 +711,15 @@ use App\Network\Response\Response;
 					if($each_record['user_email_id']==$office_email_id || $each_record['user_email_id']==$ro_incharge){
 
 						$appl_array[$i]['show_esign_btn'] = 'no';
-					}else{
+					}
+					//else part commented on 16-01-2023 to show esign button if status is null in prov grant table
+					//else{
 						$this->loadModel('DmiGrantProvCertificateLogs');
-						$getStatus = $this->DmiGrantProvCertificateLogs->find('all',array('fields'=>'id','conditions'=>array('customer_id'=>$customer_id),'order'=>'id desc'))->first();
+						$getStatus = $this->DmiGrantProvCertificateLogs->find('all',array('fields'=>array('id','status'),'conditions'=>array('customer_id'=>$customer_id),'order'=>'id desc'))->first();
 						if(!empty($getStatus) && $getStatus['status']==null){							
 							$appl_array[$i]['show_esign_btn'] = 'yes';
 						}						
-					}
+					//}
 					
 					
 					$i=$i+1;
