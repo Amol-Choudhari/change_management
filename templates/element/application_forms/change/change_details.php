@@ -307,12 +307,39 @@
 						
 					<?php } ?>
 					
-					<?php if (in_array(9,$selectedValues)) { // for Machinery details ?>
+					<?php if (in_array(8,$selectedValues)) { // for Machinery details ?>
 						<!-- fields for new change value-->
 						<div class="col-md-12"><div class="card card-success"><div class="card-header"><h3 class="card-title">Machinery Details</h3></div></div></div>
 						<div class="clearfix"></div>
 						<?php echo $this->element('application_forms/change/machine_details_table_view'); ?>
 
+					<?php } ?>
+					
+					<?php if (in_array(9,$selectedValues)) { // for Business Type ?>
+
+						<div class="col-md-12"><div class="card card-success"><div class="card-header"><h3 class="card-title">Business Type</h3></div></div></div>
+						<div class="clearfix"></div>
+						<!-- fields for new change value-->
+						<div class="col-md-6">
+							<p><b>New Details</b></p>
+							<div class="form-group row">
+								<label for="inputEmail3" class="col-sm-3 col-form-label">Business Type <span class="cRed">*</span></label>
+								<div class="col-sm-9">
+									<?php echo $this->form->control('business_type', array('type'=>'select', 'id'=>'business_type', 'options'=>$section_form_details[7][0], 'value'=>$section_form_details[0]['business_type'], 'label'=>false, 'class'=>'form-control')); ?>
+									<span id="error_business_type" class="error invalid-feedback"></span>
+								</div>
+							</div>
+						</div>
+						<!-- fields to show last value-->
+						<div class="col-md-6 last_details_change">
+							<p><b>Last Details</b></p>
+							<div class="form-group row">
+								<label for="inputEmail3" class="col-sm-3 col-form-label">Business Type <span class="cRed">*</span></label>
+								<div class="col-sm-9">
+									<?php echo $this->form->control('business_type_last', array('type'=>'select', 'options'=>$section_form_details[7][0], 'value'=>$section_form_details[7][1]['business_type'], 'label'=>false, 'class'=>'form-control')); ?>
+								</div>
+							</div>
+						</div>
 					<?php } ?>
 				</div>
 			</div>

@@ -129,7 +129,7 @@ class DmiChangeFirmsTable extends Table{
 		}	
 
 		if($form_fields_details['certification_type'] == 1 && $application_type == 3){
-			$this->getPaymentForCommodity($customer_id,$form_fields_details);
+			//$this->getPaymentForCommodity($customer_id,$form_fields_details);//commented this line on 16-03-2023 as it remove payment session, and not required now
 		}	
 
 		return array($form_fields_details,$commodities_detail,$sub_commodities_detail,$categoryList);

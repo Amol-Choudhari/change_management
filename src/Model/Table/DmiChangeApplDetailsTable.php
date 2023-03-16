@@ -36,7 +36,7 @@
 											   'reffered_back_date' => "", 'form_status' =>"", 'customer_reply' =>"", 'customer_reply_date' =>"", 'approved_date' => "",
 											   'user_email_id' => "", 'current_level' => "",'mo_comment' =>"", 'mo_comment_date' => "", 'ro_reply_comment' =>"", 'ro_reply_comment_date' =>"", 'delete_mo_comment' =>"", 'delete_ro_reply' => "",
 											   'delete_ro_referred_back' => "", 'delete_customer_reply' => "", 'ro_current_comment_to' => "",
-											   'rb_comment_ul'=>"",'mo_comment_ul'=>"",'rr_comment_ul'=>"",'cr_comment_ul'=>"",'dist_list'=>""); 
+											   'rb_comment_ul'=>"",'mo_comment_ul'=>"",'rr_comment_ul'=>"",'cr_comment_ul'=>"",'dist_list'=>"",'business_type'=>""); 
 				
 			}
 			
@@ -56,8 +56,25 @@
 			$firm_details = $DmiFirms->firmDetails($customer_id);
 
 			//premises details
-			$DmiCustomerPremisesProfiles = TableRegistry::getTableLocator()->get('DmiCustomerPremisesProfiles');
-			$premises_details = $DmiCustomerPremisesProfiles->find('all',array('fields'=>array('street_address','state','district','postal_code'),'conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->first();
+			if($firm_type==1){
+				$PremisesProfilesTable = TableRegistry::getTableLocator()->get('DmiCustomerPremisesProfiles');
+			}else{
+				$PremisesProfilesTable = TableRegistry::getTableLocator()->get('DmiPrintingPremisesProfiles');
+			}
+			
+			$premises_details = $PremisesProfilesTable->find('all',array('fields'=>array('street_address','state','district','postal_code'),'conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->first();
+			
+			
+			//Firm details fro business type
+			if($firm_type==1){
+				$firmProfilesTable = TableRegistry::getTableLocator()->get('DmiCustomerFirmProfiles');
+			}else{
+				$firmProfilesTable = TableRegistry::getTableLocator()->get('DmiPrintingFirmProfiles');
+			}
+			
+			$fetchFirmProfileDetails = $firmProfilesTable->find('all',array('fields'=>array('business_type'),'conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->first();
+			$getBusinessTypes = $CustomersController->Mastertablecontent->allBusinessType();
+			$businessTypes = array($getBusinessTypes,$fetchFirmProfileDetails);
 			
 			//tbl details
 			$DmiChangeAllTblsDetails = TableRegistry::getTableLocator()->get('DmiChangeAllTblsDetails');
@@ -154,7 +171,7 @@
 			}
 			$added_machines_details = $DmiChangeAllMachinesDetails->machineDetails($customer_id);
 					
-			return array($form_fields_details,$firm_details,$premises_details,$added_tbls_details,$added_directors_details,$labDetails,$added_machines_details);
+			return array($form_fields_details,$firm_details,$premises_details,$added_tbls_details,$added_directors_details,$labDetails,$added_machines_details,$businessTypes);
 				
 		}		
 		
@@ -288,6 +305,9 @@
 						));
 						
 					}
+				}
+				if(in_array(9,$selectedValues)){
+					$dataArray = array_merge($dataArray,array('business_type'=>htmlentities($forms_data['business_type'], ENT_QUOTES)));
 				}
 				
 				//common required fields
@@ -460,6 +480,9 @@
 					
 				}
 			}
+			if(in_array(9,$selectedValues)){
+				$dataArray = array_merge($dataArray,array('business_type'=>htmlentities($forms_data['business_type'], ENT_QUOTES)));
+			}
 			
 			//common required fields
 			$commonArr = array(				
@@ -549,6 +572,11 @@
 				}
 				
 			
+			}
+			if(in_array(9,$selectedValues)){
+				if(empty($forms_data['business_type'])){
+					$returnValue = null ; 
+				}
 			}
 			
 			return $returnValue;

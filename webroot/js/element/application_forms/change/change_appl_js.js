@@ -27,6 +27,7 @@
         var selected_commodity=$("#selected_commodity").val();
         var packing_types=$("#packing_types").val();
         var selected_packing_types=$("#selected_packing_types").val();
+		var business_type=$("#business_type").val();
 		
 		var selectedValues = $("#selectedValues").val();
 		selectedValues = selectedValues.split(",");
@@ -157,6 +158,13 @@
 			}
 			
 		}
+		
+		if(selectedValues.includes("9")==true && business_type==""){				
+            $("#error_business_type").show().text("Please enter firm name");
+            $("#business_type").addClass("is-invalid");
+            $("#business_type").click(function(){$("#error_business_type").hide().text; $("#business_type").removeClass("is-invalid");});
+            value_return = 'false';
+        }
 
         if(value_return == 'false')
 		{
