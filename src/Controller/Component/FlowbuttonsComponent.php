@@ -75,7 +75,20 @@ class FlowbuttonsComponent extends Component {
 						
 					}elseif($firm_type ==1 /*&& $ca_bevo_applicant=='yes'*/){//commented CA BEVO condition on 23-09-2021 by Amol, CA need to forward to RO (for approval or Grant)
 						
-						$ForwarBtn = 'RO';
+						//condition added on 01-02-2023 by Amol, 
+						//to hide forward button if appl is CA Non BEVO and SO office have multiple officer
+						if ($firm_type ==1 && $ca_bevo_applicant=='yes') {							
+							$ForwarBtn = 'RO';							
+						
+						} else {							
+							$username = $_SESSION['username'];
+							$officerCount = $this->Customfunctions->findOfficerCountInoffice($username);//get officer count in office
+							//if single officer in office then need forward, else can grant
+							if ($officerCount <= 1) {
+								$ForwarBtn = 'RO';
+							}
+						}
+						
 					}
 				}
 				
@@ -168,6 +181,19 @@ class FlowbuttonsComponent extends Component {
 						
 						$GrantBtn = 'yes';
 					}*/
+					//condition applied on 01-02-2023 by Amol,
+					//to show grant button if appl is CA Non BEVO and SO officer have multiple officer
+					if($firm_type ==1 && $ca_bevo_applicant!='yes'){
+						
+						$username = $_SESSION['username'];
+						$officerCount = $this->Customfunctions->findOfficerCountInoffice($username);//get officer count in office
+						
+						//if appl CA Non BEVO and Multiple officers in office then can grant without RO approval
+						if ($officerCount > 1) {
+							$GrantBtn = 'yes';
+						}
+						
+					}
 				}
 				
 			}elseif($applicationType==2){

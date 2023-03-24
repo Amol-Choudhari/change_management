@@ -79,7 +79,7 @@
 			<td style="padding:10px; vertical-align:top;"><b>New Details</b></td>
 		</tr>
 		
-		<?php echo $this->element('application_forms/change/elementChangeUpdatesOnCertificate'); ?>
+		<?php echo $this->element('application_forms/change/elementChangeUpdatesOnApplPdf'); ?>
 				
 	</table>
 	<br><br>

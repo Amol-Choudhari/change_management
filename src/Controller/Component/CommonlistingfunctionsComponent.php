@@ -24,58 +24,66 @@
 		
 		
 		//Get MO With Nodal Create Array Status Method
-		public function getMOWithNodalCreateArrayStatus($for_status,$customer_id,$final_submit_table,$DmiMoRoCommentsDetails,$each_alloc) {
+		public function getMOWithNodalCreateArrayStatus($for_status,$customer_id,$final_submit_table,$DmiMoRoCommentsDetails,$each_alloc,$appl_type_id=null) {//new argument added on 17-03-2023 "$appl_type_id"
 			
 			$DmiMoRoCommentsDetails = TableRegistry::getTableLocator()->get($DmiMoRoCommentsDetails);
 			$final_submit_table = TableRegistry::getTableLocator()->get($final_submit_table);
 			$creat_array = null;
 			$username = $this->Session->read('username');
 			
-			$grantDateCondition = $this->Customfunctions->returnGrantDateCondition($customer_id);
+			$grantDateCondition = $this->Customfunctions->returnGrantDateCondition($customer_id,$appl_type_id);//new argument added on 17-03-2023 "$appl_type_id"
 			
+			//Check if the Application is pending after grant.
+			$checkIfApplAfterGrant =  $final_submit_table->find('all',array('conditions'=>array('customer_id IS'=>$customer_id,$grantDateCondition,'status'=>'pending'),'order'=>'id DESC'))->first();
+
 			//check final submit status for level 1 and approved for each allocated id
 			$level1_approved_status = $final_submit_table->find('all',array('conditions'=>array('customer_id IS'=>$customer_id,$grantDateCondition,'status'=>'approved','current_level'=>'level_1'),'order'=>'id DESC'))->first();							
 			//check MO RO SO comments table status for each id
 			$mo_with_level3_comm = $DmiMoRoCommentsDetails->find('all',array('conditions'=>array('customer_id IS'=>$customer_id,$grantDateCondition),'order'=>'id DESC'))->first();	
 			
-			//for pending applications
-			if ($for_status == 'pending') {
-				
-				$this->Session->write('ro_with','mo');
-				
-				if (empty($mo_with_level3_comm) && empty($level1_approved_status)) {
-					$creat_array = $each_alloc['modified'];
-				}
-
-			//for referred back applications
-			} elseif ($for_status == 'ref_back') {
-				
-				$this->Session->write('ro_with','mo');
-				
-				if (!empty($mo_with_level3_comm)) {
+			#This if block is added because some application are showing in the Pending even after grant.
+			#This is applied to all block to avoid the application those are havent pending  - Akash [15-03-2023]
+			if (!empty($checkIfApplAfterGrant)) {
+			
+				//for pending applications
+				if ($for_status == 'pending') {
 					
-					if ($mo_with_level3_comm['available_to']=='ro' && empty($level1_approved_status)) {
-						$creat_array = $mo_with_level3_comm['modified'];
+					$this->Session->write('ro_with','mo');
+					
+					if (empty($mo_with_level3_comm) && empty($level1_approved_status)) {
+						$creat_array = $each_alloc['modified'];
 					}
-				}
-			
-			//for replied applications
-			} elseif ($for_status == 'replied') {
-				
-				$this->Session->write('ro_with','mo');
-				
-				if (!empty($mo_with_level3_comm)) {
 
-					if ($mo_with_level3_comm['available_to']=='mo' && empty($level1_approved_status)) {
-						$creat_array = $mo_with_level3_comm['modified'];
+				//for referred back applications
+				} elseif ($for_status == 'ref_back') {
+					
+					$this->Session->write('ro_with','mo');
+					
+					if (!empty($mo_with_level3_comm)) {
+						
+						if ($mo_with_level3_comm['available_to']=='ro' && empty($level1_approved_status)) {
+							$creat_array = $mo_with_level3_comm['modified'];
+						}
 					}
-				}
-			
-			//for approved applications	
-			} elseif ($for_status == 'approved') {
+				
+				//for replied applications
+				} elseif ($for_status == 'replied') {
+					
+					$this->Session->write('ro_with','mo');
+					
+					if (!empty($mo_with_level3_comm)) {
 
-				if (!empty($level1_approved_status)) {
-					$creat_array = $level1_approved_status['modified'];
+						if ($mo_with_level3_comm['available_to']=='mo' && empty($level1_approved_status)) {
+							$creat_array = $mo_with_level3_comm['modified'];
+						}
+					}
+				
+				//for approved applications	
+				} elseif ($for_status == 'approved') {
+
+					if (!empty($level1_approved_status)) {
+						$creat_array = $level1_approved_status['modified'];
+					}
 				}
 			}
 			
@@ -224,7 +232,7 @@
 			$final_report_table = TableRegistry::getTableLocator()->get($final_report_table);
 			$creat_array = null;
 			$username = $this->Session->read('username');
-			$grantDateCondition = $this->Customfunctions->returnGrantDateCondition($customer_id);
+			$grantDateCondition = $this->Customfunctions->returnGrantDateCondition($customer_id,$appl_type_id);//added new parameter in call "$appl_type_id" on 20-03-2023
 			
 			//for pending reports
 			if($for_status == 'pending') {
@@ -1076,7 +1084,7 @@
 				
 				if($for_level=='level_1'){
 					if($sub_tab=='scrutiny_with_nodal_office'){
-						$creat_array = $this->getMOWithNodalCreateArrayStatus($for_status,$customer_id,$final_submit_table,$DmiMoRoCommentsDetails,$each_alloc);
+						$creat_array = $this->getMOWithNodalCreateArrayStatus($for_status,$customer_id,$final_submit_table,$DmiMoRoCommentsDetails,$each_alloc,$appl_type_id);//new argument added on 17-03-2023 "$appl_type_id"
 						$comm_with_email = $each_alloc['level_3'];
 					}
 					elseif($sub_tab=='scrutiny_with_reg_office'){

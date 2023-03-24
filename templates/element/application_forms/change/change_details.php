@@ -26,7 +26,7 @@
 						<div class="col-md-6 last_details_change">
 							<p><b>Last Details</b></p>
 							<div class="form-group row">
-								<label for="inputEmail3" class="col-sm-3 col-form-label">Firm Name <span class="cRed">*</span></label>
+								<label for="inputEmail3" class="col-sm-3 col-form-label">Firm Name </label>
 								<div class="col-sm-9">
 									<?php echo $this->Form->control('firm_name_last', array('type'=>'text','escape'=>false, 'value'=>$section_form_details[1]['firm_name'], 'class'=>'form-control input-field', 'label'=>false, 'disabled'=>true)); ?>
 								</div>
@@ -55,7 +55,7 @@
 								</div>
 							</div>
 							<div class="form-group row">
-								<label for="inputEmail3" class="col-sm-3 col-form-label">Phone No. <span class="cRed">*</span></label>
+								<label for="inputEmail3" class="col-sm-3 col-form-label">Phone No. </label>
 								<div class="col-sm-9">
 									<?php echo $this->Form->control('phone_no', array('type'=>'text', 'id'=>'phone_no', 'escape'=>false, 'value'=>$section_form_details[0]['phone_no'], 'class'=>'form-control input-field', 'label'=>false)); ?>
 									<span id="error_phone_no" class="error invalid-feedback"></span>
@@ -66,19 +66,19 @@
 						<div class="col-md-6 last_details_change">
 							<p><b>Last Details</b></p>
 							<div class="form-group row">
-								<label for="inputEmail3" class="col-sm-3 col-form-label">Mobile No. <span class="cRed">*</span></label>
+								<label for="inputEmail3" class="col-sm-3 col-form-label">Mobile No. </label>
 								<div class="col-sm-9">
 									<?php echo $this->Form->control('mobile_no_last', array('type'=>'text','escape'=>false, 'value'=>base64_decode($section_form_details[1]['mobile_no']), 'class'=>'form-control input-field', 'label'=>false)); ?>
 								</div>
 							</div>
 							<div class="form-group row">
-								<label for="inputEmail3" class="col-sm-3 col-form-label">Email Id <span class="cRed">*</span></label>
+								<label for="inputEmail3" class="col-sm-3 col-form-label">Email Id </label>
 								<div class="col-sm-9">
 									<?php echo $this->Form->control('email_id_last', array('type'=>'text','escape'=>false, 'value'=>base64_decode($section_form_details[1]['email']), 'class'=>'form-control input-field', 'label'=>false)); ?>
 								</div>
 							</div>
 							<div class="form-group row">
-								<label for="inputEmail3" class="col-sm-3 col-form-label">Phone No. <span class="cRed">*</span></label>
+								<label for="inputEmail3" class="col-sm-3 col-form-label">Phone No. </label>
 								<div class="col-sm-9">
 									<?php echo $this->Form->control('phone_no_last', array('type'=>'text','escape'=>false, 'value'=>base64_decode($section_form_details[1]['fax_no']), 'class'=>'form-control input-field', 'label'=>false)); ?>
 								</div>
@@ -126,28 +126,28 @@
 						<div class="col-md-6 last_details_change">
 							<p><b>Last Details</b></p>
 							<div class="form-group row">
-								<label for="inputEmail3" class="col-sm-3 col-form-label">Address <span class="cRed">*</span></label>
+								<label for="inputEmail3" class="col-sm-3 col-form-label">Address </label>
 									<div class="custom-file col-sm-9">
 										<?php echo $this->Form->control('street_address_last', array('type'=>'textarea', 'escape'=>false, 'value'=>$section_form_details[2]['street_address'], 'class'=>'form-control input-field', 'label'=>false, 'placeholder'=>'Please enter street address')); ?>
 								
 								</div>
 							</div>
 							<div class="form-group row">
-								<label for="inputEmail3" class="col-sm-3 col-form-label">State/Region <span class="cRed">*</span></label>
+								<label for="inputEmail3" class="col-sm-3 col-form-label">State/Region </label>
 									<div class="custom-file col-sm-9">
 										<?php echo $this->Form->control('state_last', array('type'=>'select','options'=>$state_list,  'value'=>$section_form_details[2]['state'],  'empty'=>'Select', 'label'=>false,'class'=>'form-control')); ?>
 									
 								</div>
 							</div>
 							<div class="form-group row">
-								<label for="inputEmail3" class="col-sm-3 col-form-label">District <span class="cRed">*</span></label>
+								<label for="inputEmail3" class="col-sm-3 col-form-label">District </label>
 									<div class="custom-file col-sm-9">
 										<?php echo $this->Form->control('district_last', array('type'=>'select','options'=>$distict_list, 'value'=>$section_form_details[2]['district'], 'label'=>false, 'class'=>'form-control')); ?>
 									
 								</div>
 							</div>
 							<div class="form-group row">
-								<label for="inputEmail3" class="col-sm-3 col-form-label">Pin Code <span class="cRed">*</span></label>
+								<label for="inputEmail3" class="col-sm-3 col-form-label">Pin Code </label>
 									<div class="custom-file col-sm-9">
 										<?php echo $this->Form->control('postal_code_last', array('type'=>'text','escape'=>false, 'value'=>$section_form_details[2]['postal_code'], 'class'=>'form-control input-field', 'label'=>false, 'placeholder'=>'Please enter postal/zip code')); ?>
 									<span id="error_postal_code" class="error invalid-feedback"></span>
@@ -255,13 +255,13 @@
 						<div class="col-md-6 last_details_change">
 							<p><b>Last Details</b></p>
 							<div class="form-group row">
-								<label for="inputEmail3" class="col-sm-4 col-form-label">Laboratory Name <span class="cRed">*</span></label>
+								<label for="inputEmail3" class="col-sm-4 col-form-label">Laboratory Name </label>
 								<div class="custom-file col-sm-8">
 									<?php echo $this->form->control('laboratory_name', array('type'=>'text','escape'=>false, 'value'=>$section_form_details[5][1]['laboratory_name'], 'class'=>'form-control input-field', 'label'=>false, 'placeholder'=>'Please enter laboratory name')); ?>
 								</div>
 							</div>
 							<div class="form-group row">
-								<label for="inputEmail3" class="col-sm-4 col-form-label">Laboratory Type <span class="cRed">*</span></label>
+								<label for="inputEmail3" class="col-sm-4 col-form-label">Laboratory Type </label>
 								<div class="custom-file col-sm-8">
 									<?php echo $this->form->control('laboratory_type', array('type'=>'select','options'=>$section_form_details[5][0], 'value'=>$section_form_details[5][1]['laboratory_type'], 'label'=>false, 'class'=>'form-control')); ?>
 								
@@ -334,7 +334,7 @@
 						<div class="col-md-6 last_details_change">
 							<p><b>Last Details</b></p>
 							<div class="form-group row">
-								<label for="inputEmail3" class="col-sm-3 col-form-label">Business Type <span class="cRed">*</span></label>
+								<label for="inputEmail3" class="col-sm-3 col-form-label">Business Type </label>
 								<div class="col-sm-9">
 									<?php echo $this->form->control('business_type_last', array('type'=>'select', 'options'=>$section_form_details[7][0], 'value'=>$section_form_details[7][1]['business_type'], 'label'=>false, 'class'=>'form-control')); ?>
 								</div>

@@ -1614,7 +1614,7 @@ class ApplicationformspdfsController extends AppController{
 		//added on 27-12-2022 for change management
 		if ($this->Session->read('application_type')==3) {
 			$this->loadComponent('Randomfunctions');
-			$this->Randomfunctions->setChangedDetailsForGrantPdf($customer_id,$customer_firm_data,$premises_data,$laboratory_data);
+			$this->Randomfunctions->setChangedDetailsForGrantPdf($customer_id,$customer_firm_data,$premises_data,$laboratory_data,$business_type);
 			
 			$this->loadModel('DmiChangeSelectedFields');
 			$getNoOfAppl = $this->DmiChangeSelectedFields->find('all',array('fields'=>array('id','changefields'),'conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->toArray();
@@ -3018,7 +3018,7 @@ class ApplicationformspdfsController extends AppController{
 		$this->set('customer_id',$customer_id);
 		
 		$this->loadComponent('Randomfunctions');
-		$this->Randomfunctions->showChangedFieldsInGrantPdfSection($customer_id);
+		$this->Randomfunctions->showChangedFieldsInApplPdf($customer_id);
 		
 		//get nodal office of the applied CA
 		$this->loadModel('DmiApplWithRoMappings');

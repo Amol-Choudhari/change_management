@@ -69,6 +69,17 @@ foreach($getNoOfAppl as $each){ ?>
 							
 						<?php $i=$i+1; }
 						
+					} elseif ($eachField['field_id']==8) {//if Machine details changed			
+						$i=1;
+						foreach ($changeMachineDetails[$applCnt] as $eachMachine) {
+							echo $i.'. '.$eachMachine['machine_name'].'<br>';
+							
+							$i++;
+						}
+						
+					} elseif ($eachField['field_id']==9) {//if Business type details changed			
+						echo $getChangeDetails[$applCnt]['business_type'];
+						
 					} ?>
 				</td>
 			</tr>
@@ -77,7 +88,7 @@ foreach($getNoOfAppl as $each){ ?>
 	</table>
 					
 	</td>
-	<td style="padding:10px; vertical-align:top;">E-Signed By:<?php if(!empty($certEsignedBy[$applCnt])){ echo $certEsignedBy[$i]; }else{ echo 'NA'; } ?></td>
+	<td style="padding:10px; vertical-align:top;">E-Signed By:<?php if(!empty($certEsignedBy[$applCnt])){ echo $certEsignedBy[$applCnt]; }else{ echo 'NA'; } ?></td>
 </tr>
 
 <?php $applCnt++; } ?>

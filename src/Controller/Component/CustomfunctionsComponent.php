@@ -2743,9 +2743,13 @@ class CustomfunctionsComponent extends Component {
 
 
 	// Return Grant Date Condition
-	public function returnGrantDateCondition($customer_id) {
+	public function returnGrantDateCondition($customer_id,$application_type=null) {//new argument added on 17-03-2023 "$application_type"
 
-		$application_type = $this->Session->read('application_type');
+		//condition added on 17-03-2023, to get application type from argument
+		if(empty($application_type)){
+			$application_type = $this->Session->read('application_type');
+		}
+		
 		$advancepayment = $this->Session->read('advancepayment');
 
 
@@ -2906,7 +2910,7 @@ class CustomfunctionsComponent extends Component {
 		if ($appl_type == 3) {
 
 			//$form_type = $this->checkApplicantFormType($customer_id);
-			$grantDateCondition = $this->returnGrantDateCondition($customer_id);
+			$grantDateCondition = $this->returnGrantDateCondition($customer_id,$appl_type);//added new parameter in call "$appl_type" on 20-03-2023
 			$selectedfields = $DmiChangeSelectedFields->find('all',array('conditions'=>array('customer_id IS'=>$customer_id,$grantDateCondition)))->first();
 
 			if ($selectedfields != null) {

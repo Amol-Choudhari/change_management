@@ -72,7 +72,7 @@
 			<div class="form-group row">
 				<label for="inputEmail3" class="col-sm-3 col-form-label">Selected Packing Types </label>
 				<div class="col-sm-9">
-					<?php echo $this->Form->control('selected_packing_types', array('type'=>'select', 'id'=>'selected_packing_types', 'value'=>$section_form_details[0]['packing_types'],'empty'=>'--Selected--', 'multiple'=>true, 'label'=>false, 'class'=>'form-control')); ?>
+					<?php echo $this->Form->control('selected_packing_types', array('type'=>'select', 'id'=>'selected_packing_types', 'options'=>$section_form_details[0]['packing_types'],'empty'=>'--Selected--', 'multiple'=>true, 'label'=>false, 'class'=>'form-control')); ?>
 					<span id="error_selected_packing_types" class="error invalid-feedback"></span>
 				</div>
 			</div>
@@ -83,19 +83,20 @@
 		<div class="col-md-6 last_details_change">
 			<p><b>Last Details</b></p>
 			<div class="form-group row">
-			<!--<label for="inputEmail3" class="col-sm-3 col-form-label">Packing Types <span class="cRed">*</span></label>
-				<div class="col-sm-9">
-					<?php //echo $this->Form->control('packing_types_last', array('type'=>'select', 'empty'=>'Select', 'options'=>$packing_types, 'label'=>false, 'class'=>'form-control')); ?>
-				</div>
-			</div>-->
+				<!--<label for="inputEmail3" class="col-sm-3 col-form-label">Packing Types <span class="cRed">*</span></label>
+					<div class="col-sm-9">
+						<?php //echo $this->Form->control('packing_types_last', array('type'=>'select', 'empty'=>'Select', 'options'=>$packing_types, 'label'=>false, 'class'=>'form-control')); ?>
+					</div>
+				</div>-->
 
-			<div class="form-group row">
-				<label for="inputEmail3" class="col-sm-3 col-form-label">Selected Packing Types </label>
-				<div class="col-sm-9">
-					<?php echo $this->Form->control('selected_packing_types_last', array('type'=>'select', 'options'=>$selected_packing_types,'empty'=>'--Selected--', 'multiple'=>true, 'label'=>false, 'class'=>'form-control')); ?>
+				<div class="form-group row">
+					<label for="inputEmail3" class="col-sm-3 col-form-label">Selected Packing Types </label>
+					<div class="col-sm-9">
+						<?php echo $this->Form->control('selected_packing_types_last', array('type'=>'select', 'options'=>$selected_packing_types,'empty'=>'--Selected--', 'multiple'=>true, 'label'=>false, 'class'=>'form-control')); ?>
+					</div>
 				</div>
+				<p class="commodity-note-txt"><i class="fa fa-info-circle"></i> To remove from list click on the item</p>
 			</div>
-			<p class="commodity-note-txt"><i class="fa fa-info-circle"></i> To remove from list click on the item</p>
 		</div>
 
 	<?php } ?>

@@ -113,6 +113,23 @@ class ApplicationController extends AppController{
 		$this->set('IsApproved','');
 		$this->set('show_button','');
 		$this->set('show_renewal_button','');
+		
+		//check if change application is already in process and yet granted
+		//then redirect to appl directly, not on field selection window.
+		//applied on 17-03-2023 by Amol
+		$this->loadModel('DmiChangeFinalSubmits');
+		$checkIfInProcess = $this->DmiChangeFinalSubmits->find('all',array('conditions'=>array('customer_id'=>$customer_id),'order'=>'id desc'))->first();
+		if (!empty($checkIfInProcess)) {
+			if (!($checkIfInProcess['status']=='approved' && $checkIfInProcess['current_level']=='level_3')) {
+				
+				$fieldResult = $this->DmiChangeFieldLists->changeFieldList($selectedValues[0]);
+				$this->Session->write('changefield',$fieldResult[0]);
+				$this->Session->write('paymentforchange',$fieldResult[1]);
+				$this->redirect('/application/application-for-certificate');
+				
+			}
+		}
+		
 
 		if ($this->request->is('post')) {
 

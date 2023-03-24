@@ -56,12 +56,12 @@
 				$("#email_id").click(function(){$("#error_email_id").hide().text; $("#email_id").removeClass("is-invalid");});
 				value_return = 'false';
 			}
-			if(phone_no==""){				
+			/*if(phone_no==""){				
 				$("#error_phone_no").show().text("Please enter phone number");
 				$("#phone_no").addClass("is-invalid");
 				$("#phone_no").click(function(){$("#error_phone_no").hide().text; $("#phone_no").removeClass("is-invalid");});
 				value_return = 'false';
-			}
+			}*/
 		}
 		
 		if(selectedValues.includes("5")==true){

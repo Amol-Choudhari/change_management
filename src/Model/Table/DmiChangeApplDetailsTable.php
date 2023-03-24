@@ -531,7 +531,7 @@
 			
 			if(in_array(2,$selectedValues)){ 
 			
-				if(empty($forms_data['mobile_no']) || empty($forms_data['email_id']) || empty($forms_data['phone_no'])){
+				if(empty($forms_data['mobile_no']) || empty($forms_data['email_id'])/* || empty($forms_data['phone_no'])*/){
 					$returnValue = null ; 
 				}
 			
