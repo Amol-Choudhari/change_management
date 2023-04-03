@@ -260,6 +260,9 @@ class ScrutinyController extends AppController{
 
 		$this->set('firm_details',$firm_details);
 
+		//added this method call on 24-03-2023 to commoity and packing types details
+		$this->Randomfunctions->getCommodityDetails($firm_details,$firm_type);
+
 		$Dmi_flow_wise_tables_list = TableRegistry::getTableLocator()->get('DmiFlowWiseTablesLists');
 		$Dmi_final_submit_tb = $Dmi_flow_wise_tables_list->find('all',array('conditions'=>array('application_type IS'=>$application_type)))->first();
 

@@ -43,21 +43,21 @@
 							<div class="form-group row">
 								<label for="inputEmail3" class="col-sm-3 col-form-label">Mobile No. <span class="cRed">*</span></label>
 								<div class="col-sm-9">
-									<?php echo $this->Form->control('mobile_no', array('type'=>'text', 'id'=>'mobile_no', 'escape'=>false, 'value'=>$section_form_details[0]['mobile_no'], 'class'=>'form-control input-field', 'label'=>false)); ?>
+									<?php echo $this->Form->control('mobile_no', array('type'=>'text', 'id'=>'mobile_no', 'escape'=>false, 'value'=>base64_decode($section_form_details[0]['mobile_no']), 'class'=>'form-control input-field', 'label'=>false)); ?>
 									<span id="error_mobile_no" class="error invalid-feedback"></span>
 								</div>
 							</div>
 							<div class="form-group row">
 								<label for="inputEmail3" class="col-sm-3 col-form-label">Email Id <span class="cRed">*</span></label>
 								<div class="col-sm-9">
-									<?php echo $this->Form->control('email_id', array('type'=>'text', 'id'=>'email_id', 'escape'=>false, 'value'=>$section_form_details[0]['email_id'], 'class'=>'form-control input-field', 'label'=>false)); ?>
+									<?php echo $this->Form->control('email_id', array('type'=>'text', 'id'=>'email_id', 'escape'=>false, 'value'=>base64_decode($section_form_details[0]['email_id']), 'class'=>'form-control input-field', 'label'=>false)); ?>
 									<span id="error_email_id" class="error invalid-feedback"></span>
 								</div>
 							</div>
 							<div class="form-group row">
 								<label for="inputEmail3" class="col-sm-3 col-form-label">Phone No. </label>
 								<div class="col-sm-9">
-									<?php echo $this->Form->control('phone_no', array('type'=>'text', 'id'=>'phone_no', 'escape'=>false, 'value'=>$section_form_details[0]['phone_no'], 'class'=>'form-control input-field', 'label'=>false)); ?>
+									<?php echo $this->Form->control('phone_no', array('type'=>'text', 'id'=>'phone_no', 'escape'=>false, 'value'=>base64_decode($section_form_details[0]['phone_no']), 'class'=>'form-control input-field', 'label'=>false)); ?>
 									<span id="error_phone_no" class="error invalid-feedback"></span>
 								</div>
 							</div>

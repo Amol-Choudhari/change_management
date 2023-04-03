@@ -2781,10 +2781,10 @@ class CustomfunctionsComponent extends Component {
 
 			if ($advancepayment == 'yes') {
 
-				return array('created >'=>$grantDate['created']);
+				return array('created >='=>$grantDate['created']);//added "=" on 27-03-2023 to if grant and query date is greater than on equal
 
 			} else {
-				return array('date(created) >'=>$grantDate['created']);
+				return array('date(created) >='=>$grantDate['created']);//added "=" on 27-03-2023 to if grant and query date is greater than on equal
 			}
 
 		} else {

@@ -1612,18 +1612,13 @@ class ApplicationformspdfsController extends AppController{
 		//check if process is Change/Modification then get details from change table.
 		//because main tables will be updated with new details at last once certificate esigned.
 		//added on 27-12-2022 for change management
-		if ($this->Session->read('application_type')==3) {
+		if ($this->Session->read('application_type')==3 || !empty($getNoOfAppl)) {
 			$this->loadComponent('Randomfunctions');
 			$this->Randomfunctions->setChangedDetailsForGrantPdf($customer_id,$customer_firm_data,$premises_data,$laboratory_data,$business_type);
 			
 			$this->loadModel('DmiChangeSelectedFields');
 			$getNoOfAppl = $this->DmiChangeSelectedFields->find('all',array('fields'=>array('id','changefields'),'conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->toArray();
 			$this->Randomfunctions->showChangedFieldsInGrantPdfSection($customer_id,$getNoOfAppl);
-			/*$i=0;
-			foreach($getNoOfAppl as $each){				
-				$this->Randomfunctions->showChangedFieldsInGrantPdfSection($customer_id,$i);				
-				$i++;
-			}*/
 			
 			$this->set('getNoOfAppl',$getNoOfAppl);
 		}
@@ -1682,13 +1677,16 @@ class ApplicationformspdfsController extends AppController{
 				$lastGrantDate = $each_grant['date'];//added on 14-10-2021
 			}
 			
-			//to show current on going renewal details at last
-			$get_user_details = $this->DmiUsers->find('all',array('conditions'=>array('email IS'=>$this->Session->read('username'))))->first();
-			$user_full_name[$i] = $get_user_details['f_name'].' '.$get_user_details['l_name'];
+			//this if statement added on 29-03-2023, to renewal dates on change appl grant. not to show current on going renewal details at last
+			if ($this->Session->read('application_type')!=3){ 
 			
-			$cert_grant_date = $pdf_date;
-			$certificate_valid_upto[$i] = $this->Customfunctions->getCertificateValidUptoDate($customer_id,$cert_grant_date);
-			
+				//to show current on going renewal details at last
+				$get_user_details = $this->DmiUsers->find('all',array('conditions'=>array('email IS'=>$this->Session->read('username'))))->first();
+				$user_full_name[$i] = $get_user_details['f_name'].' '.$get_user_details['l_name'];
+				
+				$cert_grant_date = $pdf_date;
+				$certificate_valid_upto[$i] = $this->Customfunctions->getCertificateValidUptoDate($customer_id,$cert_grant_date);
+			}
 			
 		}else{				
 			//user details for first grant
@@ -1854,9 +1852,16 @@ class ApplicationformspdfsController extends AppController{
 		//check if process is Change/Modification then get details from change table.
 		//because main tables will be updated with new details at last once certificate esigned.
 		//added on 27-12-2022 for change management
-		if ($this->Session->read('application_type')==3) {
+		$this->loadModel('DmiChangeSelectedFields');
+		$getNoOfAppl = $this->DmiChangeSelectedFields->find('all',array('fields'=>array('id','changefields'),'conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->toArray();
+			
+		if ($this->Session->read('application_type')==3 || !empty($getNoOfAppl)) {
 			$this->loadComponent('Randomfunctions');
-			$this->Randomfunctions->setChangedDetailsForGrantPdf($customer_id,$customer_firm_data,$premises_data);
+			$this->Randomfunctions->setChangedDetailsForGrantPdf($customer_id,$customer_firm_data,$premises_data,null,$business_type);
+			
+			$this->Randomfunctions->showChangedFieldsInGrantPdfSection($customer_id,$getNoOfAppl);
+			
+			$this->set('getNoOfAppl',$getNoOfAppl);
 		}
 
 		//if called for re-esign process, make grant date condition blank, bcoz need to call all records
@@ -1915,12 +1920,16 @@ class ApplicationformspdfsController extends AppController{
 				$lastGrantDate = $each_grant['date'];//added on 14-10-2021
 			}
 			
-			//to show current on going renewal details at last
-			$get_user_details = $this->DmiUsers->find('all',array('conditions'=>array('email IS'=>$this->Session->read('username'))))->first();
-			$user_full_name[$i] = $get_user_details['f_name'].' '.$get_user_details['l_name'];
-			
-			$cert_grant_date = $pdf_date;
-			$certificate_valid_upto[$i] = $this->Customfunctions->getCertificateValidUptoDate($customer_id,$cert_grant_date);
+			//this if statement added on 29-03-2023, to renewal dates on change appl grant. not to show current on going renewal details at last
+			if ($this->Session->read('application_type')!=3){ 
+				
+				//to show current on going renewal details at last
+				$get_user_details = $this->DmiUsers->find('all',array('conditions'=>array('email IS'=>$this->Session->read('username'))))->first();
+				$user_full_name[$i] = $get_user_details['f_name'].' '.$get_user_details['l_name'];
+				
+				$cert_grant_date = $pdf_date;
+				$certificate_valid_upto[$i] = $this->Customfunctions->getCertificateValidUptoDate($customer_id,$cert_grant_date);
+			}
 			
 			
 		}else{				
@@ -2100,9 +2109,15 @@ class ApplicationformspdfsController extends AppController{
 		//check if process is Change/Modification then get details from change table.
 		//because main tables will be updated with new details at last once certificate esigned.
 		//added on 27-12-2022 for change management
-		if ($this->Session->read('application_type')==3) {
+		if ($this->Session->read('application_type')==3 || !empty($getNoOfAppl)) {
 			$this->loadComponent('Randomfunctions');
-			$this->Randomfunctions->setChangedDetailsForGrantPdf($customer_id,$customer_firm_data,$premises_data);
+			$this->Randomfunctions->setChangedDetailsForGrantPdf($customer_id,$customer_firm_data,$premises_data,$laboratory_data,$business_type);
+			
+			$this->loadModel('DmiChangeSelectedFields');
+			$getNoOfAppl = $this->DmiChangeSelectedFields->find('all',array('fields'=>array('id','changefields'),'conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->toArray();
+			$this->Randomfunctions->showChangedFieldsInGrantPdfSection($customer_id,$getNoOfAppl);
+			
+			$this->set('getNoOfAppl',$getNoOfAppl);
 		}
 
 		//if called for re-esign process, make grant date condition blank, bcoz need to call all records
@@ -2161,13 +2176,17 @@ class ApplicationformspdfsController extends AppController{
 				$lastGrantDate = $each_grant['date'];//added on 14-10-2021
 			}
 			
-			//to show current on going renewal details at last
-			$get_user_details = $this->DmiUsers->find('all',array('conditions'=>array('email IS'=>$this->Session->read('username'))))->first();
-			$user_full_name[$i] = $get_user_details['f_name'].' '.$get_user_details['l_name'];
+			//this if statement added on 29-03-2023, to renewal dates on change appl grant. not to show current on going renewal details at last
+			if ($this->Session->read('application_type')!=3){ 
 			
-			$cert_grant_date = $pdf_date;
-			$certificate_valid_upto[$i] = $this->Customfunctions->getCertificateValidUptoDate($customer_id,$cert_grant_date);
+				//to show current on going renewal details at last
+				$get_user_details = $this->DmiUsers->find('all',array('conditions'=>array('email IS'=>$this->Session->read('username'))))->first();
+				$user_full_name[$i] = $get_user_details['f_name'].' '.$get_user_details['l_name'];
+				
+				$cert_grant_date = $pdf_date;
+				$certificate_valid_upto[$i] = $this->Customfunctions->getCertificateValidUptoDate($customer_id,$cert_grant_date);
 			
+			}
 			
 		}else{				
 			//user details for first grant
@@ -3043,7 +3062,7 @@ class ApplicationformspdfsController extends AppController{
 		$this->set('firm_state_name',$firm_state_name);		
 		
 		// to show commodities and there selected sub-commodities
-		$sub_commodity_array = explode(',',$customer_firm_data['sub_commodity']);
+	/*	$sub_commodity_array = explode(',',$customer_firm_data['sub_commodity']);
 
 		$i=0;
 		foreach($sub_commodity_array as $sub_commodity_id)
@@ -3057,7 +3076,7 @@ class ApplicationformspdfsController extends AppController{
 		$unique_commodity_id = array_unique($commodity_id);		
 		$commodity_name_list = $this->MCommodityCategory->find('all',array('conditions'=>array('category_code IN'=>$unique_commodity_id, 'display'=>'Y')))->toArray();
 		$this->set('commodity_name_list',$commodity_name_list);		
-		$this->set('sub_commodity_data',$sub_commodity_data);
+		$this->set('sub_commodity_data',$sub_commodity_data);*/
 		
 		$this->generateApplicationPdf('/Applicationformspdfs/changeApplPdf');	
 		

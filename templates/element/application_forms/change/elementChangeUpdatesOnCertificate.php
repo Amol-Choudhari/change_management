@@ -19,9 +19,10 @@ foreach($getNoOfAppl as $each){ ?>
 						echo $getChangeDetails[$applCnt]['firm_name'];
 					
 					} elseif ($eachField['field_id']==2) {//if personal details changed
-						echo $getChangeDetails[$applCnt]['mobile_no'].'<br>';
-						echo $getChangeDetails[$applCnt]['email_id'].'<br>';
-						echo $getChangeDetails[$applCnt]['phone_no'];
+						
+						if(!empty($getChangeDetails[$applCnt]['mobile_no'])){ echo base64_decode($getChangeDetails[$applCnt]['mobile_no']).', '; } //for email encoding
+						if(!empty($getChangeDetails[$applCnt]['email_id'])){ echo base64_decode($getChangeDetails[$applCnt]['email_id']).', '; }
+						if(!empty($getChangeDetails[$applCnt]['phone_no'])){ echo base64_decode($getChangeDetails[$applCnt]['phone_no']); }
 					
 					} elseif ($eachField['field_id']==3) {//if TBL details changed			
 						$i=1;
@@ -48,26 +49,45 @@ foreach($getNoOfAppl as $each){ ?>
 						
 					} elseif ($eachField['field_id']==7) {//if Commodity changed					
 						
-						$i=1;	
-						foreach($change_commodity_name_list[$applCnt] as $commodity_name){ ?>
-						
-							<b><?php echo $i.'.'. $commodity_name['category_name']; ?></b>
-							<ol>
+						$splitApplId = explode('/',$customer_id);
+
+						//for PP
+						if ($splitApplId[1]==2) { ?>
+							
+							<ul>
 								<?php 
 
-									foreach($change_sub_commodity_data[$applCnt] as $sub_commodity){ ?>
-								
-									<?php if($sub_commodity['category_code'] == $commodity_name['category_code']){?>
+									foreach($packaging_types as $eachType){ ?>
 									
-										<li><?php echo $sub_commodity['commodity_name']; ?></li>
-										
-									<?php } ?>
+										<li><?php echo $eachType; ?></li>
 								
 								<?php  } ?>
 								
-							</ol>
+							</ul>
+
+						<?php }else{
 							
-						<?php $i=$i+1; }
+							$i=1;	
+							foreach($change_commodity_name_list[$applCnt] as $commodity_name){ ?>
+							
+								<b><?php echo $i.'.'. $commodity_name['category_name']; ?></b>
+								<ol>
+									<?php 
+
+										foreach($change_sub_commodity_data[$applCnt] as $sub_commodity){ ?>
+									
+										<?php if($sub_commodity['category_code'] == $commodity_name['category_code']){?>
+										
+											<li><?php echo $sub_commodity['commodity_name']; ?></li>
+											
+										<?php } ?>
+									
+									<?php  } ?>
+									
+								</ol>
+								
+							<?php $i=$i+1; }
+						}
 						
 					} elseif ($eachField['field_id']==8) {//if Machine details changed			
 						$i=1;

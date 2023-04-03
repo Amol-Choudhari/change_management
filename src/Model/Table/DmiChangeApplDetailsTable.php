@@ -39,7 +39,13 @@
 											   'rb_comment_ul'=>"",'mo_comment_ul'=>"",'rr_comment_ul'=>"",'cr_comment_ul'=>"",'dist_list'=>"",'business_type'=>""); 
 				
 			}
-			
+
+			//below two lines are intensionally added to fetch selected commodities and packing types values as string
+			//store in custom field name to get file saving referredback comment between RO/SO and MO
+			//on 27-03-2023
+			$form_fields_details['selected_comm'] = $form_fields_details['commodity'];
+			$form_fields_details['selected_pack'] = $form_fields_details['packing_types'];
+
 			$CustomersController = new CustomersController;
 			
 			$firm_type = $CustomersController->Customfunctions->firmType($customer_id);
@@ -49,6 +55,7 @@
 			$form_fields_details['commodity'] = $commOrPackingTypeResult[1];
 			$form_fields_details['comm_category_list'] = $commOrPackingTypeResult[0];
 			$form_fields_details['commodity_list'] = $commOrPackingTypeResult[3];
+			
 			
 			
 			//for firm details
@@ -230,11 +237,20 @@
 					$dataArray = array_merge($dataArray,array('firm_name'=>htmlentities($forms_data['firm_name'], ENT_QUOTES)));
 				}
 				if(in_array(2,$selectedValues)){
-					$dataArray = array_merge($dataArray,array(
-						'mobile_no'=>htmlentities($forms_data['mobile_no'], ENT_QUOTES),
-						'email_id'=>htmlentities($forms_data['email_id'], ENT_QUOTES),
-						'phone_no'=>htmlentities($forms_data['phone_no'], ENT_QUOTES),
-					));
+					
+					if(!empty($forms_data['phone_no'])){
+						$dataArray = array_merge($dataArray,array(
+							'mobile_no'=>base64_encode(htmlentities($forms_data['mobile_no'], ENT_QUOTES)),
+							'email_id'=>base64_encode(htmlentities($forms_data['email_id'], ENT_QUOTES)),
+							'phone_no'=>base64_encode(htmlentities($forms_data['phone_no'], ENT_QUOTES)),
+						));
+					}else{
+						$dataArray = array_merge($dataArray,array(
+							'mobile_no'=>base64_encode(htmlentities($forms_data['mobile_no'], ENT_QUOTES)),
+							'email_id'=>base64_encode(htmlentities($forms_data['email_id'], ENT_QUOTES)),
+						));
+					}
+					
 				}
 				if(in_array(5,$selectedValues)){
 					$dataArray = array_merge($dataArray,array(
@@ -470,12 +486,12 @@
 				if ($firm_type==1 || $firm_type==3) {
 					$dataArray = array_merge($dataArray,array(
 						'comm_category'=>htmlentities($forms_data['comm_category'], ENT_QUOTES),
-						'commodity'=>htmlentities($forms_data['selected_commodity'], ENT_QUOTES),
+						'commodity'=>htmlentities($forms_data['selected_comm'], ENT_QUOTES),
 					));
 					
 				} elseif ($firm_type==2) {
 					$dataArray = array_merge($dataArray,array(
-						'packing_types'=>htmlentities($forms_data['selected_packing_types'], ENT_QUOTES),
+						'packing_types'=>htmlentities($forms_data['selected_pack'], ENT_QUOTES),
 					));
 					
 				}

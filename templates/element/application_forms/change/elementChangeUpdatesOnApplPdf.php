@@ -36,26 +36,46 @@
 						
 					} elseif ($eachField['field_id']==7) {//if Commodity changed					
 						
-						$i=1;	
-						foreach($change_commodity_name_list as $commodity_name){ ?>
-						
-							<b><?php echo $i.'.'. $commodity_name['category_name']; ?></b>
-							<ol>
+						$splitApplId = explode('/',$customer_id);
+
+						//for PP
+						if ($splitApplId[1]==2) { ?>
+							
+							<ul>
 								<?php 
 
-									foreach($change_sub_commodity_data as $sub_commodity){ ?>
-								
-									<?php if($sub_commodity['category_code'] == $commodity_name['category_code']){?>
+									foreach($packaging_types as $eachType){ ?>
 									
-										<li><?php echo $sub_commodity['commodity_name']; ?></li>
-										
-									<?php } ?>
+										<li><?php echo $eachType['packing_type']; ?></li>
 								
 								<?php  } ?>
 								
-							</ol>
+							</ul>
+
+						<?php }else{
+							//for CA and Lab
+							$i=1;	
+							foreach($change_commodity_name_list as $commodity_name){ ?>
 							
-						<?php $i=$i+1; }
+								<b><?php echo $i.'.'. $commodity_name['category_name']; ?></b>
+								<ol>
+									<?php 
+
+										foreach($change_sub_commodity_data as $sub_commodity){ ?>
+									
+										<?php if($sub_commodity['category_code'] == $commodity_name['category_code']){?>
+										
+											<li><?php echo $sub_commodity['commodity_name']; ?></li>
+											
+										<?php } ?>
+									
+									<?php  } ?>
+									
+								</ol>
+								
+							<?php $i=$i+1; }
+						}
+						
 						
 					} elseif ($eachField['field_id']==8) {//if Machine Details	
 						$i=1;

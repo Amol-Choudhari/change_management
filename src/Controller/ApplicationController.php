@@ -99,7 +99,10 @@ class ApplicationController extends AppController{
 		$customer_id = $this->Customfunctions->sessionCustomerID();
 		$form_type = $this->Customfunctions->checkApplicantFormType($customer_id);
 		$grantDateCondition = $this->Customfunctions->returnGrantDateCondition($customer_id);
-		$final_submit_details = $this->Customfunctions->finalSubmitDetails($customer_id,'application_form');
+		//$final_submit_details = $this->Customfunctions->finalSubmitDetails($customer_id,'application_form');
+		
+		$this->loadModel('DmiChangeFinalSubmits');
+		$final_submit_details = $this->DmiChangeFinalSubmits->find('all', array('conditions'=>array('customer_id IS'=>$customer_id,'status'=>'pending',$grantDateCondition),'order'=>'id DESC'))->first();
 		$this->set('final_submit_details',$final_submit_details);
 
 		$changeFieldsList = $this->DmiChangeFieldLists->find('list',array('keyField'=>'field_id','valueField'=>'change_field','conditions'=>array('form_type IS'=>'common'),'order'=>'field_id'))->toArray();
@@ -824,6 +827,24 @@ class ApplicationController extends AppController{
 			$list_applicant_payment_id = $this->$payment_table->find('list', array('valueField'=>'id','conditions'=>array('customer_id IS'=>$customer_id)))->toArray();
 			
 			if (!empty($list_applicant_payment_id)) { $process_query = 'Updated'; } else { $process_query = 'Saved'; }
+
+
+			//condition added for change module
+			//to get changed commodities or packing types if applied in change
+			//on 24-03-2023 by Amol
+			if ($application_type == 3) {
+				$this->loadModel('DmiChangeApplDetails');
+				$getChangeDetails = $this->DmiChangeApplDetails->find('all',array('fields'=>array('commodity','packing_types'),'conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->first();
+				if (!empty($getChangeDetails)) {
+					if (!empty($getChangeDetails['commodity'])){
+						$firm_details['sub_commodity'] = $getChangeDetails['commodity'];
+					}
+					elseif (!empty($getChangeDetails['packing_types'])) {
+						$firm_details['packaging_materials'] = $getChangeDetails['packing_types'];
+					}
+				} 
+
+			}
 
 			$sub_commodity_array = explode(',',(string) $firm_details['sub_commodity']); #For Deprecations
 

@@ -71,14 +71,12 @@
 		</table>
 		
 		
-		
-			
-			<table width="100%" border="1">
+		<table width="100%" border="1">
 				<tr>
 					<th style="padding:10px;" width="50%" cellspacing="50" align="left"><b>PART I</b></th>
 					<th style="padding:10px;" width="50%" cellspacing="50" align="left"><b>See Rules 3(7) & 3(8)</b></th>
 				</tr>
-			
+				
 				<tr>
 					<th style="padding:10px;" width="50%" cellspacing="50" align="left"><b>Field Name</b></th>
 					<th style="padding:10px;" width="50%" cellspacing="50" align="left"><b>Description</b></th>
@@ -109,7 +107,6 @@
 						<td style="padding:10px; vertical-align:top;"><?php if(!empty($business_type)){ echo $business_type; }else{ echo 'NA'; }  ?></td>
 					</tr>
 					
-					
 					<tr>
 						<td style="padding:10px; vertical-align:top;">4. Type of packaging material for which permission was granted</td>
 						<td style="padding:10px; vertical-align:top;">
@@ -130,12 +127,6 @@
 							?></td>
 					</tr>
 					
-					
-					<!--<tr>
-						<td style="padding:10px; vertical-align:top;">7. Name and address of processing unit(Grinding Mill, Oil Mill, Tie-up Arrangement etc.)</td>
-						<td style="padding:10px; vertical-align:top;"></td>
-					</tr>-->
-
 					
 					<tr>
 						<td style="padding:10px; vertical-align:top;">6. Special Conditions/Remarks, if any:</td>
@@ -168,7 +159,6 @@
 						</td>
 					</tr>
 					
-
 					<tr>
 						<td style="padding:10px; vertical-align:top;">8. The Certificate will remain valid from this date to:</td>
 						<td style="padding:10px; vertical-align:top;"><?php if(!empty($certificate_valid_upto[0])){ echo $certificate_valid_upto[0]; }else{ echo 'NA'; } ?></td>
@@ -182,18 +172,8 @@
 						<td style="padding:10px; vertical-align:top;">E-Signed By: <?php if(!empty($user_full_name[0])){ echo $user_full_name[0]; }else{ echo 'NA'; } ?></td>
 																
 					</tr>
-
-					
-
-					
-			</table>
-			
-
-		
-		
-		
-		
-		
+				
+		</table>
 		
 		<!-- for Renewal part -->
 		<p></p>
@@ -222,8 +202,6 @@
 				</tr>
 		
 		</table>
-		
-		
 		
 		<table width="100%" border="1">
 				<tr>
@@ -263,18 +241,6 @@
 		</table>
 		
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 		<!-- for change in certification part -->
 		<p></p>
 		<table width="100%" border="1" style="margin-top:50px;">
@@ -303,8 +269,6 @@
 		
 		</table>
 		
-		
-		
 		<table width="100%" border="1" >
 				<tr>
 					<th style="padding:10px;" width="30%" cellspacing="50" align="left"><b>Date of Application</b></th>
@@ -313,25 +277,13 @@
 					
 				</tr>
 				
-				<tr>
-					<td style="padding:10px; vertical-align:top;">Date:<?php echo 'NA'; ?></td>
-					<td style="padding:10px; vertical-align:top;"><?php echo 'NA'; ?></td>
-					<td style="padding:10px; vertical-align:top;">E-Signed By:<?php echo 'NA'; ?></td>
-				</tr>
+				<!-- element call to show change updates added on 02-01-2023-->
+				<?php echo $this->element('application_forms/change/elementChangeUpdatesOnCertificate'); ?>
 		
 		</table>
 		
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		<!-- for cancellation in certification part -->
+			<!-- for cancellation in certification part -->
 		<p></p>
 		<table width="100%" border="1" style="margin-top:50px;">
 				<tr>
@@ -348,3 +300,5 @@
 		</table>
 	  <!-- QR Code added by shankhpal shende on 17/08/2022 -->
 	  <div style="text-align: left;"> <img width="100" height="100" src="<?php echo $result_for_qr['qr_code_path']; ?>"></div>
+		
+		

@@ -568,6 +568,7 @@ class RandomfunctionsComponent extends Component {
 			$DmiChangeApplDetails = TableRegistry::getTableLocator()->get('DmiChangeApplDetails');
 			$MCommodity = TableRegistry::getTableLocator()->get('MCommodity');
 			$MCommodityCategory = TableRegistry::getTableLocator()->get('MCommodityCategory');
+			$DmiPackingTypes = TableRegistry::getTableLocator()->get('DmiPackingTypes');
 			$changeApplDetails = $DmiChangeApplDetails->sectionFormDetails($customer_id);
 
 			if (!empty($changeApplDetails[0]['firm_name'])) {//if firm name changed			
@@ -600,8 +601,8 @@ class RandomfunctionsComponent extends Component {
 			if (!empty($changeApplDetails[0]['packing_types'])) {//if Packaging material changed	for PP
 				
 				$packaging_materials = $changeApplDetails[0]['packing_types'];
-				$packaging_types = $this->DmiPackingTypes->find('list', array('keyField'=>'id','valueField'=>'packing_type', 'conditions'=>array('id IN'=>$packaging_materials)))->toArray();			 
-				$this->set('packaging_types',$packaging_types);
+				//$packaging_types = $DmiPackingTypes->find('list', array('keyField'=>'id','valueField'=>'packing_type', 'conditions'=>array('id IN'=>$packaging_materials)))->toArray();			 
+				$this->Controller->set('packaging_types',$packaging_materials);
 			}
 			if (!empty($changeApplDetails[0]['premise_street'])) {//if premises changed	
 				
@@ -785,6 +786,7 @@ class RandomfunctionsComponent extends Component {
 			$DmiStates = TableRegistry::getTableLocator()->get('DmiStates');
 			$DmiBusinessTypes = TableRegistry::getTableLocator()->get('DmiBusinessTypes');
 			$DmiChangeAllMachinesDetails = TableRegistry::getTableLocator()->get('DmiChangeAllMachinesDetails');
+			$DmiPackingTypes = TableRegistry::getTableLocator()->get('DmiPackingTypes');
 			
 			//check selected fields
 			$selectedfields = $DmiChangeSelectedFields->selectedChangeFields();
@@ -847,6 +849,14 @@ class RandomfunctionsComponent extends Component {
 				$this->Controller->set('change_commodity_name_list',$change_commodity_name_list);
 				$this->Controller->set('change_sub_commodity_data',$change_sub_commodity_data);
 			}
+
+			//for change commodities
+			if (!empty($getChangeDetails['packing_types'])) {
+
+				$packaging_materials = explode(',',(string) $getChangeDetails['packing_types']); #For Deprecations
+				$packaging_types = $DmiPackingTypes->find('all', array('fields'=>'packing_type', 'conditions'=>array('id IN'=>$packaging_materials)))->toArray();			 
+				$this->Controller->set('packaging_types',$packaging_types);
+			}
 			
 			//for change commodities
 			if (!empty($getChangeDetails['business_type'])) {
@@ -857,7 +867,7 @@ class RandomfunctionsComponent extends Component {
 				
 			}
 			
-			$this->Controller->set(compact('selectedValues','getFieldName','getChangeDetails','changeTblDetails','changeDirectorDetails','change_premises','changeMachineDetails'));
+			$this->Controller->set(compact('customer_id','selectedValues','getFieldName','getChangeDetails','changeTblDetails','changeDirectorDetails','change_premises','changeMachineDetails'));
 		}
 
 
