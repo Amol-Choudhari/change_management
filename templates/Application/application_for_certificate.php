@@ -37,7 +37,7 @@
 
 	<?php echo $this->Html->script('application/application_for_certificate/edit_and_delete_reply'); ?>
 
-	<?php if (!isset($_SESSION['authscrutiny'])) {print_r($final_submit_status);exit;  ?>
+	<?php if (!isset($_SESSION['authscrutiny'])) {  ?>
 
 		<?php if ($final_submit_status != 'referred_back' && $final_submit_status != 'no_final_submit') {  ?>
 			<?php echo $this->Html->script('application/application_for_certificate/authscrutiny_referred_back_no_final_submit'); ?>

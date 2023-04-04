@@ -35,8 +35,8 @@
 
 			if(isset($_SESSION['edit_directors_details_id'])){ $hide_edit_id = array('id !='=>$_SESSION['edit_directors_details_id']); }else{ $hide_edit_id = array('id IS NOT NULL');  }
 			$added_directors_details = $this->find('all', array('conditions'=>array('OR'=>$hide_edit_id,
-																					'customer_id IS'=>$customer_id,'delete_status IS NULL',$grantDateCondition),'order'=>'id'))->toArray();			
-			
+																					'customer_id IS'=>$customer_id,'delete_status IS NULL',/*$grantDateCondition*/),'order'=>'id'))->toArray();			
+																																//$grantDateCondition commented on 04-04-2023, to show all directors list
 			return	$added_directors_details; 
 		}
 		

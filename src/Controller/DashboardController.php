@@ -684,7 +684,7 @@ class DashboardController extends AppController{
 								$creat_array='';//clear variable each time
 								$customer_id = $each_alloc['customer_id'];
 
-								$grantDateCondition = $this->Customfunctions->returnGrantDateCondition($customer_id);
+								
 								//get_form_type
 								$form_type = $this->Customfunctions->checkApplicantFormType($customer_id);
 								//get firm details
@@ -693,6 +693,7 @@ class DashboardController extends AppController{
 								$firm_table_id = $firm_details['id'];
 								$appl_type_id = $each_flow['application_type'];
 								$appl_view_link = '../scrutiny/form_scrutiny_fetch_id/'.$firm_table_id.'/view/'.$appl_type_id;
+								$grantDateCondition = $this->Customfunctions->returnGrantDateCondition($customer_id,$appl_type_id);//added new parameter in call "$appl_type_id" on 04-04-2023
 
 								//get Nodal officer details
 								$this->loadModel('DmiUsers');

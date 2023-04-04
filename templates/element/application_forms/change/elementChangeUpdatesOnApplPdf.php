@@ -7,9 +7,11 @@
 						echo $getChangeDetails['firm_name'];
 					
 					} elseif ($eachField['field_id']==2) {//if personal details changed
-						echo $getChangeDetails['mobile_no'].'<br>';
-						echo $getChangeDetails['email_id'].'<br>';
-						echo $getChangeDetails['phone_no'];
+						echo base64_decode($getChangeDetails['mobile_no']).'<br>';
+						echo base64_decode($getChangeDetails['email_id']).'<br>';
+						
+						if (!empty($getChangeDetails['phone_no'])){ echo base64_decode($getChangeDetails['phone_no']); }
+						
 					
 					} elseif ($eachField['field_id']==3) {//if TBL details changed			
 						$i=1;

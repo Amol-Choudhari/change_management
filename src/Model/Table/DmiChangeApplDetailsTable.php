@@ -45,10 +45,17 @@
 			//on 27-03-2023
 			$form_fields_details['selected_comm'] = $form_fields_details['commodity'];
 			$form_fields_details['selected_pack'] = $form_fields_details['packing_types'];
+			
+			//for firm details
+			$DmiFirms = TableRegistry::getTableLocator()->get('DmiFirms');
+			$firm_details = $DmiFirms->firmDetails($customer_id);
 
 			$CustomersController = new CustomersController;
 			
 			$firm_type = $CustomersController->Customfunctions->firmType($customer_id);
+			
+			//this condition added on 04-04-2023 by Amol to fetch commodity details from firm table. if not in change appl.
+			if (empty($form_fields_details['commodity'])) { $form_fields_details['commodity'] = $firm_details['commodity']; }
 			
 			$commOrPackingTypeResult = $this->getChangeCommodityDetails($form_fields_details,$firm_type);
 			$form_fields_details['packing_types'] = $commOrPackingTypeResult[2];
@@ -56,11 +63,6 @@
 			$form_fields_details['comm_category_list'] = $commOrPackingTypeResult[0];
 			$form_fields_details['commodity_list'] = $commOrPackingTypeResult[3];
 			
-			
-			
-			//for firm details
-			$DmiFirms = TableRegistry::getTableLocator()->get('DmiFirms');
-			$firm_details = $DmiFirms->firmDetails($customer_id);
 
 			//premises details
 			if($firm_type==1){
@@ -75,14 +77,16 @@
 			//Firm details fro business type
 			if($firm_type==1){
 				$firmProfilesTable = TableRegistry::getTableLocator()->get('DmiCustomerFirmProfiles');
-			}else{
+			}elseif($firm_type==2){
 				$firmProfilesTable = TableRegistry::getTableLocator()->get('DmiPrintingFirmProfiles');
+			}else{
+				$firmProfilesTable = TableRegistry::getTableLocator()->get('DmiLaboratoryFirmDetails');
 			}
 			
 			$fetchFirmProfileDetails = $firmProfilesTable->find('all',array('fields'=>array('business_type'),'conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->first();
 			$getBusinessTypes = $CustomersController->Mastertablecontent->allBusinessType();
 			$businessTypes = array($getBusinessTypes,$fetchFirmProfileDetails);
-			
+			//print_r($fetchFirmProfileDetails);exit;
 			//tbl details
 			$DmiChangeAllTblsDetails = TableRegistry::getTableLocator()->get('DmiChangeAllTblsDetails');
 			$checkChangeTbl = $DmiChangeAllTblsDetails->find('all',array('fields'=>'id','conditions'=>array('customer_id IS'=>$customer_id)))->first();
@@ -659,9 +663,9 @@
 
 				if(!empty($sub_comm_id)){
 					
-					$selected_commodities = $commodityTable->find('list',array('keyField'=>'commodity_code','valueField'=>'commodity_name', 'conditions'=>array('commodity_code IN'=>(int) $sub_comm_id)))->toArray();
+					$selected_commodities = $commodityTable->find('list',array('keyField'=>'commodity_code','valueField'=>'commodity_name', 'conditions'=>array('commodity_code IN'=> $sub_comm_id)))->toArray();
 				}
-				
+
 
 			}
 			
