@@ -2111,7 +2111,7 @@ class ApplicationformspdfsController extends AppController{
 		//added on 27-12-2022 for change management
 		if ($this->Session->read('application_type')==3 || !empty($getNoOfAppl)) {
 			$this->loadComponent('Randomfunctions');
-			$this->Randomfunctions->setChangedDetailsForGrantPdf($customer_id,$customer_firm_data,$premises_data,$laboratory_data,$business_type);
+			$this->Randomfunctions->setChangedDetailsForGrantPdf($customer_id,$customer_firm_data,null,null,$business_type);
 			
 			$this->loadModel('DmiChangeSelectedFields');
 			$getNoOfAppl = $this->DmiChangeSelectedFields->find('all',array('fields'=>array('id','changefields'),'conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->toArray();

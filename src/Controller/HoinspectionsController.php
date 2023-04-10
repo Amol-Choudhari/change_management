@@ -154,6 +154,19 @@ use App\Network\Response\Response;
 			$application_pdf_path = $this->$appl_pdf_table->find('all',array('conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id DESC'))->first();
 			$this->set('download_application_pdf',$application_pdf_path['pdf_file']);
 
+			//condition added on 08-03-2023 for CA export report and pdf links
+			$checkExport = $this->Customfunctions->checkApplicantExportUnit($customer_id);
+			if ($application_type==1 && $checkExport=='yes') {			
+				$report_pdf_table = 'DmiCaExportSiteinspectionReports';
+				$this->loadModel($report_pdf_table);
+				
+			}
+			//added applicationtype==3 condition on 05-04-2023, to get change report table
+			elseif($application_type==3){
+				$report_pdf_table = 'DmiChangeSiteinspectionReports';
+				$this->loadModel($report_pdf_table);				
+			}
+
 			// fetch inspection report pdf record
 			$report_pdf_path = $this->$report_pdf_table->find('all',array('conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id DESC'))->first();
 			if(empty($report_pdf_path)){
@@ -161,7 +174,13 @@ use App\Network\Response\Response;
 				$this->set('report_pdf_path',null);
 
 			}else{
-				$this->set('download_report_pdf',$report_pdf_path['pdf_file']);
+				//condition added on 08-03-2023 for CA export report and pdf links
+				if(($application_type==1 && $checkExport=='yes') || $application_type==3){//added applicationtype==3 condition on 05-04-2023
+					$this->set('download_report_pdf',$report_pdf_path['report_docs']);
+				}else{
+					$this->set('download_report_pdf',$report_pdf_path['pdf_file']);
+				}
+				
 				$this->set('report_pdf_path',$report_pdf_path);
 			}
 			

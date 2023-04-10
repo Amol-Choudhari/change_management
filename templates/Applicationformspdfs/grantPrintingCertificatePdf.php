@@ -271,9 +271,9 @@
 		
 		<table width="100%" border="1" >
 				<tr>
-					<th style="padding:10px;" width="30%" cellspacing="50" align="left"><b>Date of Application</b></th>
-					<th style="padding:10px;" width="30%" cellspacing="50" align="left"><b>Details of the changes recorded</b></th>
-					<th style="padding:10px;" width="40%" cellspacing="50" align="left"><b>Signature & Designation of Authorised Officer</b></th>
+					<th style="padding:10px;" width="25%" cellspacing="50" align="left"><b>Date of Application</b></th>
+					<th style="padding:10px;" width="45%" cellspacing="50" align="left"><b>Details of the changes recorded</b></th>
+					<th style="padding:10px;" width="30%" cellspacing="50" align="left"><b>Signature & Designation of Authorised Officer</b></th>
 					
 				</tr>
 				

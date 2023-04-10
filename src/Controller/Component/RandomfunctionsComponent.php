@@ -563,7 +563,7 @@ class RandomfunctionsComponent extends Component {
 		//created common function to set variables in Grant pdf view for change flow
 		//this is to show details on grant pdf from change appl table before final esigned.
 		//29-12-2022 by Amol
-		public function setChangedDetailsForGrantPdf($customer_id,$customer_firm_data,$premises_data,$laboratory_data=null,$business_type=null){
+		public function setChangedDetailsForGrantPdf($customer_id,$customer_firm_data,$premises_data=null,$laboratory_data=null,$business_type=null){
 
 			$DmiChangeApplDetails = TableRegistry::getTableLocator()->get('DmiChangeApplDetails');
 			$MCommodity = TableRegistry::getTableLocator()->get('MCommodity');

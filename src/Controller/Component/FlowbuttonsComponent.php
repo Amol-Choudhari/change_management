@@ -61,7 +61,7 @@ class FlowbuttonsComponent extends Component {
 		
 		if(!empty($showForwardBtn) && $all_report_status == 'true'){
 			
-			if($applicationType==1){
+			if($applicationType==1 || $applicationType==3){//added $applicationType==3 on 05-04-2023
 				
 				if($office_type == 'RO' && $hoInspectionExist=='yes' && empty($check_ho_allocation)){
 					
@@ -107,14 +107,14 @@ class FlowbuttonsComponent extends Component {
 				}
 				
 			}elseif($applicationType==3){
-				
-				if($office_type == 'SO'){
+				//commented on 05-04-2023
+				/*if($office_type == 'SO'){
 					
 					if($firm_type ==2){
 						
 						$ForwarBtn = 'RO';
 					}
-				}
+				}*/
 			}elseif($applicationType == 5){//added on 18-11-2021 for 15 digit flow
 
 				if($office_type == 'SO'){
@@ -161,7 +161,7 @@ class FlowbuttonsComponent extends Component {
 		
 		if(!empty($showGrantBtn) && $all_report_status == 'true'){
 			
-			if($applicationType==1){
+			if($applicationType==1 || $applicationType==3){//added $applicationType == 3 on 05-04-2023
 				
 				if($office_type=='RO'){
 					
@@ -209,7 +209,9 @@ class FlowbuttonsComponent extends Component {
 						$GrantBtn = 'yes';
 					}
 				}
-			}elseif($applicationType==3){
+			}
+			//commented on 05-04-2023
+			/*elseif($applicationType==3){
 				
 				if($office_type=='RO'){
 					
@@ -223,7 +225,7 @@ class FlowbuttonsComponent extends Component {
 					}
 				}
 				
-			}
+			}*/
 			
 			
 		}
