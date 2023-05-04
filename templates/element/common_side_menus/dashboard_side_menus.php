@@ -261,6 +261,7 @@
 												<p class="nav-icon-p">Renewal Application</p>
 											</a>
 										</li>
+										<!-- Added option for Change grant list on 01-05-2023 -->
 										<li class="nav-item">
 											<a href="<?php echo $this->request->getAttribute("webroot");?>hoinspections/redirectGrantedApplications/3" class="bg-cyan nav-link <?php echo $menu_add_menu; ?>">
 												<i class="far fa-dot-circle nav-icon"></i>

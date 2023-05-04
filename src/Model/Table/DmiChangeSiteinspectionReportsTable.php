@@ -13,7 +13,12 @@ class DmiChangeSiteinspectionReportsTable extends Table{
 	
 	public function sectionFormDetails($customer_id)
 	{
-		$latest_id = $this->find('list', array('valueField'=>'id', 'conditions'=>array('customer_id IS'=>$customer_id)))->toArray();
+		$CustomersController = new CustomersController;
+		
+		//added on 24-04-2023
+		$grantDateCondition = $CustomersController->Customfunctions->returnGrantDateCondition($customer_id,3);
+		//updated condition on 24-04-2023 for "grantdatecondition" on ama approved records
+		$latest_id = $this->find('list', array('valueField'=>'id', 'conditions'=>array('customer_id IS'=>$customer_id,$grantDateCondition)))->toArray();
 				
 		if($latest_id != null){
 			$form_fields = $this->find('all', array('conditions'=>array('id'=>MAX($latest_id))))->first();		

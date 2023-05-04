@@ -179,16 +179,20 @@
 
     }
 
-    $("#chemist_details_docs").click(function(){
+    $("#chemist_details_docs").change(function(){
         file_browse_onclick('chemist_details_docs');
     });
 
-    $("#lab_equipped_docs").click(function(){
+    $("#lab_equipped_docs").change(function(){
         file_browse_onclick('lab_equipped_docs');
     });
 
-    $("#lab_consent_docs").click(function(){
+    $("#lab_consent_docs").change(function(){
         file_browse_onclick('lab_consent_docs');
+    });
+	//added on 03-05-2023 by Amol
+	$("#rel_doc").change(function(){
+        file_browse_onclick('rel_doc');
     });
 
 

@@ -1,5 +1,5 @@
 <?php $applCnt=0;
-foreach($getNoOfAppl as $each){ ?>
+foreach($newarr as $each){ ?>
 
 <tr>
 	<td style="padding:10px; vertical-align:top;">Date: <?php echo $applSubmissionDate[$applCnt]; ?></td>
@@ -44,7 +44,7 @@ foreach($getNoOfAppl as $each){ ?>
 						echo $change_premises[$applCnt];
 						
 					} elseif ($eachField['field_id']==6) {//if Grading lab details changed			
-						echo 'Type: '.$change_lab_type.'<br>';
+						echo 'Type: '.$change_lab_type[$applCnt].'<br>';
 						echo 'Name: '.$getChangeDetails[$applCnt]['lab_name'];
 						
 					} elseif ($eachField['field_id']==7) {//if Commodity changed					

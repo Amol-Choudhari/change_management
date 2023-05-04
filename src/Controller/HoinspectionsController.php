@@ -708,10 +708,32 @@ use App\Network\Response\Response;
 					}
 					
 					//get report pdf links
+					
+					
+					//condition added on 01-05-2023 for CA export report and pdf links by Amol
+					$checkExport = $this->Customfunctions->checkApplicantExportUnit($customer_id);
+					if ($appl_type_id==1 && $checkExport=='yes') {			
+						$report_pdf_table = 'DmiCaExportSiteinspectionReports';
+						$this->loadModel($report_pdf_table);				
+				
+					}
+					//added applicationtype==3 condition on 01-05-2023, to get change report table by Amol
+					elseif($appl_type_id==3){
+						$report_pdf_table = 'DmiChangeSiteinspectionReports';
+						$this->loadModel($report_pdf_table);				
+					}
+			
 					$report_pdf = $appl_type_id;//set default to reload page if blank
 					$get_report_pdf = $this->$report_pdf_table->find('all',array('conditions'=>array('customer_id'=>$customer_id),'order'=>'id desc'))->first();
 					if(!empty($get_report_pdf)){
-						$report_pdf = $get_report_pdf[$report_pdf_field];
+	  
+						//condition added on 01-05-2023 for CA export report and pdf links
+						//and also for change request report pdf
+						if(($appl_type_id==1 && $checkExport=='yes') || $appl_type_id==3){
+							$report_pdf = $get_report_pdf['report_docs'];
+						}else{
+							$report_pdf = $get_report_pdf[$report_pdf_field];
+						}
 					}
 					
 					

@@ -24,7 +24,7 @@
 												<p><span><?php //if ($current_level == 'level_2' && $application_mode == 'edit') { echo 'Upload Report'; }else{ echo 'Uploaded Report'; } ?></span></p>
 												<span class="float-left"><?php if ($current_level == 'level_2' && $application_mode == 'edit' && empty($section_form_details[0]['report_docs'])) { echo 'Attach Report'; }else{ echo 'Attached Report'; } ?> :
 													<?php if (!empty($section_form_details[0]['report_docs'])) { ?>
-														<a id="report_docs_value" target="blank" href="<?php echo str_replace("D:/xampp/htdocs","",$section_form_details[0]['report_docs']); ?>">Preview</a>
+														<a id="report_docs_value" target="blank" href="<?php echo str_replace("D:/xampp/htdocs","",$section_form_details[0]['report_docs']); ?>"><?=$str2 = substr(array_values(array_slice((explode("/",$section_form_details[0]['report_docs'])), -1))[0],23);?></a>
 													<?php }else{ echo "No Document Provided" ;} ?>
 												</span>
 											</label>

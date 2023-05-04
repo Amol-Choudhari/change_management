@@ -146,7 +146,11 @@ class FlowbuttonsComponent extends Component {
 		$Dmi_flow_wise_tables_list = TableRegistry::getTableLocator()->get('DmiFlowWiseTablesLists');
 		$Dmi_ama_approved_model = $Dmi_flow_wise_tables_list->getFlowWiseTableDetails($applicationType,'ama_approved_application');
 		$Dmi_ama_approved_application = TableRegistry::getTableLocator()->get($Dmi_ama_approved_model);
-		$check_ama_approval = $Dmi_ama_approved_application->find('all',array('conditions'=>array('customer_id IS'=>$customerId)))->first();
+
+		//added on 24-04-2023
+		$grantDateCondition = $this->Customfunctions->returnGrantDateCondition($customerId,$applicationType);
+		//updated condition on 24-04-2023 for "grantdatecondition" on ama approved records
+		$check_ama_approval = $Dmi_ama_approved_application->find('all',array('conditions'=>array('customer_id IS'=>$customerId,$grantDateCondition)))->first();
 		
 		$inspection_report_section = TableRegistry::getTableLocator()->get('DmiCommonSiteinspectionFlowDetails');
 		$all_report_status = $inspection_report_section->reportSectionApproveStatus($customerId,$allSectionDetails);

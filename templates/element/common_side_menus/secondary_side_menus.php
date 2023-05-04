@@ -90,23 +90,28 @@ if ($current_menu == 'menu_register') {
 									<p><?php echo $show_renewal_button; ?></p>
 								</a>
 							</li>
+							
+							
 
 						<?php } ?>
 					
 					
-
-						<!-- <li class="nav-item">
-						<a href="#" class="nav-link <?php //echo $menu_susp; ?>">
-							<i class="far fa-clock nav-icon"></i>
-							<p>Suspension</p>
-						</a>
-						</li> -->
-						<li class="nav-item">
-						<a href="<?php echo $this->request->getAttribute("webroot");?>application/application-type/3" class="nav-link <?php echo $menu_mod; ?>">
-							<i class="fa fa-wrench nav-icon"></i>
-							<p>Modification</p>
-						</a>
-						</li>
+						<?php if ($IsApproved == 'yes') { ?>
+							<!-- <li class="nav-item">
+							<a href="#" class="nav-link <?php //echo $menu_susp; ?>">
+								<i class="far fa-clock nav-icon"></i>
+								<p>Suspension</p>
+							</a>
+							</li> -->
+							
+							<li class="nav-item">
+								<a href="<?php echo $this->request->getAttribute("webroot");?>application/application-type/3" class="nav-link <?php echo $menu_mod; ?>">
+									<i class="fa fa-wrench nav-icon"></i>
+									<p>Modification</p>
+								</a>
+							</li>
+						
+						<?php } ?>
 
 
 						<!-- condition added by Shankhpal Shende on 08/11/2022 When user login with export lab, then it show on left menu. -->

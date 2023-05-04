@@ -200,7 +200,7 @@
 									<div class="form-group row">
 										<label for="inputEmail3" class="col-sm-3 col-form-label">Attach File: <span class="cRed">*</span></label>
 											<?php if(!empty($section_form_details[0]['chemist_details_docs'])){?>
-												<a id="chemist_detail_docs_value" target="blank" href="<?php echo str_replace("D:/xampp/htdocs","",$section_form_details[0]['chemist_details_docs']); ?>">Preview</a>
+												<a id="chemist_detail_docs_value" target="blank" href="<?php echo str_replace("D:/xampp/htdocs","",$section_form_details[0]['chemist_details_docs']); ?>"><?=$str2 = substr(array_values(array_slice((explode("/",$section_form_details[0]['chemist_details_docs'])), -1))[0],23);?></a>
 											<?php } ?>
 										
 										<div class="custom-file col-sm-9">
@@ -218,7 +218,7 @@
 									<div class="form-group row">
 										<label for="inputEmail3" class="col-sm-3 col-form-label">Attach File: <span class="cRed">*</span></label>
 											<?php if(!empty($section_form_details[0]['lab_equipped_docs'])){?>
-												<a id="lab_equipped_docs_value" target="blank" href="<?php echo str_replace("D:/xampp/htdocs","",$section_form_details[0]['lab_equipped_docs']); ?>">Preview</a>
+												<a id="lab_equipped_docs_value" target="blank" href="<?php echo str_replace("D:/xampp/htdocs","",$section_form_details[0]['lab_equipped_docs']); ?>"><?=$str2 = substr(array_values(array_slice((explode("/",$section_form_details[0]['lab_equipped_docs'])), -1))[0],23);?></a>
 											<?php } ?>
 										
 										<div class="custom-file col-sm-9">
@@ -237,7 +237,7 @@
 										<div class="form-group row">
 										<label for="inputEmail3" class="col-sm-2 col-form-label">Attach File: <span class="cRed">*</span></label>
 											<?php if(!empty($section_form_details[0]['lab_consent_docs'])){?>
-												<a id="consent_letter_docs_value" target="blank" href="<?php echo str_replace("D:/xampp/htdocs","",$section_form_details[0]['lab_consent_docs']); ?>">Preview</a>
+												<a id="consent_letter_docs_value" target="blank" href="<?php echo str_replace("D:/xampp/htdocs","",$section_form_details[0]['lab_consent_docs']); ?>"><?=$str2 = substr(array_values(array_slice((explode("/",$section_form_details[0]['lab_consent_docs'])), -1))[0],23);?></a>
 											<?php } ?>
 										
 										<div class="custom-file col-sm-4">
@@ -272,7 +272,7 @@
 								<div class="d-inline-block">
 									<p class="bg-info pl-2 p-1 rounded text-sm"><i class="fa fa-info-circle"></i> Upload Details of Approved Chemists</p>
 									<div class="form-group row">
-									Attached File : <a target="blank" href="<?php echo str_replace("D:/xampp/htdocs","",$section_form_details[5][1]['chemist_detail_docs']); ?>">Preview</a>
+									Attached File : <a target="blank" href="<?php echo str_replace("D:/xampp/htdocs","",$section_form_details[5][1]['chemist_detail_docs']); ?>"><?=$str2 = substr(array_values(array_slice((explode("/",$section_form_details[0]['chemist_detail_docs'])), -1))[0],23);?></a>
 									</div>
 									<p class="lab_form_note float-right"><i class="fa fa-info-circle"></i> File type: PDF, jpg &amp; max size upto 2 MB</p>
 								</div>
@@ -282,7 +282,7 @@
 								<div class="d-inline-block">
 									<p class="bg-info pl-2 p-1 rounded text-sm"><i class="fa fa-info-circle"></i> Upload Details of Instruments, Details of Glass Apparatus, Details of Chemicals</p>
 									<div class="form-group row">
-									Attached File : <a target="blank" href="<?php echo str_replace("D:/xampp/htdocs","",$section_form_details[5][1]['lab_equipped_docs']); ?>">Preview</a>	
+									Attached File : <a target="blank" href="<?php echo str_replace("D:/xampp/htdocs","",$section_form_details[5][1]['lab_equipped_docs']); ?>"><?=$str2 = substr(array_values(array_slice((explode("/",$section_form_details[0]['lab_equipped_docs'])), -1))[0],23);?></a>	
 									</div>
 									<p class="lab_form_note float-right"><i class="fa fa-info-circle"></i> File type: PDF, jpg &amp; max size upto 2 MB</p>
 								</div>
@@ -291,7 +291,7 @@
 							<?php if(!empty($section_form_details[5][1]['consent_letter_docs'])){?>
 								<p class="bg-info pl-2 p-1 rounded text-sm"><i class="fa fa-info-circle"></i> Consent letter of the laboratory may be enclosed, Not required in case of own laboratory.</p>
 									<div class="form-group row">
-										Attached File : <a target="blank" href="<?php echo str_replace("D:/xampp/htdocs","",$section_form_details[5][1]['consent_letter_docs']); ?>">Preview</a>	
+										Attached File : <a target="blank" href="<?php echo str_replace("D:/xampp/htdocs","",$section_form_details[5][1]['consent_letter_docs']); ?>"><?=$str2 = substr(array_values(array_slice((explode("/",$section_form_details[0]['consent_letter_docs'])), -1))[0],23);?></a>	
 									</div>
 								<p class="lab_form_note float-right"><i class="fa fa-info-circle"></i> File type: PDF, jpg &amp; max size upto 2 MB</p>
 							<?php } ?>
@@ -341,6 +341,27 @@
 							</div>
 						</div>
 					<?php } ?>
+					
+					<!-- new block added on 03-05-2023 by Amol, for new field for uploading relevant document -->
+					<div class="col-md-6">
+						<div class="d-inline-block">
+							<p class="bg-info pl-2 p-1 rounded text-sm"><i class="fa fa-info-circle"></i> Relevant Document</p>
+							<div class="form-group row">
+								<label for="inputEmail3" class="col-sm-3 col-form-label">Attach File:</label>
+									<?php if(!empty($section_form_details[0]['rel_doc'])){?>
+										<a id="rel_doc_value" target="blank" href="<?php echo str_replace("D:/xampp/htdocs","",$section_form_details[0]['rel_doc']); ?>"><?=$str2 = substr(array_values(array_slice((explode("/",$section_form_details[0]['rel_doc'])), -1))[0],23);?></a>
+									<?php } ?>
+								
+								<div class="custom-file col-sm-9">
+									<input type="file" name="rel_doc" class="form-control" id="rel_doc", multiple='multiple'>
+									<span id="error_rel_doc" class="error invalid-feedback"></span>
+									<span id="error_type_rel_doc" class="error invalid-feedback"></span>
+									<span id="error_size_rel_doc" class="error invalid-feedback"></span>
+								</div>
+							</div>
+							<p class="lab_form_note float-right"><i class="fa fa-info-circle"></i> File type: PDF, jpg &amp; max size upto 2 MB</p>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>

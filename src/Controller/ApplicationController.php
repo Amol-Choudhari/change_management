@@ -404,6 +404,7 @@ class ApplicationController extends AppController{
 		$selectedSections = array();
 		$change_details = array();
 		$last_details = array();
+		$selectedValues = array();
 		if ($application_type == 3) {
 			$this->loadModel('DmiChangeSelectedFields');
 			$this->loadModel('DmiChangeApplDetails');

@@ -606,15 +606,25 @@ class RandomfunctionsComponent extends Component {
 			}
 			if (!empty($changeApplDetails[0]['premise_street'])) {//if premises changed	
 				
-				$premises_data[0]['street_address'] = $changeApplDetails[0]['premise_street'];
+				//first premises variables used in grant pdf viewf files, set
+				$customer_firm_data['street_address'] = $changeApplDetails[0]['premise_street'];	
+				$firm_district_name = $this->Controller->Mastertablecontent->districtValueById($changeApplDetails[0]['premise_city'])->district_name;
+				$this->Controller->set('firm_district_name',$firm_district_name);	
+				$firm_state_name = $this->Controller->Mastertablecontent->stateValueById($changeApplDetails[0]['premise_state']);
+				$this->Controller->set('firm_state_name',$firm_state_name);	
+				$customer_firm_data['postal_code'] = $changeApplDetails[0]['premise_pin'];
 				
+				//second premises variables used in grant pdf view files, set here
+				$premises_data[0]['street_address'] = $changeApplDetails[0]['premise_street'];				
 				$premises_district_name = $this->Controller->Mastertablecontent->districtValueById($changeApplDetails[0]['premise_city']);
-				$this->Controller->set('premises_district_name',$premises_district_name);
-				
+				$this->Controller->set('premises_district_name',$premises_district_name);				
+	
 				$premises_state_name = $this->Controller->Mastertablecontent->stateValueById($changeApplDetails[0]['premise_state']);
 				$this->Controller->set('premises_state_name',$premises_state_name);	
 
-				$premises_data[0]['postal_code'] = $changeApplDetails[0]['premise_pin'];			
+				$premises_data[0]['postal_code'] = $changeApplDetails[0]['premise_pin'];
+
+					
 			}
 			if (!empty($changeApplDetails[0]['lab_type']) && !empty($laboratory_data)) {//if Lab details changed	
 				
@@ -630,9 +640,9 @@ class RandomfunctionsComponent extends Component {
 			}
 			//check if TBL updated
 			$DmiChangeAllTblsDetails = TableRegistry::getTableLocator()->get('DmiChangeAllTblsDetails');
-			$added_tbls_details = $DmiChangeAllTblsDetails->find('all', array('conditions'=>array('customer_id IS'=>$customer_id,'delete_status IS NULL','status IS NULL'),'order'=>'id'))->toArray();
-			if (!empty($added_tbls_details)) {
-				$added_tbls_details[1][0] = $added_tbls_details;
+			$get_tbls_details = $DmiChangeAllTblsDetails->find('all', array('conditions'=>array('customer_id IS'=>$customer_id,'delete_status IS NULL','status IS NULL'),'order'=>'id'))->toArray();
+			if (!empty($get_tbls_details)) {
+				$added_tbls_details[1][0] = $get_tbls_details;
 				$this->Controller->set('added_tbls_details',$added_tbls_details);				
 			}
 			//check if Director details updated
@@ -670,20 +680,24 @@ class RandomfunctionsComponent extends Component {
 			
 			$applSubmissionDate = array();
 			$certEsignedBy = array();
+			$newarr = array();
+			$change_premises = array();
 			foreach($getNoOfAppl as $each){		
-				//check selected fields
-				$selectedValues[$applCnt] = explode(',',$each['changefields']);
+				
 
-				//get selected fields name
-				$getFieldName[$applCnt] = $DmiChangeFieldLists->find('all',array('conditions'=>array('field_id IN'=>$selectedValues[$applCnt],'form_type IS'=>'common'),'order'=>'field_id asc'))->toArray();
 				
 				//to get application submission date
 				$get_final_submitted_date = $DmiChangeFinalSubmits->find('all',array('conditions'=>array('customer_id IS'=>$customer_id,'id NOT IN'=>$finalSubIdForLog,'status'=>'pending'),'order'=>'id desc'))->first();
-				$finalSubIdForLog[] = $get_final_submitted_date['id'];//to record ids once used
-				$applSubmissionDate[$applCnt] = $get_final_submitted_date['created'];
+				
 				
 				//to cert get esigned by user name
-				$get_change_grant_details = $DmiChangeGrantCertificatesPdfs->find('all',array('fields'=>array('user_email_id','created'),'conditions'=>array('customer_id IS'=>$customer_id,'id NOT IN'=>$grantIdForLog,'date(created) >'=>$get_final_submitted_date['created']),'order'=>'id desc'))->first();
+				//applied condition on 11-04-2023, to count only final submitted appl.
+				$get_change_grant_details  = array();
+				if(!empty($get_final_submitted_date)){
+					$finalSubIdForLog[] = $get_final_submitted_date['id'];//to record ids once used
+					$applSubmissionDate[$applCnt] = $get_final_submitted_date['created'];
+					$get_change_grant_details = $DmiChangeGrantCertificatesPdfs->find('all',array('fields'=>array('id','user_email_id','created'),'conditions'=>array('customer_id IS'=>$customer_id,'id NOT IN'=>$grantIdForLog,'date(created) >'=>$get_final_submitted_date['created']),'order'=>'id desc'))->first();
+				}		
 
 				$applCond = array();
 				if(!empty($get_change_grant_details)){
@@ -718,11 +732,10 @@ class RandomfunctionsComponent extends Component {
 				$changeMachineDetails[$applCnt] = $DmiChangeAllMachinesDetails->find('all',array('fields'=>array('machine_name'),'conditions'=>array('customer_id IS'=>$customer_id,'delete_status IS NULL','status IS NULL')))->toArray();
 				
 				// to show changed premises details	
-				$change_premises = '';
 				if (!empty($getChangeDetails[$applCnt]['premise_city'])) {
 					$change_district_name = $DmiDistricts->find('all',array('fields'=>'district_name','conditions'=>array('id IS'=>$getChangeDetails[$applCnt]['premise_city'])))->first();		
 					$change_state_name = $DmiStates->find('all',array('fields'=>'state_name','conditions'=>array('id IS'=>$getChangeDetails[$applCnt]['premise_state'])))->first();
-					$change_premises = $getChangeDetails[$applCnt]['premises_street'].', '.$change_district_name['district_name'].', '.$change_state_name['state_name'].', '.$getChangeDetails[$applCnt]['premises_pin'];
+					$change_premises[$applCnt] = $getChangeDetails[$applCnt]['premise_street'].', '.$change_district_name['district_name'].', '.$change_state_name['state_name'].', '.$getChangeDetails[$applCnt]['premise_pin'];
 				}
 				
 				//for changed lab details
@@ -730,10 +743,9 @@ class RandomfunctionsComponent extends Component {
 
 					$DmiLaboratoryTypes = TableRegistry::getTableLocator()->get('DmiLaboratoryTypes');
 					$change_lab = $DmiLaboratoryTypes->find('all',array('fields'=>'laboratory_type','conditions'=>array('id IS'=>$getChangeDetails[$applCnt]['lab_type'])))->first();
-					$change_lab_type = $change_lab['laboratory_type'];
+					$change_lab_type[$applCnt] = $change_lab['laboratory_type'];
 					$this->Controller->set('change_lab_type',$change_lab_type);
 					
-					$change_premises[$applCnt] = $getChangeDetails[$applCnt]['premise_street'].', '.$change_district_name['district_name'].', '.$change_state_name['state_name'].', '.$getChangeDetails[$applCnt]['premise_pin'];
 				}
 				
 				//for change commodities
@@ -765,11 +777,30 @@ class RandomfunctionsComponent extends Component {
 					
 				}
 				
-				$applCnt++;
+				//this if else conditionnadded on 11-04-2023, to avoid in-process change appl, details in grant cert.
+				//when appl. type is 3 in session then only in-process change appl. details will be considered.
+				if ($this->Session->read('application_type')==3){
+					//check selected fields
+					$selectedValues[$applCnt] = explode(',',$each['changefields']);
+					//get selected fields name
+					$getFieldName[$applCnt] = $DmiChangeFieldLists->find('all',array('conditions'=>array('field_id IN'=>$selectedValues[$applCnt],'form_type IS'=>'common'),'order'=>'field_id asc'))->toArray();
+					$newarr[] = $applCnt;
+					$applCnt++;
+				}else{
+					if(!empty($get_change_grant_details)){
+						//check selected fields
+						$selectedValues[$applCnt] = explode(',',$each['changefields']);
+						//get selected fields name
+						$getFieldName[$applCnt] = $DmiChangeFieldLists->find('all',array('conditions'=>array('field_id IN'=>$selectedValues[$applCnt],'form_type IS'=>'common'),'order'=>'field_id asc'))->toArray();
+						$newarr[] = $applCnt;
+						$applCnt++;
+					}
+				}
+				
 			}
-			
 
-			$this->Controller->set(compact('selectedValues','getFieldName','getChangeDetails','changeTblDetails','changeDirectorDetails','change_premises','applSubmissionDate','certEsignedBy','changeMachineDetails'));
+
+			$this->Controller->set(compact('newarr','selectedValues','getFieldName','getChangeDetails','changeTblDetails','changeDirectorDetails','change_premises','applSubmissionDate','certEsignedBy','changeMachineDetails'));
 		}
 		
 		
@@ -812,7 +843,7 @@ class RandomfunctionsComponent extends Component {
 			if (!empty($getChangeDetails['premise_city'])) {
 				$change_district_name = $DmiDistricts->find('all',array('fields'=>'district_name','conditions'=>array('id IS'=>$getChangeDetails['premise_city'])))->first();		
 				$change_state_name = $DmiStates->find('all',array('fields'=>'state_name','conditions'=>array('id IS'=>$getChangeDetails['premise_state'])))->first();
-				$change_premises = $getChangeDetails['premises_street'].', '.$change_district_name['district_name'].', '.$change_state_name['state_name'].', '.$getChangeDetails['premises_pin'];
+				$change_premises = $getChangeDetails['premise_street'].', '.$change_district_name['district_name'].', '.$change_state_name['state_name'].', '.$getChangeDetails['premise_pin'];
 			}
 			
 			//for changed lab details
@@ -823,7 +854,6 @@ class RandomfunctionsComponent extends Component {
 				$change_lab_type = $change_lab['laboratory_type'];
 				$this->Controller->set('change_lab_type',$change_lab_type);
 				
-				$change_premises = $getChangeDetails['premise_street'].', '.$change_district_name['district_name'].', '.$change_state_name['state_name'].', '.$getChangeDetails['premise_pin'];
 			}
 			
 			//for change commodities

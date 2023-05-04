@@ -36,7 +36,7 @@
 											   'reffered_back_date' => "", 'form_status' =>"", 'customer_reply' =>"", 'customer_reply_date' =>"", 'approved_date' => "",
 											   'user_email_id' => "", 'current_level' => "",'mo_comment' =>"", 'mo_comment_date' => "", 'ro_reply_comment' =>"", 'ro_reply_comment_date' =>"", 'delete_mo_comment' =>"", 'delete_ro_reply' => "",
 											   'delete_ro_referred_back' => "", 'delete_customer_reply' => "", 'ro_current_comment_to' => "",
-											   'rb_comment_ul'=>"",'mo_comment_ul'=>"",'rr_comment_ul'=>"",'cr_comment_ul'=>"",'dist_list'=>"",'business_type'=>""); 
+											   'rb_comment_ul'=>"",'mo_comment_ul'=>"",'rr_comment_ul'=>"",'cr_comment_ul'=>"",'dist_list'=>"",'business_type'=>"",'rel_doc'=>""); 
 				
 			}
 
@@ -55,7 +55,7 @@
 			$firm_type = $CustomersController->Customfunctions->firmType($customer_id);
 			
 			//this condition added on 04-04-2023 by Amol to fetch commodity details from firm table. if not in change appl.
-			if (empty($form_fields_details['commodity'])) { $form_fields_details['commodity'] = $firm_details['commodity']; }
+			if (empty($form_fields_details['commodity'])) { $form_fields_details['commodity'] = $firm_details['sub_commodity']; }
 			
 			$commOrPackingTypeResult = $this->getChangeCommodityDetails($form_fields_details,$firm_type);
 			$form_fields_details['packing_types'] = $commOrPackingTypeResult[2];
@@ -65,13 +65,20 @@
 			
 
 			//premises details
-			if($firm_type==1){
+			/*if($firm_type==1){
 				$PremisesProfilesTable = TableRegistry::getTableLocator()->get('DmiCustomerPremisesProfiles');
 			}else{
 				$PremisesProfilesTable = TableRegistry::getTableLocator()->get('DmiPrintingPremisesProfiles');
-			}
+			}*/		
 			
-			$premises_details = $PremisesProfilesTable->find('all',array('fields'=>array('street_address','state','district','postal_code'),'conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->first();
+			//$premises_details = $PremisesProfilesTable->find('all',array('fields'=>array('street_address','state','district','postal_code'),'conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->first();
+			
+			//show last premises details from firm details table, as lab dont have premises section, and if want to change.
+			//updated on 20-04-2023	
+			$premises_details['street_address'] =  $firm_details['street_address'];
+			$premises_details['state'] =  $firm_details['state'];
+			$premises_details['district'] =  $firm_details['district'];
+			$premises_details['postal_code'] =  $firm_details['postal_code'];
 			
 			
 			//Firm details fro business type
@@ -330,6 +337,19 @@
 					$dataArray = array_merge($dataArray,array('business_type'=>htmlentities($forms_data['business_type'], ENT_QUOTES)));
 				}
 				
+				//added new field for relevant document uploading
+				//on 03-05-2023 by Amol
+				if(!empty($forms_data['rel_doc']->getClientFilename())){
+
+					$file_name = $forms_data['rel_doc']->getClientFilename();
+					$file_size = $forms_data['rel_doc']->getSize();
+					$file_type = $forms_data['rel_doc']->getClientMediaType();
+					$file_local_path = $forms_data['rel_doc']->getStream()->getMetadata('uri');
+												
+					$rel_doc = $CustomersController->Customfunctions->fileUploadLib($file_name,$file_size,$file_type,$file_local_path); // calling file uploading function		
+				
+				}else{ $rel_doc = $section_form_details[0]['rel_doc']; }
+				
 				//common required fields
 				$commonArr = array(				
 					'id'=>$max_id,
@@ -339,7 +359,8 @@
 					'customer_reply_date'=>$customer_reply_date,
 					'cr_comment_ul'=>$cr_comment_ul,
 					'created'=>$created,
-					'modified'=>date('Y-m-d H:i:s')
+					'modified'=>date('Y-m-d H:i:s'),
+					'rel_doc'=>$rel_doc //added on 03-05-2023
 				);
 				
 				$dataArray = array_merge($dataArray,$commonArr);
@@ -504,6 +525,19 @@
 				$dataArray = array_merge($dataArray,array('business_type'=>htmlentities($forms_data['business_type'], ENT_QUOTES)));
 			}
 			
+			//added new field for relevant document uploading
+			//on 03-05-2023 by Amol
+			if(!empty($forms_data['rel_doc']->getClientFilename())){
+
+				$file_name = $forms_data['rel_doc']->getClientFilename();
+				$file_size = $forms_data['rel_doc']->getSize();
+				$file_type = $forms_data['rel_doc']->getClientMediaType();
+				$file_local_path = $forms_data['rel_doc']->getStream()->getMetadata('uri');
+											
+				$rel_doc = $CustomersController->Customfunctions->fileUploadLib($file_name,$file_size,$file_type,$file_local_path); // calling file uploading function		
+			
+			}else{ $rel_doc = $section_form_details[0]['rel_doc']; }
+			
 			//common required fields
 			$commonArr = array(				
 
@@ -522,7 +556,8 @@
 				'mo_comment_ul'=>$mo_comment_ul,
 				'ro_reply_comment'=>$ro_reply_comment,
 				'ro_reply_comment_date'=>$ro_reply_comment_date,
-				'rr_comment_ul'=>$rr_comment_ul
+				'rr_comment_ul'=>$rr_comment_ul,
+				'rel_doc'=>$rel_doc //added on 03-05-2023
 			);
 			
 			$dataArray = array_merge($dataArray,$commonArr);
@@ -675,6 +710,145 @@
 			}
 			
 			return array($category_list,$selected_commodities,$selected_packing_types,$selected_category_commodities);
+		}
+		
+		
+		
+		//to update all changed details to original tables after grant.
+		//to refelct the change in overall application once grant.
+		//this method is called after grant esigned while creating grant pdf, but before entry in grant table
+		//on 20-04-2023
+		public function updateChangeDetailsAftergrant($customer_id){
+			
+			$DmiChangeSelectedFields = TableRegistry::getTableLocator()->get('DmiChangeSelectedFields');
+			$selectedfields = $DmiChangeSelectedFields->selectedChangeFields();
+			$selectedValues = $selectedfields[0];
+			
+			$DmiChangeApplDetails = TableRegistry::getTableLocator()->get('DmiChangeApplDetails');
+			$DmiChangeGrantedLogs = TableRegistry::getTableLocator()->get('DmiChangeGrantedLogs');
+			
+			$getChangeApplDetails = $DmiChangeApplDetails->find('all',array('conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->first();
+			$getChangeGrantedLogs = $DmiChangeGrantedLogs->find('all',array('conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->first();
+			$version = 1;
+			if(!empty($getChangeGrantedLogs)){
+				$version = $getChangeGrantedLogs['version']+1;
+			}
+			
+			if(in_array(1,$selectedValues)){
+				//get last firm name from table to store in log table
+				$DmiFirms = TableRegistry::getTableLocator()->get('DmiFirms');
+				$getFirmName = $DmiFirms->find('all',array('fields'=>'firm_name',array('conditions'=>array('customer_id'=>$customer_id),'order'=>'id desc')))->first();
+				//save details in logs table first				
+				$result = $this->saveRecordGrantLogs($customer_id,'Firm Name',$getFirmName['firm_name'],$getChangeApplDetails['firm_name'],$version);
+				if($result==true){					
+					$DmiFirms->updateAll(array('firm_name'=>$getChangeApplDetails['firm_name']),array('customer_id'=>$customer_id));
+				}
+				
+			}
+			if(in_array(2,$selectedValues)){
+				
+				$dataArray = array_merge($dataArray,array(
+					'mobile_no'=>htmlentities($forms_data['mobile_no'], ENT_QUOTES),
+					'email_id'=>htmlentities($forms_data['email_id'], ENT_QUOTES),
+					'phone_no'=>htmlentities($forms_data['phone_no'], ENT_QUOTES),
+				));
+			}
+			if(in_array(5,$selectedValues)){
+				$dataArray = array_merge($dataArray,array(
+					'premise_street'=>htmlentities($forms_data['premise_street'], ENT_QUOTES),
+					'premise_state'=>htmlentities($forms_data['premise_state'], ENT_QUOTES),
+					'premise_city'=>htmlentities($forms_data['premise_city'], ENT_QUOTES),
+					'premise_pin'=>htmlentities($forms_data['premise_pin'], ENT_QUOTES),
+				));
+			}
+			if(in_array(6,$selectedValues)){
+				
+				if(!empty($forms_data['chemist_details_docs']->getClientFilename())){
+
+					$file_name = $forms_data['chemist_details_docs']->getClientFilename();
+					$file_size = $forms_data['chemist_details_docs']->getSize();
+					$file_type = $forms_data['chemist_details_docs']->getClientMediaType();
+					$file_local_path = $forms_data['chemist_details_docs']->getStream()->getMetadata('uri');
+												
+					$chemist_details_docs = $CustomersController->Customfunctions->fileUploadLib($file_name,$file_size,$file_type,$file_local_path); // calling file uploading function		
+				
+				}else{ $chemist_details_docs = $section_form_details[0]['chemist_details_docs']; }
+				
+				if(!empty($forms_data['lab_equipped_docs']->getClientFilename())){
+
+					$file_name = $forms_data['lab_equipped_docs']->getClientFilename();
+					$file_size = $forms_data['lab_equipped_docs']->getSize();
+					$file_type = $forms_data['lab_equipped_docs']->getClientMediaType();
+					$file_local_path = $forms_data['lab_equipped_docs']->getStream()->getMetadata('uri');
+												
+					$lab_equipped_docs = $CustomersController->Customfunctions->fileUploadLib($file_name,$file_size,$file_type,$file_local_path); // calling file uploading function		
+				
+				}else{ $lab_equipped_docs = $section_form_details[0]['lab_equipped_docs']; }
+				
+				if(!empty($forms_data['lab_consent_docs']->getClientFilename())){
+
+					$file_name = $forms_data['lab_consent_docs']->getClientFilename();
+					$file_size = $forms_data['lab_consent_docs']->getSize();
+					$file_type = $forms_data['lab_consent_docs']->getClientMediaType();
+					$file_local_path = $forms_data['lab_consent_docs']->getStream()->getMetadata('uri');
+												
+					$lab_consent_docs = $CustomersController->Customfunctions->fileUploadLib($file_name,$file_size,$file_type,$file_local_path); // calling file uploading function		
+				
+				}else{ $lab_consent_docs = $section_form_details[0]['lab_consent_docs']; }
+				
+				$dataArray = array_merge($dataArray,array(
+					'lab_name'=>htmlentities($forms_data['lab_name'], ENT_QUOTES),
+					'lab_type'=>htmlentities($forms_data['lab_type'], ENT_QUOTES),
+					'chemist_details_docs'=>$chemist_details_docs,
+					'lab_equipped_docs'=>$lab_equipped_docs,
+					'lab_consent_docs'=>$lab_consent_docs,
+				));
+			}
+			if(in_array(7,$selectedValues)){
+			
+				if ($firm_type==1 || $firm_type==3) {
+					$dataArray = array_merge($dataArray,array(
+						'comm_category'=>htmlentities($forms_data['comm_category'], ENT_QUOTES),
+						'commodity'=>htmlentities($forms_data['selected_comm'], ENT_QUOTES),
+					));
+					
+				} elseif ($firm_type==2) {
+					$dataArray = array_merge($dataArray,array(
+						'packing_types'=>htmlentities($forms_data['selected_pack'], ENT_QUOTES),
+					));
+					
+				}
+			}
+			if(in_array(9,$selectedValues)){
+				$dataArray = array_merge($dataArray,array('business_type'=>htmlentities($forms_data['business_type'], ENT_QUOTES)));
+			}
+			
+			
+			
+		}
+		
+		
+		//to save record in cafter grant log table
+		//on 25-04-2023
+		public function saveRecordGrantLogs($customer_id,$changed_field,$prev_value,$new_value,$version){
+			
+			$DmiChangeGrantedLogs = TableRegistry::getTableLocator()->get('DmiChangeGrantedLogs');
+			
+			$dataArray = array(			
+				'customer_id'=>$customer_id,
+				'grant_by'=>$this->Session->read('username'),
+				'changed_field'=>$changed_field,
+				'prev_value'=>$prev_value,
+				'new_value'=>$new_value,
+				'created'=>date('Y-m-d H:i:s'),
+				'version'=>$version		
+			);
+			
+			$grantedLogsEntity = $DmiChangeGrantedLogs->newEntity($dataArray);				
+			if($this->save($grantedLogsEntity)){ 			
+				return true; 
+			}
+			return false;
 		}
 
 } ?>

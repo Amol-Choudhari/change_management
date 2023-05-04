@@ -935,7 +935,7 @@
 		
 			$final_submit_status = $this->Controller->Customfunctions->finalSubmitDetails($customer_id,'application_form',$appl_type_id);
 			
-			$grantDateCondition = $this->Controller->Customfunctions->returnGrantDateCondition($customer_id);
+			$grantDateCondition = $this->Controller->Customfunctions->returnGrantDateCondition($customer_id,$appl_type_id);//added appl_type parameter on 25-04-2023, to manage flow wise condition
 				
 			$app_current_pending = $appl_current_pos_table->find('all',array('conditions'=>array('customer_id IS'=>$customer_id,'current_user_email_id'=>$username,$grantDateCondition),'order'=>array('id DESC')))->first();
 			

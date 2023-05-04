@@ -2952,7 +2952,8 @@ class CustomfunctionsComponent extends Component {
 		//if application for change and firm is CA
 		if ($applicationType == 3 &&  $firmType == 1) {
 
-			$selectedValues = $DmiChangeSelectedFields->selectedChangeFields();
+			//commented on 17-04-2023 as per change request updates
+			/*$selectedValues = $DmiChangeSelectedFields->selectedChangeFields();
 
 			if (in_array(3,$selectedValues[0])) {
 
@@ -2966,7 +2967,7 @@ class CustomfunctionsComponent extends Component {
 
 				$totalCategories = count(array_unique($results));
 				$totalCharges = $totalCategories * $totalCharges;
-			}
+			}*/
 		}
 
 		//if application for New and firm is CA

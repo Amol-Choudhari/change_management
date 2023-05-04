@@ -1612,12 +1612,12 @@ class ApplicationformspdfsController extends AppController{
 		//check if process is Change/Modification then get details from change table.
 		//because main tables will be updated with new details at last once certificate esigned.
 		//added on 27-12-2022 for change management
+		$this->loadModel('DmiChangeSelectedFields');
+		$getNoOfAppl = $this->DmiChangeSelectedFields->find('all',array('fields'=>array('id','changefields'),'conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->toArray();
 		if ($this->Session->read('application_type')==3 || !empty($getNoOfAppl)) {
 			$this->loadComponent('Randomfunctions');
 			$this->Randomfunctions->setChangedDetailsForGrantPdf($customer_id,$customer_firm_data,$premises_data,$laboratory_data,$business_type);
 			
-			$this->loadModel('DmiChangeSelectedFields');
-			$getNoOfAppl = $this->DmiChangeSelectedFields->find('all',array('fields'=>array('id','changefields'),'conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->toArray();
 			$this->Randomfunctions->showChangedFieldsInGrantPdfSection($customer_id,$getNoOfAppl);
 			
 			$this->set('getNoOfAppl',$getNoOfAppl);
@@ -1742,7 +1742,7 @@ class ApplicationformspdfsController extends AppController{
 			$this->set('certificate_valid_upto',$certificate_valid_upto);
 
 			//This below line is added for the QR Code genration on Shankhpal [16-08-2022]	
-			$firm_name_forqr = $firm_data[0]['firm_name'];	
+			$firm_name_forqr = $customer_firm_data['firm_name'];//updated on 25-04-2023, to get updated details, if changed appl in process
 			$data = [$customer_id,$pdf_date,$certificate_valid_upto,$firm_name_forqr];
 			$result_for_qr = $this->Customfunctions->getQrCode($data);
 			$this->set('result_for_qr',$result_for_qr);
@@ -1772,7 +1772,7 @@ class ApplicationformspdfsController extends AppController{
 			}
 			
 			//This below line is added for the QR Code genration on Shankhpal [16-08-2022]	
-			$firm_name_forqr = $firm_data[0]['firm_name'];	
+			$firm_name_forqr = $customer_firm_data['firm_name'];//updated on 25-04-2023, to get updated details, if changed appl in process
 			$data = [$customer_id,$pdf_date,$certificate_valid_upto,$firm_name_forqr];
 			$result_for_qr = $this->Customfunctions->getQrCode($data);
 			$this->set('result_for_qr',$result_for_qr);
@@ -1987,7 +1987,7 @@ class ApplicationformspdfsController extends AppController{
 			$this->set('certificate_valid_upto',$certificate_valid_upto);
 			
 			//This below line is added for the QR Code genration on Shankhpal [16-08-2022]	
-			$firm_name_forqr = $firm_data[0]['firm_name'];	
+			$firm_name_forqr = $customer_firm_data['firm_name'];//updated on 25-04-2023, to get updated details, if changed appl in process	
 			$data = [$customer_id,$pdf_date,$certificate_valid_upto,$firm_name_forqr];
 			$result_for_qr = $this->Customfunctions->getQrCode($data);
 			$this->set('result_for_qr',$result_for_qr);				
@@ -2017,7 +2017,7 @@ class ApplicationformspdfsController extends AppController{
 			}
 
 			//This below line is added for the QR Code genration on Shankhpal [16-08-2022]	
-			$firm_name_forqr = $firm_data[0]['firm_name'];	
+			$firm_name_forqr = $customer_firm_data['firm_name'];//updated on 25-04-2023, to get updated details, if changed appl in process
 			$data = [$customer_id,$pdf_date,$certificate_valid_upto,$firm_name_forqr];
 			$result_for_qr = $this->Customfunctions->getQrCode($data);
 			$this->set('result_for_qr',$result_for_qr);				
@@ -2109,12 +2109,12 @@ class ApplicationformspdfsController extends AppController{
 		//check if process is Change/Modification then get details from change table.
 		//because main tables will be updated with new details at last once certificate esigned.
 		//added on 27-12-2022 for change management
+		$this->loadModel('DmiChangeSelectedFields');
+		$getNoOfAppl = $this->DmiChangeSelectedFields->find('all',array('fields'=>array('id','changefields'),'conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->toArray();
 		if ($this->Session->read('application_type')==3 || !empty($getNoOfAppl)) {
 			$this->loadComponent('Randomfunctions');
 			$this->Randomfunctions->setChangedDetailsForGrantPdf($customer_id,$customer_firm_data,null,null,$business_type);
 			
-			$this->loadModel('DmiChangeSelectedFields');
-			$getNoOfAppl = $this->DmiChangeSelectedFields->find('all',array('fields'=>array('id','changefields'),'conditions'=>array('customer_id IS'=>$customer_id),'order'=>'id desc'))->toArray();
 			$this->Randomfunctions->showChangedFieldsInGrantPdfSection($customer_id,$getNoOfAppl);
 			
 			$this->set('getNoOfAppl',$getNoOfAppl);
@@ -2243,7 +2243,7 @@ class ApplicationformspdfsController extends AppController{
 			$this->set('certificate_valid_upto',$certificate_valid_upto);
 
 			//This below line is added for the QR Code genration on Shankhpal [16-08-2022]	
-			$firm_name_forqr = $customer_firm_data['firm_name'];
+			$firm_name_forqr = $customer_firm_data['firm_name'];//updated on 25-04-2023, to get updated details, if changed appl in process
 			$data = [$customer_id,$pdf_date,$certificate_valid_upto,$firm_name_forqr];
 			$result_for_qr = $this->Customfunctions->getQrCode($data);
 			$this->set('result_for_qr',$result_for_qr);
@@ -2272,7 +2272,7 @@ class ApplicationformspdfsController extends AppController{
 			}
 			
 			//This below line is added for the QR Code genration on Shankhpal [16-08-2022]	
-			$firm_name_forqr = $customer_firm_data['firm_name'];			
+			$firm_name_forqr = $customer_firm_data['firm_name'];//updated on 25-04-2023, to get updated details, if changed appl in process			
 			$data = [$customer_id,$pdf_date,$certificate_valid_upto,$firm_name_forqr];
 			$result_for_qr = $this->Customfunctions->getQrCode($data);
 			$this->set('result_for_qr',$result_for_qr);				

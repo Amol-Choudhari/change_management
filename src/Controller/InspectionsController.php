@@ -91,7 +91,7 @@ class InspectionsController extends AppController{
 		$this->set('customer_id',$customer_id);
 		
 		$grantDateCondition = $this->Customfunctions->returnGrantDateCondition($customer_id);
-					//print_r($grantDateCondition); exit;
+					
 
 		$form_final_submit_details = $this->Customfunctions->finalSubmitDetails($customer_id,'application_form');
 		
