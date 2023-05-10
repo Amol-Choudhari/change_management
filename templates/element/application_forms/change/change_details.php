@@ -272,7 +272,7 @@
 								<div class="d-inline-block">
 									<p class="bg-info pl-2 p-1 rounded text-sm"><i class="fa fa-info-circle"></i> Upload Details of Approved Chemists</p>
 									<div class="form-group row">
-									Attached File : <a target="blank" href="<?php echo str_replace("D:/xampp/htdocs","",$section_form_details[5][1]['chemist_detail_docs']); ?>"><?=$str2 = substr(array_values(array_slice((explode("/",$section_form_details[0]['chemist_detail_docs'])), -1))[0],23);?></a>
+									Attached File : <a target="blank" href="<?php echo str_replace("D:/xampp/htdocs","",$section_form_details[5][1]['chemist_detail_docs']); ?>"><?=$str2 = substr(array_values(array_slice((explode("/",$section_form_details[5][1]['chemist_detail_docs'])), -1))[0],23);?></a>
 									</div>
 									<p class="lab_form_note float-right"><i class="fa fa-info-circle"></i> File type: PDF, jpg &amp; max size upto 2 MB</p>
 								</div>
@@ -282,7 +282,7 @@
 								<div class="d-inline-block">
 									<p class="bg-info pl-2 p-1 rounded text-sm"><i class="fa fa-info-circle"></i> Upload Details of Instruments, Details of Glass Apparatus, Details of Chemicals</p>
 									<div class="form-group row">
-									Attached File : <a target="blank" href="<?php echo str_replace("D:/xampp/htdocs","",$section_form_details[5][1]['lab_equipped_docs']); ?>"><?=$str2 = substr(array_values(array_slice((explode("/",$section_form_details[0]['lab_equipped_docs'])), -1))[0],23);?></a>	
+									Attached File : <a target="blank" href="<?php echo str_replace("D:/xampp/htdocs","",$section_form_details[5][1]['lab_equipped_docs']); ?>"><?=$str2 = substr(array_values(array_slice((explode("/",$section_form_details[5][1]['lab_equipped_docs'])), -1))[0],23);?></a>	
 									</div>
 									<p class="lab_form_note float-right"><i class="fa fa-info-circle"></i> File type: PDF, jpg &amp; max size upto 2 MB</p>
 								</div>
@@ -291,7 +291,7 @@
 							<?php if(!empty($section_form_details[5][1]['consent_letter_docs'])){?>
 								<p class="bg-info pl-2 p-1 rounded text-sm"><i class="fa fa-info-circle"></i> Consent letter of the laboratory may be enclosed, Not required in case of own laboratory.</p>
 									<div class="form-group row">
-										Attached File : <a target="blank" href="<?php echo str_replace("D:/xampp/htdocs","",$section_form_details[5][1]['consent_letter_docs']); ?>"><?=$str2 = substr(array_values(array_slice((explode("/",$section_form_details[0]['consent_letter_docs'])), -1))[0],23);?></a>	
+										Attached File : <a target="blank" href="<?php echo str_replace("D:/xampp/htdocs","",$section_form_details[5][1]['consent_letter_docs']); ?>"><?=$str2 = substr(array_values(array_slice((explode("/",$section_form_details[5][1]['consent_letter_docs'])), -1))[0],23);?></a>	
 									</div>
 								<p class="lab_form_note float-right"><i class="fa fa-info-circle"></i> File type: PDF, jpg &amp; max size upto 2 MB</p>
 							<?php } ?>
